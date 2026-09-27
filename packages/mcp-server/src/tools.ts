@@ -626,10 +626,13 @@ export const TOOLS: ToolSpec[] = [
       "'recipient' is a phone, an email, an iMessage chat guid, or a WhatsApp jid. A display " +
       "name is refused. The text is 'body'. Always-allow, if the owner chooses it, covers " +
       "later messages to that same recipient and does not cover a different one. The reply " +
-      "is the verified store row, or status 'unverified' when no new outbound row appeared. " +
-      "An unverified send is not retried. WhatsApp needs Accessibility. Without it the call " +
-      "is blocked and nothing is typed. A zero exit from the app is not evidence the message " +
-      "landed. The account is whichever one the app is signed into.",
+      "is a verified local sent row only when one new outbound row matches the exact text " +
+      "and recipient with a successful native status and no error. This is not a delivery " +
+      "receipt. Missing, failed, undecodable, or ambiguous rows return 'unverified'; never " +
+      "retry automatically. WhatsApp needs Accessibility, a direct phone recipient that " +
+      "the app visibly identifies, and an empty composer. Groups or layouts that cannot " +
+      "prove that recipient are blocked before typing. The account is whichever one the " +
+      "app is signed into.",
     inputSchema: {
       type: "object",
       required: ["app", "recipient", "body"],

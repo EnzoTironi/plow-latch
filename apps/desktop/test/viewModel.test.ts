@@ -133,6 +133,24 @@ describe("auditActivities (scripts)", () => {
     );
   });
 
+  it("a message target refusal is blocked after a queued send, never completed or unverified", () => {
+    const events: JSONValue[] = [
+      { event: "intent_received", intentId: "m3", request: "send whatsapp", ts: "2026-08-20T12:00:20Z" },
+      { event: "intent_decision", intentId: "m3", decision: "allow_once", source: "prompt", ts: "2026-08-20T12:00:20Z" },
+      { event: "message_send_queued", intentId: "m3", ts: "2026-08-20T12:00:20Z" },
+    ];
+    expect(auditActivities(events)[0]!.status).toBe("Queued");
+    events.push({ event: "message_send_start", intentId: "m3", ts: "2026-08-20T12:00:21Z" });
+    expect(auditActivities(events)[0]!.status).toBe("Running");
+    events.push({ event: "message_send_refused", intentId: "m3", cause: "target_validation", ts: "2026-08-20T12:00:22Z" });
+    const activity = auditActivities(events)[0]!;
+    expect(activity.status).toBe("Blocked · Message target");
+    expect(activity.statusKind).toBe("blocked");
+    expect(activity.timeline.map((step) => step.text)).toContain(
+      "Message not sent: the approved recipient or composer could not be confirmed",
+    );
+  });
+
   it("a script this Mac blocked reads as blocked, and one still going as running", () => {
     const blocked = auditActivities([
       ...scriptRun,

@@ -590,9 +590,11 @@ function classifyActivity(
     if (has("message_send_refused")) {
       const cause = jv(entry("message_send_refused")!).get("cause").str;
       if (cause === "accessibility") return ran("Blocked · Accessibility", "amber", "blocked");
+      if (cause === "target_validation") return ran("Blocked · Message target", "amber", "blocked");
       return ran("Error", "red", "failed");
     }
     if (!sent && has("message_send_start")) return ran("Running", "blue", "running");
+    if (!sent && has("message_send_queued")) return ran("Queued", "blue", "running");
     return ran("Completed", "green", "completed");
   }
   if (events.some((e) => (jv(e).get("event").str ?? "").startsWith("browser_"))) {
@@ -848,6 +850,7 @@ function describeStep(e: JSONValue): AuditStep {
       state = ev.get("exit_code").int === 0 ? "ok" : "bad";
       break;
     case "applescript_error": text = `Script error: ${ev.get("error").str ?? ""}`; state = "bad"; break;
+    case "message_send_queued": text = "Message send queued"; break;
     case "message_send_start":
       text = `Message send started: ${ev.get("app").str ?? ""} to ${ev.get("recipient").str ?? ""}`;
       break;
@@ -855,7 +858,9 @@ function describeStep(e: JSONValue): AuditStep {
       const cause = ev.get("cause").str;
       text = cause === "accessibility"
         ? "Message not sent: Accessibility is not granted"
-        : "Message not sent: the store could not be read";
+        : cause === "target_validation"
+          ? "Message not sent: the approved recipient or composer could not be confirmed"
+          : "Message not sent: the store could not be read";
       state = "bad";
       break;
     }

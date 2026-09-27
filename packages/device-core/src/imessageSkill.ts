@@ -213,11 +213,12 @@ recipient. There is no grant for every recipient.
       goal: "<what the owner asked for, in one line>"
     }
 
-The reply is the verified store row, or \`status: "unverified"\` when no new outbound
-row appeared. **Do not send again** because a reply was unverified. A second send is a
-second message. The success criterion is the tool's \`verified\` row, whose \`is_sent = 1\`
-and \`error = 0\`. \`is_delivered\` is not part of it. \`error = 22\` is the common one, a
-recipient the pinned service cannot reach.
+The reply is a verified local sent row, or \`status: "unverified"\` when the row is
+missing, failed, undecodable, or ambiguous. **Do not send again** because a reply was
+unverified. A second send is a second message. The tool requires the exact body and
+chat, a native message ID, \`is_sent = 1\`, and \`error = 0\`. This is not a delivery
+receipt: \`is_delivered\` is not part of it. \`error = 22\` is the common one, a recipient
+the pinned service cannot reach.
 
 **With a file attachment** the text tool does not apply. Send the file with
 \`plow_run_applescript\`, and the path arrives in \`args\`, never pasted into the script:
@@ -234,9 +235,11 @@ recipient from the approver.
 
 ## Verify after send
 
-The tool snapshots the store and looks for exactly one new outbound row at that
-recipient. You do not run that query yourself. A zero exit from Messages means the
-app accepted the script, not that the row exists. Trust \`status\`.
+The tool snapshots the store, sends once, and observes a bounded window for exactly
+one new outbound row in that chat with the requested body and a successful native
+status. Modern bodies use the pinned native decoder; an unavailable or failed decode
+stays unverified. You do not run that query yourself. A zero exit from Messages means
+the app accepted the script, not that the matching sent row exists. Trust \`status\`.
 
 ## Approval semantics
 
