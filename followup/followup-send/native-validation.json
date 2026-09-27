@@ -1,0 +1,24 @@
+{
+  "sourceSha256": "5617a8caab2b6d46e99f9fb879aec0619f9c3bc3e411617f0c3ad12d8dff7983",
+  "realNativeApp": true,
+  "realProductionApprovalRenderer": true,
+  "decision": "allow_once",
+  "liveRelay": false,
+  "privateRecipientOmitted": true,
+  "phoneVerifiedBeforePasteAndBeforeSend": true,
+  "headerAndComposerContinuityHeld": true,
+  "exactMultilineUnicodeBodyObserved": true,
+  "finalSendPermanentlyStubbed": true,
+  "finalSendBoundaryReached": true,
+  "transientReadErrorsRecovered": 2,
+  "clipboardRestoreReturned": true,
+  "nativeSyntheticDraftClearedAndVoiceControlRestored": true,
+  "realOutboundRowsForSyntheticBody": 0,
+  "actualWhatsAppSendTest": "pending explicit recipient authorization",
+  "earlierAttempts": [
+    "Fixture missed wrapped name heading: fixed",
+    "AX model mismatch protection added",
+    "Focus/interrupted native runs refused before Send",
+    "AX invalid-element read during panel close: bounded snapshot retry fixed"
+  ]
+}

@@ -1,0 +1,17 @@
+5e0362cfbd61ae6454828cb510e0dc8f7a44ff5d
+apps/desktop/plugins/messages/skill.md
+packages/device-core/src/imessageSkill.ts
+packages/device-core/src/whatsappSkill.ts
+packages/device-core/test/whatsappRecipes.test.ts
+
+Auto-merging DESIGN.md
+Auto-merging apps/desktop/plugins/messages/skill.md
+CONFLICT (content): Merge conflict in apps/desktop/plugins/messages/skill.md
+Auto-merging packages/device-core/src/deviceAgent.ts
+Auto-merging packages/device-core/src/imessageSkill.ts
+CONFLICT (content): Merge conflict in packages/device-core/src/imessageSkill.ts
+Auto-merging packages/device-core/src/index.ts
+CONFLICT (modify/delete): packages/device-core/src/whatsappSkill.ts deleted in 0171b62615d8d981411aa6ffe827741014eac632 and modified in fe440205d9a7a1594c95bbb3e584dc479ea7858b.  Version fe440205d9a7a1594c95bbb3e584dc479ea7858b of packages/device-core/src/whatsappSkill.ts left in tree.
+Auto-merging packages/device-core/test/skills.test.ts
+CONFLICT (modify/delete): packages/device-core/test/whatsappRecipes.test.ts deleted in 0171b62615d8d981411aa6ffe827741014eac632 and modified in fe440205d9a7a1594c95bbb3e584dc479ea7858b.  Version fe440205d9a7a1594c95bbb3e584dc479ea7858b of packages/device-core/test/whatsappRecipes.test.ts left in tree.
+Auto-merging packages/mcp-server/test/mcpServer.test.ts

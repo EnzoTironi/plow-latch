@@ -1,0 +1,34 @@
+{
+  "commit": "5ed85e8488d16f11ed850b6a1a944e28ff88106a",
+  "dirty": true,
+  "app": "whatsapp",
+  "recipient": "[authorized test recipient; redacted]",
+  "realApp": true,
+  "realStore": true,
+  "liveRelay": false,
+  "approval": "interactive production renderer through test-only Electron window and local-file approval bridge",
+  "sendActionStubbed": true,
+  "shippingDecoderVersion": "0.1.0",
+  "elapsedMs": 19373,
+  "status": "unverified",
+  "reason": "none",
+  "hostGate": null,
+  "sendAttempted": null,
+  "scriptExit": 1,
+  "rowPresent": false,
+  "noRetry": true,
+  "decisions": [
+    {
+      "decision": "allow_once",
+      "source": "prompt"
+    }
+  ],
+  "sendStarts": 1,
+  "sendResults": [
+    {
+      "verified": false,
+      "scriptExit": 1,
+      "rowPresent": false
+    }
+  ]
+}

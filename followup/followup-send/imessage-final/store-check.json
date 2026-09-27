@@ -1,0 +1,19 @@
+{
+  "commit": "107da7baac029a2b891bef06175788e906fb264f",
+  "matchingSyntheticOutboundRowCount": 1,
+  "rows": [
+    {
+      "isSent": 0,
+      "error": 22,
+      "legacyTextPresent": true,
+      "attributedBodyBytes": 250,
+      "nativeMessageIdPresent": true,
+      "service": "iMessage",
+      "chatStyle": 45,
+      "exactChatIdentifier": true
+    }
+  ],
+  "recipientOmitted": true,
+  "noRetry": true,
+  "nativeMessagesUI": "Synthetic multiline test displayed exactly; Not Delivered and send-failure indicator observed"
+}

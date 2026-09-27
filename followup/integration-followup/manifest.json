@@ -1,0 +1,95 @@
+{
+  "captured_at_utc": "2026-09-27T12:37:31.785146+00:00",
+  "base": "16d871a53b7c495c639670e3ac6e2b87080f4299",
+  "reads": "0171b62615d8d981411aa6ffe827741014eac632",
+  "sends": "fe440205d9a7a1594c95bbb3e584dc479ea7858b",
+  "source_clean": true,
+  "merged_tree": "9119111d999b3e196b797bd746746c0e443cbca4",
+  "merge_exit": 1,
+  "temporary_gitdir": "/tmp/latch-review-20260927/integration-followup/final-doc-dc3ww0_9/objects.git",
+  "preview_dir": "/tmp/latch-review-20260927/integration-followup/final-doc-dc3ww0_9",
+  "resolved_projection": "/tmp/latch-review-20260927/integration-followup/final-doc-dc3ww0_9/resolved-source",
+  "previous_tested_tree": "aa8126453e2341f73a9c5388dbfee9fe4decc078",
+  "previous_tested_sends": "107da7baac029a2b891bef06175788e906fb264f",
+  "combined_tests": {
+    "command": "node /Users/reviewer/.codex/worktrees/review-message-send/latch/node_modules/vitest/vitest.mjs run packages/device-core/test packages/mcp-server/test apps/desktop/test/pluginsModel.test.ts apps/desktop/test/viewModel.test.ts apps/desktop/test/auditIndex.test.ts",
+    "cwd": "/tmp/latch-review-20260927/integration-followup/final-pylpno1u/resolved-source",
+    "exit_code": 0,
+    "test_files_passed": 64,
+    "test_files_skipped": 1,
+    "tests_passed": 1405,
+    "tests_skipped": 4,
+    "duration_seconds": 58.0,
+    "log": "combined-tests.log",
+    "projection_source_unchanged": true,
+    "tested_send_sha": "107da7baac029a2b891bef06175788e906fb264f",
+    "tested_resolved_tree": "aa8126453e2341f73a9c5388dbfee9fe4decc078",
+    "carried_forward_by_runtime_equivalence": true,
+    "skipped_suite": "packages/mcp-server/test/browser.integration.test.ts",
+    "skip_reason": "opt-in real Camoufox suite requires DOMO_BROWSER_RUNTIME and DOMO_CAMOUFOX"
+  },
+  "resolved_tree": "7a65e882513a4cf31efcff3b47358d8c1129da29",
+  "runtime_equivalence": {
+    "previous_tested_tree": "aa8126453e2341f73a9c5388dbfee9fe4decc078",
+    "final_tree": "7a65e882513a4cf31efcff3b47358d8c1129da29",
+    "changed_paths": [
+      "apps/desktop/plugins/messages/skill.md"
+    ],
+    "sha256_all_other_tree_entries": "01e9d00077c34cbe092f9e53333da5e6170fb87499c8d855a2fb1e66154f62ac",
+    "identical_except_final_skill_markdown": true
+  },
+  "patch_checks": {
+    "conflict-resolution.patch": {
+      "applies_cleanly": true,
+      "result_tree": "7a65e882513a4cf31efcff3b47358d8c1129da29",
+      "sha256": "4f20f758b5b7ed60ff256171f15e2e15a1844ee2750d89caffb519cf1f0f4c46"
+    },
+    "onto-540.patch": {
+      "applies_cleanly": true,
+      "result_tree": "7a65e882513a4cf31efcff3b47358d8c1129da29",
+      "sha256": "20e9364bf8d2366abb794b4b760861a81da751e7625842e8161ed9f937cb4aa5"
+    },
+    "onto-541.patch": {
+      "applies_cleanly": true,
+      "result_tree": "7a65e882513a4cf31efcff3b47358d8c1129da29",
+      "sha256": "4f631d49c5434e88477ffc4f0c419c0ae817024a3cf37f43c1aca03e66ad878f"
+    }
+  },
+  "reverse_order": {
+    "merge_exit": 1,
+    "resolved_tree": "7a65e882513a4cf31efcff3b47358d8c1129da29",
+    "same_resolved_tree": true
+  },
+  "conflict_paths": [
+    "packages/device-core/src/imessageSkill.ts",
+    "apps/desktop/plugins/messages/skill.md",
+    "packages/device-core/src/whatsappSkill.ts",
+    "packages/device-core/test/whatsappRecipes.test.ts"
+  ],
+  "typecheck": {
+    "command": "node /Users/reviewer/.codex/worktrees/review-message-send/latch/node_modules/typescript/bin/tsc -b --pretty false",
+    "cwd": "/tmp/latch-review-20260927/integration-followup/final-doc-dc3ww0_9/resolved-source",
+    "exit_code": 0,
+    "output": "typecheck.log (empty; no diagnostics)"
+  },
+  "final_doc_tests": {
+    "command": "node /Users/reviewer/.codex/worktrees/review-message-send/latch/node_modules/vitest/vitest.mjs run packages/device-core/test/pluginSkills.test.ts packages/device-core/test/imessageRecipes.test.ts packages/device-core/test/skills.test.ts packages/mcp-server/test/toolCopy.test.ts apps/desktop/test/pluginsModel.test.ts",
+    "cwd": "/tmp/latch-review-20260927/integration-followup/final-doc-dc3ww0_9/resolved-source",
+    "exit_code": 0,
+    "test_files_passed": 5,
+    "tests_passed": 196,
+    "tests_skipped": 0,
+    "duration_seconds": 0.772,
+    "log": "final-doc-tests.log",
+    "tested_send_sha": "fe440205d9a7a1594c95bbb3e584dc479ea7858b",
+    "tested_resolved_tree": "7a65e882513a4cf31efcff3b47358d8c1129da29"
+  },
+  "preservation_checks": {
+    "legacy_whatsapp_skill_and_test_deleted": true,
+    "removed_skill_unregistered_and_unexported": true,
+    "message_send_and_native_body_decoder_wiring_retained": true,
+    "exact_local_sent_copy_retained": true,
+    "messages_manifest_byte_identical_to_540": true,
+    "final_projection_source_unchanged_after_tests": true
+  }
+}

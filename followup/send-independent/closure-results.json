@@ -1,0 +1,48 @@
+{
+  "wrongChat": [
+    {
+      "kind": "group",
+      "outcome": {
+        "verified": false,
+        "reason": "none"
+      }
+    },
+    {
+      "kind": "sms",
+      "outcome": {
+        "verified": false,
+        "reason": "none"
+      }
+    }
+  ],
+  "decoder": [
+    {
+      "kind": "valid",
+      "body": "Your order was delivered! Thank you for ordering from Super Duper Burgers.",
+      "legacyTextNull": true,
+      "privateFileMode": "0600",
+      "removedAfterDecode": true
+    },
+    {
+      "kind": "malformed",
+      "body": null,
+      "legacyTextNull": true,
+      "privateFileMode": "0600",
+      "removedAfterDecode": true
+    }
+  ],
+  "decodeWindow": {
+    "queriesIncludingSnapshot": 3,
+    "result": {
+      "status": "unverified",
+      "app": "imessage",
+      "recipient": "ada@example.com",
+      "reason": "many",
+      "script_exit": 0
+    }
+  },
+  "queueAudit": {
+    "status": "Queued",
+    "statusKind": "running"
+  }
+}

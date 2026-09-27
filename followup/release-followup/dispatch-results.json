@@ -1,0 +1,45 @@
+{
+  "nativeArch": "arm64",
+  "source": "493614d4398c04754e6a5006f0eb78de16947b87",
+  "latch": "0171b62615d8d981411aa6ffe827741014eac632",
+  "dispatch": "DeviceAgent.handleIntent, normal plugin resolution and sandboxed execution, fixture HeadlessPolicy",
+  "ownerArchiveRead": false,
+  "probes": [
+    {
+      "argv": [
+        "plow-messages",
+        "--help"
+      ],
+      "helpReturned": true
+    },
+    {
+      "argv": [
+        "plow-messages",
+        "--app",
+        "imessage",
+        "--help"
+      ],
+      "helpReturned": true
+    },
+    {
+      "argv": [
+        "plow-messages",
+        "--app",
+        "whatsapp",
+        "--help"
+      ],
+      "helpReturned": true
+    },
+    {
+      "argv": [
+        "plow-messages",
+        "--app",
+        "whatsapp",
+        "--help"
+      ],
+      "stagedBinaryRemoved": true,
+      "refusedMissingFile": true
+    }
+  ],
+  "auditedExecution": true
+}

@@ -1,0 +1,102 @@
+
+ RUN  v2.1.9 /private/tmp/latch-review-20260927/integration-followup/final-doc-dc3ww0_9/resolved-source
+
+ ✓ packages/device-core/test/pluginSkills.test.ts (18 tests) 4ms
+ ✓ apps/desktop/test/pluginsModel.test.ts (30 tests) 7ms
+ ✓ packages/device-core/test/skills.test.ts (94 tests) 37ms
+ ✓ packages/device-core/test/imessageRecipes.test.ts (5 tests) 55ms
+stderr | packages/mcp-server/test/toolCopy.test.ts > the server tells the agent what it is for > server/discover carries the instructions block
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_read_file names the user's own machine
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_write_file names the user's own machine
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_run_command names the user's own machine
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_run_applescript names the user's own machine
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_browser_open names the user's own machine
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_read_file and plow_write_file distinguish this Mac from the agent's workspace
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_run_command leads with when to choose it, names Latch, not the sandbox
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_browser_open says why it beats a plain web fetch
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_read_file carries the blocked sentence
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_write_file carries the blocked sentence
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_run_command carries the blocked sentence
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_run_applescript carries the blocked sentence
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > the script tool says why it exists, how it takes values, and where a sandboxed refusal goes
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > the script tool says exit 0 is not delivery, and that a send goes out as the owner
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > the browser tool sends a hard block to the owner's Safari, and the script tool names it
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_run_command explains a running result that carries a diagnosis
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_device_status is for the user's question or after a block — never a way to avoid trying
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_get_output and plow_get_result name the blocked answer
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > every skill body carries the host-gate note, before the footer, with no tool names
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > the goal field says a human reads it > names the reader, and does not offer access for a better answer
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > the handshake says what this server is > initialize carries a titled, described identity
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > the handshake says what this server is > reports the version it was given, and flags the default as a bug
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool says what kind of tool it is > carries a title and annotations for every tool
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool says what kind of tool it is > the tools that 'cannot change this Mac' are exactly the ones marked 'readOnlyHint'
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool says what kind of tool it is > the tools that 'reach the open internet' are exactly the ones marked 'openWorldHint'
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > what the agent-facing copy must and must not say > explains threshold payment authorization for the bundled v1 bank registry
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > what the agent-facing copy must and must not say > all three surfaces interpolate the one live-web routing sentence
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > what the agent-facing copy must and must not say > both copy homes interpolate the one tooling list
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/mcp-server/test/toolCopy.test.ts (49 tests) 104ms
+
+ Test Files  5 passed (5)
+      Tests  196 passed (196)
+   Start at  09:38:55
+   Duration  772ms (transform 412ms, setup 0ms, collect 1.55s, tests 207ms, environment 0ms, prepare 208ms)
+

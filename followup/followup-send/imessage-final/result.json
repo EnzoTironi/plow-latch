@@ -1,0 +1,34 @@
+{
+  "commit": "107da7baac029a2b891bef06175788e906fb264f",
+  "dirty": false,
+  "app": "imessage",
+  "recipient": "[authorized test recipient; redacted]",
+  "realApp": true,
+  "realStore": true,
+  "liveRelay": false,
+  "approval": "interactive production renderer through test-only Electron window and local-file approval bridge",
+  "sendActionStubbed": false,
+  "shippingDecoderVersion": "0.1.0",
+  "elapsedMs": 18276,
+  "status": "unverified",
+  "reason": "none",
+  "hostGate": null,
+  "sendAttempted": null,
+  "scriptExit": 0,
+  "rowPresent": false,
+  "noRetry": true,
+  "decisions": [
+    {
+      "decision": "allow_once",
+      "source": "prompt"
+    }
+  ],
+  "sendStarts": 1,
+  "sendResults": [
+    {
+      "verified": false,
+      "scriptExit": 0,
+      "rowPresent": false
+    }
+  ]
+}

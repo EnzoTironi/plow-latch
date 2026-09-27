@@ -1,0 +1,16 @@
+1 warning generated.
+plow-messages-bridge.h:19:30: warning: 'NSUnarchiver' is deprecated: first deprecated in macOS 10.13 - Use NSKeyedUnarchiver instead
+17 | static inline id PlowMessagesUnarchive(NSData *data) {
+18 |     @try {
+19 |         return [NSUnarchiver unarchiveObjectWithData:data];
+   |                              `- warning: 'NSUnarchiver' is deprecated: first deprecated in macOS 10.13 - Use NSKeyedUnarchiver instead
+20 |     } @catch (NSException *exception) {
+21 |         // Swallowed: the reason string embeds untrusted blob bytes.
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSArchiver.h:126:12: note: 'NSUnarchiver' has been explicitly marked deprecated here
+124 | /// }
+125 | API_DEPRECATED("Use NSKeyedUnarchiver instead", macos(10.0,10.13), ios(2.0,11.0), watchos(2.0,4.0), tvos(9.0,11.0))
+126 | @interface NSUnarchiver : NSCoder {
+    |            `- note: 'NSUnarchiver' has been explicitly marked deprecated here
+127 | @private
+128 |     void *		datax;

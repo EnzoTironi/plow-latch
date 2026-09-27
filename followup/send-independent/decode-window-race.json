@@ -1,0 +1,15 @@
+{
+  "scenario": "second same-body row arrives while native decoder runs; decoder finishes after observation deadline",
+  "storeRowsAtReturn": 2,
+  "queriesIncludingSnapshot": 2,
+  "result": {
+    "status": "verified",
+    "app": "imessage",
+    "recipient": "ada@example.com",
+    "row": {
+      "rowid": 9,
+      "chat": "iMessage;-;ada@example.com",
+      "message_id": "m9"
+    }
+  }
+}

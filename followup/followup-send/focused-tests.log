@@ -1,0 +1,50 @@
+
+ RUN  v2.1.9 /Users/reviewer/.codex/worktrees/review-message-send/latch
+
+ ✓ packages/device-core/test/messageBodyStore.test.ts (6 tests) 29ms
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > shows the canonical recipient and exact text before a denial and never runs a script
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > runs once, verifies the real SQLite row, and stores a rule only for this agent and recipient
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/device-core/test/messageSend.test.ts (56 tests) 437ms
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > keeps the deferred result pending until a slow script exits, then verifies once
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > serializes simultaneous same-body sends before taking their snapshots
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > uses the sandboxed pinned decoder and checks 'exact identity'
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > uses the sandboxed pinned decoder and checks 'wrong row'
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > uses the sandboxed pinned decoder and checks 'wrong chat'
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > uses the sandboxed pinned decoder and checks 'inbound row'
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > uses the sandboxed pinned decoder and checks 'failed decode'
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > diagnoses a pre-send store refusal and records that no script was attempted
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/mcp-server/test/messageSend.test.ts (10 tests) 52119ms
+   ✓ plow_send_message integration > runs once, verifies the real SQLite row, and stores a rule only for this agent and recipient 10515ms
+   ✓ plow_send_message integration > keeps the deferred result pending until a slow script exits, then verifies once 5083ms
+   ✓ plow_send_message integration > serializes simultaneous same-body sends before taking their snapshots 10372ms
+   ✓ plow_send_message integration > uses the sandboxed pinned decoder and checks 'exact identity' 5259ms
+   ✓ plow_send_message integration > uses the sandboxed pinned decoder and checks 'wrong row' 5250ms
+   ✓ plow_send_message integration > uses the sandboxed pinned decoder and checks 'wrong chat' 5210ms
+   ✓ plow_send_message integration > uses the sandboxed pinned decoder and checks 'inbound row' 5163ms
+   ✓ plow_send_message integration > uses the sandboxed pinned decoder and checks 'failed decode' 5188ms
+
+ Test Files  3 passed (3)
+      Tests  72 passed (72)
+   Start at  09:11:02
+   Duration  52.79s (transform 290ms, setup 0ms, collect 689ms, tests 52.58s, environment 0ms, prepare 195ms)
+

@@ -1,0 +1,44 @@
+
+ RUN  v2.1.9 /private/tmp/latch-review-20260927/release-followup/test-arm64
+
+--limit wants a positive number, not -1
+--limit wants a positive number, not -1
+--limit wants a positive number, not 0
+--after wants an ISO-8601 date like 2026-09-01 or 2026-09-01T18:30:00-07:00
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-kvuI1U/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+thread needs --chat-id N or --handle H (run `chats` to find one)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-kvuI1U/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-kvuI1U/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+--app wants imessage or whatsapp, not signal
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-kvuI1U/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+plow-messages: unknown option --sql (try --help)
+plow-messages: cannot read the Messages store at /var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-absent/chat.db. On a Mac this usually means Full Disk Access has not been granted to the app running this command, or the path is wrong.
+ ✓ test/cli.test.ts (35 tests) 606ms
+ ✓ test/whatsappCli.test.ts (15 tests) 643ms
+
+ Test Files  2 passed (2)
+      Tests  50 passed (50)
+   Start at  08:47:07
+   Duration  1.10s (transform 125ms, setup 0ms, collect 143ms, tests 1.25s, environment 0ms, prepare 158ms)
+

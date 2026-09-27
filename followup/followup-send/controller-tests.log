@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 /Users/reviewer/.codex/worktrees/review-message-send/latch
+
+ ✓ packages/device-core/test/whatsappSend.test.ts (52 tests) 37ms
+ ✓ packages/device-core/test/executorLanguage.test.ts (2 tests) 110ms
+
+ Test Files  2 passed (2)
+      Tests  54 passed (54)
+   Start at  09:28:25
+   Duration  667ms (transform 297ms, setup 0ms, collect 573ms, tests 147ms, environment 0ms, prepare 79ms)
+

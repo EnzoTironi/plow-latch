@@ -1,0 +1,9 @@
+{
+  "scenario": "second send has approval but remains in messageSendQueue before any message_send_start",
+  "status": "Completed",
+  "statusKind": "completed",
+  "events": [
+    "intent_received",
+    "intent_decision"
+  ]
+}

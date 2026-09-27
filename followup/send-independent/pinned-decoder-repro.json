@@ -1,0 +1,16 @@
+[
+  {
+    "kind": "valid",
+    "exitCode": 0,
+    "running": false,
+    "body": "Your order was delivered! Thank you for ordering from Super Duper Burgers.",
+    "stderr": ""
+  },
+  {
+    "kind": "malformed",
+    "exitCode": 0,
+    "running": false,
+    "body": "hello",
+    "stderr": ""
+  }
+]

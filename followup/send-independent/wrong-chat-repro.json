@@ -1,0 +1,36 @@
+[
+  {
+    "kind": "group",
+    "intendedRecipient": "ada@example.com",
+    "actualChat": "iMessage;+;chat-group-other",
+    "outcome": {
+      "verified": true,
+      "row": {
+        "rowid": 9,
+        "chatId": 2,
+        "chat": "iMessage;+;chat-group-other",
+        "messageId": "wrong-message",
+        "sent": true,
+        "body": "hello",
+        "needsDecodedBody": false
+      }
+    }
+  },
+  {
+    "kind": "sms",
+    "intendedRecipient": "ada@example.com",
+    "actualChat": "SMS;-;ada@example.com",
+    "outcome": {
+      "verified": true,
+      "row": {
+        "rowid": 9,
+        "chatId": 2,
+        "chat": "SMS;-;ada@example.com",
+        "messageId": "wrong-message",
+        "sent": true,
+        "body": "hello",
+        "needsDecodedBody": false
+      }
+    }
+  }
+]

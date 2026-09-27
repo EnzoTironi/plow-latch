@@ -1,0 +1,20 @@
+{
+  "recordedAt": "2026-09-27T12:30:46.298Z",
+  "baseHead": "5ed85e8488d16f11ed850b6a1a944e28ff88106a",
+  "note": "Frozen working source prior to parent final commit; hashes identify the sender tested by native-draft-5.",
+  "files": {
+    "packages/device-core/src/whatsappSend.ts": "5617a8caab2b6d46e99f9fb879aec0619f9c3bc3e411617f0c3ad12d8dff7983",
+    "packages/device-core/src/executor.ts": "2c32dd776850ac35cb99d03fffaebe092c5363d3c94be0972a12ff27987fb74c",
+    "packages/device-core/test/whatsappSend.test.ts": "7e67a9e3b9f70b1a7a22924c21af93fc94add2acab0ea4deec1fa0ad1a4e6d3b",
+    "packages/device-core/test/executorLanguage.test.ts": "5fd60167f7b74112120c58c6d18be642ab5651e570f9abce3ff63880f75ccbbd",
+    "packages/device-core/dist/whatsappSend.js": "ad5a159a4dce51d7488661c0eea56be69f4903400e9cd06d0ab0d3145dc88e8d"
+  },
+  "emittedWhatsAppScriptSha256": "f19da13d657a97fb2fc65f10924e1fabe7bdeb9e8f2a01ac561c911de9a2b675",
+  "focusedTests": {
+    "whatsappFixtureAndNativeHelper": 52,
+    "realOsascriptExecutor": 2,
+    "total": 54,
+    "passed": 54
+  },
+  "nativeDraftEvidence": "/tmp/latch-review-20260927/followup-send/native-draft-5"
+}

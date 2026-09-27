@@ -1,0 +1,107 @@
+{
+  "sourceSha": "493614d4398c04754e6a5006f0eb78de16947b87",
+  "latchSource": "0171b62615d8d981411aa6ffe827741014eac632",
+  "localSnapshotOnly": true,
+  "downloadTransport": "injected local bytes via the public FetchBytes seam; SHA checking and extraction are production stageBinaries",
+  "results": [
+    {
+      "arch": "arm64",
+      "probes": [
+        {
+          "args": [
+            "--help"
+          ],
+          "status": 0
+        },
+        {
+          "args": [
+            "--app",
+            "imessage",
+            "--help"
+          ],
+          "status": 0
+        },
+        {
+          "args": [
+            "--app",
+            "whatsapp",
+            "--help"
+          ],
+          "status": 0
+        },
+        {
+          "args": [
+            "--app",
+            "imessage",
+            "--store",
+            "<absent archive>",
+            "chats"
+          ],
+          "status": 1
+        },
+        {
+          "args": [
+            "--app",
+            "whatsapp",
+            "--store",
+            "<absent archive>",
+            "chats"
+          ],
+          "status": 1
+        }
+      ],
+      "restageRepairsModifiedBinary": true,
+      "stagedBinarySha256": "6c9d2b700b03dc0f474a90410437de429322307b2823a485fc7a42b8893e0f10"
+    },
+    {
+      "arch": "x64",
+      "probes": [
+        {
+          "args": [
+            "--help"
+          ],
+          "status": 0
+        },
+        {
+          "args": [
+            "--app",
+            "imessage",
+            "--help"
+          ],
+          "status": 0
+        },
+        {
+          "args": [
+            "--app",
+            "whatsapp",
+            "--help"
+          ],
+          "status": 0
+        },
+        {
+          "args": [
+            "--app",
+            "imessage",
+            "--store",
+            "<absent archive>",
+            "chats"
+          ],
+          "status": 1
+        },
+        {
+          "args": [
+            "--app",
+            "whatsapp",
+            "--store",
+            "<absent archive>",
+            "chats"
+          ],
+          "status": 1
+        }
+      ],
+      "restageRepairsModifiedBinary": true,
+      "stagedBinarySha256": "17fc8276833781d719a83c62f81ecbad5a6a8ca98cf9d1340a3802fef7e84bd3"
+    }
+  ],
+  "mismatchedHashRefusedAndRuntimeRemoved": true
+}

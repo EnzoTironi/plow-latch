@@ -1,0 +1,65 @@
+{
+  "captured_at_utc": "2026-09-27T12:31:52.131583+00:00",
+  "base": "16d871a53b7c495c639670e3ac6e2b87080f4299",
+  "reads": "0171b62615d8d981411aa6ffe827741014eac632",
+  "sends": "107da7baac029a2b891bef06175788e906fb264f",
+  "source_clean": true,
+  "merged_tree": "1c6c7ea985dfcbd52530fb5cec220f9d85f0af94",
+  "merge_exit": 1,
+  "resolved_tree": "aa8126453e2341f73a9c5388dbfee9fe4decc078",
+  "temporary_gitdir": "/tmp/latch-review-20260927/integration-followup/final-pylpno1u/objects.git",
+  "preview_dir": "/tmp/latch-review-20260927/integration-followup/final-pylpno1u",
+  "resolved_projection": "/tmp/latch-review-20260927/integration-followup/final-pylpno1u/resolved-source",
+  "conflict_paths": [
+    "packages/device-core/src/imessageSkill.ts",
+    "packages/device-core/src/whatsappSkill.ts",
+    "packages/device-core/test/whatsappRecipes.test.ts"
+  ],
+  "patch_checks": {
+    "conflict-resolution.patch": {
+      "applies_cleanly": true,
+      "result_tree": "aa8126453e2341f73a9c5388dbfee9fe4decc078",
+      "sha256": "6606bb8971b9c9d0f17d9967eec18c63dc90d6e1925055e4e68d3dd86c2c2d19"
+    },
+    "onto-540.patch": {
+      "applies_cleanly": true,
+      "result_tree": "aa8126453e2341f73a9c5388dbfee9fe4decc078",
+      "sha256": "3a4defadb0f22949ee0c380eb22a66c6dcbdf0ab8f8914ea801351f3cca3dc36"
+    },
+    "onto-541.patch": {
+      "applies_cleanly": true,
+      "result_tree": "aa8126453e2341f73a9c5388dbfee9fe4decc078",
+      "sha256": "cab3507e6950b53236c2121047877405d6fe80010a79303416d68ef246abd4b4"
+    }
+  },
+  "reverse_order": {
+    "merge_exit": 1,
+    "resolved_tree": "aa8126453e2341f73a9c5388dbfee9fe4decc078",
+    "same_resolved_tree": true
+  },
+  "typecheck": {
+    "command": "node /Users/reviewer/.codex/worktrees/review-message-send/latch/node_modules/typescript/bin/tsc -b --pretty false",
+    "cwd": "/tmp/latch-review-20260927/integration-followup/final-pylpno1u/resolved-source",
+    "exit_code": 0,
+    "output": "typecheck.log (empty; no diagnostics)"
+  },
+  "preservation_checks": {
+    "legacy_whatsapp_skill_and_test_deleted": true,
+    "removed_skill_unregistered_and_unexported": true,
+    "message_send_and_native_body_decoder_wiring_retained": true,
+    "exact_local_sent_copy_retained": true,
+    "messages_manifest_byte_identical_to_540": true
+  },
+  "combined_tests": {
+    "command": "node /Users/reviewer/.codex/worktrees/review-message-send/latch/node_modules/vitest/vitest.mjs run packages/device-core/test packages/mcp-server/test apps/desktop/test/pluginsModel.test.ts apps/desktop/test/viewModel.test.ts apps/desktop/test/auditIndex.test.ts",
+    "cwd": "/tmp/latch-review-20260927/integration-followup/final-pylpno1u/resolved-source",
+    "exit_code": 0,
+    "test_files_passed": 64,
+    "test_files_skipped": 1,
+    "tests_passed": 1405,
+    "tests_skipped": 4,
+    "duration_seconds": 58.0,
+    "log": "combined-tests.log",
+    "projection_source_unchanged": true
+  }
+}

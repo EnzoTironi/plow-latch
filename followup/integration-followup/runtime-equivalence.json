@@ -1,0 +1,9 @@
+{
+  "previous_tested_tree": "aa8126453e2341f73a9c5388dbfee9fe4decc078",
+  "final_tree": "7a65e882513a4cf31efcff3b47358d8c1129da29",
+  "changed_paths": [
+    "apps/desktop/plugins/messages/skill.md"
+  ],
+  "sha256_all_other_tree_entries": "01e9d00077c34cbe092f9e53333da5e6170fb87499c8d855a2fb1e66154f62ac",
+  "identical_except_final_skill_markdown": true
+}

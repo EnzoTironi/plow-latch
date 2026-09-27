@@ -1,0 +1,283 @@
+{
+  "timestamp": "2026-09-27T12:31:54.411Z",
+  "scope": "Production fixed script in VM; fixture adapters only, no native UI or sends",
+  "sourceSHA256": "5617a8caab2b6d46e99f9fb879aec0619f9c3bc3e411617f0c3ad12d8dff7983",
+  "fixtureSHA256": "7e67a9e3b9f70b1a7a22924c21af93fc94add2acab0ea4deec1fa0ad1a4e6d3b",
+  "caseCount": 27,
+  "cases": {
+    "happyPathOnce": {
+      "outcome": "LATCH_SEND_ATTEMPTED",
+      "sendCount": 1,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "paste",
+        "info",
+        "escape",
+        "send",
+        "restore"
+      ]
+    },
+    "changed_heading_afterFinalInfoClose": {
+      "outcome": "LATCH_RECIPIENT_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "paste",
+        "info",
+        "escape",
+        "restore"
+      ]
+    },
+    "changed_headerRef_afterFinalInfoClose": {
+      "outcome": "LATCH_RECIPIENT_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "paste",
+        "info",
+        "escape",
+        "restore"
+      ]
+    },
+    "changed_composerRef_afterFinalInfoClose": {
+      "outcome": "LATCH_RECIPIENT_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "paste",
+        "info",
+        "escape",
+        "restore"
+      ]
+    },
+    "unexpected_headerRole": {
+      "outcome": "LATCH_RECIPIENT_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open"
+      ]
+    },
+    "unexpected_composerRole": {
+      "outcome": "LATCH_RECIPIENT_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open"
+      ]
+    },
+    "unexpected_sendRole": {
+      "outcome": "LATCH_COMPOSER_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "paste",
+        "info",
+        "escape",
+        "restore"
+      ]
+    },
+    "nativeComposerAXValue_-25205": {
+      "outcome": "AX attribute unsupported"
+    },
+    "nativeComposerAXValue_-25202": {
+      "outcome": "LATCH_AX_TRANSIENT:-25202"
+    },
+    "nativeComposerAXValue_-25204": {
+      "outcome": "LATCH_AX_TRANSIENT:-25204"
+    },
+    "nativeComposerAXValue_-25201": {
+      "outcome": "AX read failed:-25201"
+    },
+    "nativeComposerAXValue_-25212": {
+      "outcome": ""
+    },
+    "pressThrowsAfterAction": {
+      "outcome": "LATCH_SEND_UNVERIFIED",
+      "sendCount": 1,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "paste",
+        "info",
+        "escape",
+        "send",
+        "restore"
+      ]
+    },
+    "clipboardRestoreThrowsAfterAction": {
+      "outcome": "LATCH_SEND_UNVERIFIED",
+      "sendCount": 1,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "paste",
+        "info",
+        "escape",
+        "send"
+      ]
+    },
+    "pasteFocusChangesBeforePaste": {
+      "outcome": "LATCH_COMPOSER_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "restore"
+      ]
+    },
+    "laterUserClipboardBeforePaste": {
+      "outcome": "LATCH_COMPOSER_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus"
+      ]
+    },
+    "transientReadRecoveryAfterEachClose": {
+      "outcome": "LATCH_SEND_ATTEMPTED",
+      "sendCount": 1,
+      "elapsedFixtureMs": 600,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "paste",
+        "info",
+        "escape",
+        "send",
+        "restore"
+      ]
+    },
+    "persistentTransientReadsReachDeadline": {
+      "outcome": "LATCH_RECIPIENT_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 30150,
+      "actions": [
+        "open"
+      ]
+    },
+    "unsupportedReadDoesNotRetry": {
+      "outcome": "LATCH_RECIPIENT_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open"
+      ]
+    },
+    "unknownTransientStatusDoesNotRetry": {
+      "outcome": "LATCH_RECIPIENT_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open"
+      ]
+    },
+    "conversationSwitchDuringTransientReadStillRefuses": {
+      "outcome": "LATCH_RECIPIENT_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 150,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "paste",
+        "info",
+        "escape",
+        "restore"
+      ]
+    },
+    "transientMarkerFrom_info_actionIsNeverRetried": {
+      "outcome": "LATCH_RECIPIENT_UNVERIFIED",
+      "sendCount": 0,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info"
+      ]
+    },
+    "transientMarkerFrom_send_actionIsNeverRetried": {
+      "outcome": "LATCH_SEND_UNVERIFIED",
+      "sendCount": 1,
+      "elapsedFixtureMs": 0,
+      "actions": [
+        "open",
+        "info",
+        "escape",
+        "clipboard",
+        "focus",
+        "paste",
+        "info",
+        "escape",
+        "send",
+        "restore"
+      ]
+    },
+    "clipboardRestoresAllItemsAndBinaryTypes": {
+      "pass": true,
+      "items": 2,
+      "types": [
+        "public.utf8-plain-text",
+        "public.rtf",
+        "public.png",
+        "custom.private-type"
+      ]
+    },
+    "clipboardPreservesLaterUserCopy": {
+      "pass": true
+    },
+    "clipboardWriteThrows_before": {
+      "outcome": "clipboard write failed",
+      "originalsRestored": true
+    },
+    "clipboardWriteThrows_after": {
+      "outcome": "clipboard write failed",
+      "originalsRestored": true
+    }
+  }
+}
