@@ -37,6 +37,10 @@ needs no flag.
 
 ## Updating the pin
 
+This branch still pins v0.1.0, which supports iMessage only. The WhatsApp
+manifest entries and skill must not ship until a release with `--app` support
+and `checksums.txt` is available and the pin below is updated.
+
 1. In `latch-plugin.json` set `version`, the version segment of both `url`s,
    and both `sha256` values, taken from the release's `checksums.txt`
    (https://github.com/plow-pbc/plow-messages/releases). A stale url
