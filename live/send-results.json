@@ -1,0 +1,76 @@
+{
+  "commit": "60ce8261fa12bb2f51e64e3447dcf4487300bd0b",
+  "dirty": true,
+  "realApp": true,
+  "realStore": true,
+  "relay": "in-process MCP envelope; no live relay",
+  "approval": "preauthorized test-only delegate; disposable rule store",
+  "recipient": "[self; redacted]",
+  "results": [
+    {
+      "test": 1,
+      "status": "verified",
+      "deferred": true,
+      "elapsedMs": 4873,
+      "verifiedRowPresent": true,
+      "scriptExit": null,
+      "reason": null,
+      "hostGate": null
+    },
+    {
+      "test": 2,
+      "status": "unverified",
+      "deferred": true,
+      "elapsedMs": 5560,
+      "verifiedRowPresent": false,
+      "scriptExit": 0,
+      "reason": "none",
+      "hostGate": null
+    }
+  ],
+  "stoppedWithoutRetry": true,
+  "otherRecipientDenied": true,
+  "approvalDecisions": 2,
+  "decisions": [
+    {
+      "decision": "always_allow",
+      "source": "prompt"
+    },
+    {
+      "decision": "always_allow",
+      "source": "rule"
+    },
+    {
+      "decision": "deny",
+      "source": "prompt"
+    }
+  ],
+  "messageResults": [
+    {
+      "verified": true,
+      "scriptExit": 0,
+      "rowPresent": true
+    },
+    {
+      "verified": false,
+      "scriptExit": 0,
+      "rowPresent": false
+    }
+  ],
+  "independentStoreCheck": [
+    {
+      "test": 1,
+      "rows": 1,
+      "sentRows": 1
+    },
+    {
+      "test": 2,
+      "rows": 1,
+      "sentRows": 0
+    }
+  ],
+  "tested_source_committed_as": "489214dfd927987acbf05d52c1861f7302081a8a",
+  "final_pr_head": "5ed85e8488d16f11ed850b6a1a944e28ff88106a",
+  "final_head_runtime_unchanged": true,
+  "ui_confirmation": "Messages displayed both exact test texts once; test B was Not Delivered. No retry was clicked."
+}

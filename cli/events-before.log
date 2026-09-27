@@ -1,0 +1,155 @@
+
+ RUN  v2.1.9 <cli-checkout>
+
+ ❯ test/whatsappCli.test.ts (12 tests | 3 failed) 183ms
+   × plow-messages --app whatsapp > ignores system events in search, thread, and the latest chat timestamp 14ms
+     → expected { …(3) } to match object { code: +0, rows: [] }
+(1 matching property omitted from actual)
+   × plow-messages --app whatsapp > bases unreplied on real direct messages and preserves bodiless media and unknown types 10ms
+     → expected [ '123456@broadcast', …(7) ] to deeply equal [ '123456@lid', …(2) ]
+   × plow-messages --app whatsapp > accepts LID direct handles and excludes broadcast and status handles 21ms
+     → expected { Object (rows, stderr, ...) } to match object { code: +0, rows: [] }
+(1 matching property omitted from actual)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/whatsappCli.test.ts > plow-messages --app whatsapp > ignores system events in search, thread, and the latest chat timestamp
+AssertionError: expected { …(3) } to match object { code: +0, rows: [] }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+    "code": 0,
+-   "rows": Array [],
++   "rows": Array [
++     Object {
++       "at": "2026-09-27T11:14:52Z",
++       "body": "system-event",
++       "chat_guid": "15550006@s.whatsapp.net",
++       "chat_identifier": "15550006@s.whatsapp.net",
++       "display_name": "Old inbound",
++       "is_from_me": false,
++       "rowid": 15,
++       "sender": "15550006@s.whatsapp.net",
++     },
++     Object {
++       "at": "2026-09-27T11:14:52Z",
++       "body": "system-event",
++       "chat_guid": "15550004@s.whatsapp.net",
++       "chat_identifier": "15550004@s.whatsapp.net",
++       "display_name": "Only events",
++       "is_from_me": false,
++       "rowid": 12,
++       "sender": "15550004@s.whatsapp.net",
++     },
++     Object {
++       "at": "2026-09-27T11:14:52Z",
++       "body": "system-event",
++       "chat_guid": "15557777@s.whatsapp.net",
++       "chat_identifier": "15557777@s.whatsapp.net",
++       "display_name": "Wren",
++       "is_from_me": false,
++       "rowid": 11,
++       "sender": "15557777@s.whatsapp.net",
++     },
++     Object {
++       "at": "2026-09-27T11:14:52Z",
++       "body": "system-event",
++       "chat_guid": "99887@g.us",
++       "chat_identifier": "99887@g.us",
++       "display_name": "Book Club",
++       "is_from_me": false,
++       "rowid": 10,
++       "sender": null,
++     },
++     Object {
++       "at": "2026-09-27T11:14:52Z",
++       "body": "system-event",
++       "chat_guid": "15551234@s.whatsapp.net",
++       "chat_identifier": "15551234@s.whatsapp.net",
++       "display_name": "O'Brien",
++       "is_from_me": false,
++       "rowid": 9,
++       "sender": "15551234@s.whatsapp.net",
++     },
++   ],
+  }
+
+ ❯ test/whatsappCli.test.ts:154:65
+    152| 
+    153|   itMac("ignores system events in search, thread, and the latest chat …
+    154|     expect(cli("--store", edgeStore, "search", "system-event")).toMatc…
+       |                                                                 ^
+    155|     const thread = cli("--store", edgeStore, "thread", "--chat-id", "1…
+    156|     expect(thread.code).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  test/whatsappCli.test.ts > plow-messages --app whatsapp > bases unreplied on real direct messages and preserves bodiless media and unknown types
+AssertionError: expected [ '123456@broadcast', …(7) ] to deeply equal [ '123456@lid', …(2) ]
+
+- Expected
++ Received
+
+  Array [
++   "123456@broadcast",
+    "123456@lid",
++   "123456@lid.status",
++   "15550004@s.whatsapp.net",
+    "15550005@s.whatsapp.net",
++   "15550006@s.whatsapp.net",
+    "15551234@s.whatsapp.net",
++   "15557777@s.whatsapp.net",
+  ]
+
+ ❯ test/whatsappCli.test.ts:167:62
+    165|     const result = cli("--store", edgeStore, "unreplied");
+    166|     expect(result.code).toBe(0);
+    167|     expect(result.rows.map((r) => r.chat_identifier).sort()).toEqual([
+       |                                                              ^
+    168|       "123456@lid", "15550005@s.whatsapp.net", "15551234@s.whatsapp.ne…
+    169|     ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  test/whatsappCli.test.ts > plow-messages --app whatsapp > accepts LID direct handles and excludes broadcast and status handles
+AssertionError: expected { Object (rows, stderr, ...) } to match object { code: +0, rows: [] }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+    "code": 0,
+-   "rows": Array [],
++   "rows": Array [
++     Object {
++       "at": "2026-09-27T11:12:22Z",
++       "body": "broadcast",
++       "chat_guid": "123456@broadcast",
++       "chat_identifier": "123456@broadcast",
++       "display_name": "Broadcast",
++       "is_from_me": false,
++       "rowid": 17,
++       "sender": "123456@broadcast",
++     },
++   ],
+  }
+
+ ❯ test/whatsappCli.test.ts:178:71
+    176|     expect(cli("--store", edgeStore, "thread", "--handle", "123456@lid…
+    177|     for (const handle of ["123456@broadcast", "123456@lid.status"]) {
+    178|       expect(cli("--store", edgeStore, "thread", "--handle", handle)).…
+       |                                                                       ^
+    179|     }
+    180|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 9 passed (12)
+   Start at  08:15:41
+   Duration  564ms (transform 69ms, setup 0ms, collect 67ms, tests 183ms, environment 0ms, prepare 50ms)
+

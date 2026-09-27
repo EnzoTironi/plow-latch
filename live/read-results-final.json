@@ -1,0 +1,74 @@
+{
+  "source_commit": "493614d4398c04754e6a5006f0eb78de16947b87",
+  "real_stores": true,
+  "private_values_redacted": true,
+  "checks": [
+    {
+      "app": "imessage",
+      "verb": "chats",
+      "rows": 5,
+      "chat_shape": true
+    },
+    {
+      "app": "imessage",
+      "verb": "thread",
+      "rows": 2,
+      "nonempty": true,
+      "message_shape": true,
+      "ascending_timestamps": true
+    },
+    {
+      "app": "imessage",
+      "verb": "search",
+      "rows": 4,
+      "phrase_redacted": true,
+      "literal_match": true,
+      "owner_sender_null_observed": false,
+      "note": "Existing iMessage output retains the handle on some outbound rows; WhatsApp-only null-sender contract was not imposed on iMessage."
+    },
+    {
+      "app": "imessage",
+      "verb": "unreplied",
+      "rows": 0,
+      "all_inbound": true
+    },
+    {
+      "app": "whatsapp",
+      "verb": "chats",
+      "rows": 5,
+      "chat_shape": true
+    },
+    {
+      "app": "whatsapp",
+      "verb": "thread",
+      "rows": 12,
+      "nonempty": true,
+      "message_shape": true,
+      "ascending_timestamps": true
+    },
+    {
+      "app": "whatsapp",
+      "verb": "search",
+      "rows": 10,
+      "phrase_redacted": true,
+      "literal_match": true,
+      "owner_sender_null": true
+    },
+    {
+      "app": "whatsapp",
+      "verb": "unreplied",
+      "rows": 2,
+      "all_inbound": true
+    }
+  ],
+  "default_equals_explicit_imessage": true,
+  "whatsapp_sample_excludes_event_types_6_10": true,
+  "whatsapp_sample_rows_checked": 24,
+  "whatsapp_jid_fields_match": true,
+  "whatsapp_unreplied_personal_jids": true,
+  "imessage_unchanged_from_baseline": {
+    "chats": true,
+    "search": true,
+    "unreplied": true
+  }
+}

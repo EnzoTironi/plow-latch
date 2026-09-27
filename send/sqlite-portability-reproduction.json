@@ -1,0 +1,21 @@
+{
+  "sqlite": "3.54.0 2026-04-09 12:25:13 8fa8248e303219400c646a885e36dfc52eae33d83f4412e3f369b2be5373aapl (64-bit)",
+  "base": "16d871a5",
+  "testWasUnchangedAtOriginalPRHead": true,
+  "examples": [
+    {
+      "flags": [
+        "-header",
+        "-csv"
+      ],
+      "output": "1\r\n"
+    },
+    {
+      "flags": [
+        "-csv",
+        "-header"
+      ],
+      "output": "one\r\n1\r\n"
+    }
+  ]
+}

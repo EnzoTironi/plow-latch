@@ -1,0 +1,36 @@
+{
+  "repository": "plow-pbc/plow-messages",
+  "pr": 3,
+  "baselineSHA": "7befff795c9d8b4c2d3c5751e128b287a3a98826",
+  "testedSHA": "493614d4398c04754e6a5006f0eb78de16947b87",
+  "worktreeClean": true,
+  "tests": {
+    "command": "npm ci && just test",
+    "baselinePassed": 42,
+    "finalPassed": 50,
+    "failed": 0,
+    "files": 2
+  },
+  "binarySHA256": "6c9d2b700b03dc0f474a90410437de429322307b2823a485fc7a42b8893e0f10",
+  "selectorMatrix": {
+    "verbs": 4,
+    "postVerbSelectorForms": 6,
+    "expectedExit": 2,
+    "casesPassed": 24
+  },
+  "quality": {
+    "gating": 7,
+    "kinds": [
+      "short-horizon-churn"
+    ],
+    "structuralRegressions": 0,
+    "acked": 0
+  },
+  "sideEffects": {
+    "sentMessages": 0,
+    "pushed": false,
+    "githubEdited": false,
+    "released": false
+  },
+  "realUserEvidence": "Parent owns native-app observations and live-store final retest; combine with this fixture evidence before publishing."
+}

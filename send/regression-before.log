@@ -1,0 +1,135 @@
+
+ RUN  v2.1.9 <send-checkout>
+
+ ❯ packages/device-core/test/messageSend.test.ts (20 tests | 6 failed) 84ms
+   × performMessageSend > does not send with an invalid snapshot "" 11ms
+     → expected { status: 'unverified', …(4) } to match object { status: 'error' }
+(4 matching properties omitted from actual)
+   × performMessageSend > does not send with an invalid snapshot " \n" 2ms
+     → expected { status: 'unverified', …(4) } to match object { status: 'error' }
+(4 matching properties omitted from actual)
+   × performMessageSend > does not send with an invalid snapshot "1e3" 1ms
+     → expected { status: 'unverified', …(4) } to match object { status: 'error' }
+(4 matching properties omitted from actual)
+   × performMessageSend > does not send with an invalid snapshot "0x10" 0ms
+     → expected { status: 'unverified', …(4) } to match object { status: 'error' }
+(4 matching properties omitted from actual)
+   × performMessageSend > does not send with an invalid snapshot "9007199254740993" 0ms
+     → expected { status: 'unverified', …(4) } to match object { status: 'error' }
+(4 matching properties omitted from actual)
+   × performMessageSend > records a snapshot failure before propagating it to the host diagnosis 1ms
+     → expected [] to deeply equal [ 'message_send_refused' ]
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > shows the canonical recipient and exact text before a denial and never runs a script
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > runs once, verifies the real SQLite row, and stores a rule only for this agent and recipient
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > keeps the deferred result pending until a slow script exits, then verifies once
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > diagnoses a pre-send store refusal and records that no script was attempted
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ❯ packages/mcp-server/test/messageSend.test.ts (4 tests | 2 failed) 210ms
+   × plow_send_message integration > keeps the deferred result pending until a slow script exits, then verifies once 21ms
+     → expected 'unverified' to be 'pending' // Object.is equality
+   × plow_send_message integration > diagnoses a pre-send store refusal and records that no script was attempted 11ms
+     → expected { error: 'the message was not sent' } to match object { status: 'blocked', …(1) }
+(1 matching property omitted from actual)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > keeps the deferred result pending until a slow script exits, then verifies once
+AssertionError: expected 'unverified' to be 'pending' // Object.is equality
+
+Expected: "pending"
+Received: "unverified"
+
+ ❯ packages/mcp-server/test/messageSend.test.ts:113:34
+    111|     vi.spyOn(device.executor, "output").mockReturnValue(FINISHED);
+    112|     const first = await callTool(server, "plow_send_message", SEND, AG…
+    113|     expect(first.payload.status).toBe("pending");
+       |                                  ^
+    114|     expect(first.payload.reason).toBe("running");
+    115|     expect(auditActivities(device.audit.entries() as JSONValue[])[0]?.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > diagnoses a pre-send store refusal and records that no script was attempted
+AssertionError: expected { error: 'the message was not sent' } to match object { status: 'blocked', …(1) }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+-   "diagnosis": Object {
+-     "permission": "full_disk_access",
+-   },
+-   "status": "blocked",
++   "error": "the message was not sent",
+  }
+
+ ❯ packages/mcp-server/test/messageSend.test.ts:143:22
+    141|       )).payload
+    142|       : first.payload;
+    143|     expect(response).toMatchObject({ status: "blocked", diagnosis: { p…
+       |                      ^
+    144|     expect(script).not.toHaveBeenCalled();
+    145|     const events = device.audit.entries().map((e) => jv(e as JSONValue…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  packages/device-core/test/messageSend.test.ts > performMessageSend > does not send with an invalid snapshot ""
+ FAIL  packages/device-core/test/messageSend.test.ts > performMessageSend > does not send with an invalid snapshot " \n"
+ FAIL  packages/device-core/test/messageSend.test.ts > performMessageSend > does not send with an invalid snapshot "1e3"
+ FAIL  packages/device-core/test/messageSend.test.ts > performMessageSend > does not send with an invalid snapshot "0x10"
+ FAIL  packages/device-core/test/messageSend.test.ts > performMessageSend > does not send with an invalid snapshot "9007199254740993"
+AssertionError: expected { status: 'unverified', …(4) } to match object { status: 'error' }
+(4 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+-   "status": "error",
++   "status": "unverified",
+  }
+
+ ❯ packages/device-core/test/messageSend.test.ts:140:60
+    138|     async (snapshot) => {
+    139|       const h = harness({ snapshot });
+    140|       expect(await performMessageSend(imessage(), h.deps)).toMatchObje…
+       |                                                            ^
+    141|       expect(h.scripts).toBe(0);
+    142|     },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  packages/device-core/test/messageSend.test.ts > performMessageSend > records a snapshot failure before propagating it to the host diagnosis
+AssertionError: expected [] to deeply equal [ 'message_send_refused' ]
+
+- Expected
++ Received
+
+- Array [
+-   "message_send_refused",
+- ]
++ Array []
+
+ ❯ packages/device-core/test/messageSend.test.ts:151:20
+    149|     await expect(performMessageSend(imessage(), h.deps)).rejects.toThr…
+    150|     expect(h.scripts).toBe(0);
+    151|     expect(events).toEqual(["message_send_refused"]);
+       |                    ^
+    152|   });
+    153| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ Test Files  2 failed (2)
+      Tests  8 failed | 16 passed (24)
+   Start at  08:08:26
+   Duration  1.33s (transform 506ms, setup 0ms, collect 1.50s, tests 294ms, environment 0ms, prepare 97ms)
+

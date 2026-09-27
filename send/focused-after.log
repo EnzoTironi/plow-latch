@@ -1,0 +1,24 @@
+
+ RUN  v2.1.9 <send-checkout>
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > shows the canonical recipient and exact text before a denial and never runs a script
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > runs once, verifies the real SQLite row, and stores a rule only for this agent and recipient
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > keeps the deferred result pending until a slow script exits, then verifies once
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/messageSend.test.ts > plow_send_message integration > diagnoses a pre-send store refusal and records that no script was attempted
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/mcp-server/test/messageSend.test.ts (4 tests) 188ms
+ ✓ packages/device-core/test/messageSend.test.ts (22 tests) 5125ms
+   ✓ performMessageSend > a -1719 after the script is Accessibility, and it is not tried again 5020ms
+
+ Test Files  2 passed (2)
+      Tests  26 passed (26)
+   Start at  08:13:21
+   Duration  5.81s (transform 345ms, setup 0ms, collect 996ms, tests 5.31s, environment 0ms, prepare 106ms)
+

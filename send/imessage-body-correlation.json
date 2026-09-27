@@ -1,0 +1,15 @@
+{
+  "approvedBody": "The intended message",
+  "fixtureBody": "A different concurrent message",
+  "query": "select m.ROWID, c.guid as chat_guid, h.id as handle, m.is_sent, m.is_delivered, m.error,\n       datetime(m.date/1000000000 + 978307200, 'unixepoch', 'localtime') as at\n  from message m\n  join chat_message_join j on j.message_id = m.ROWID\n  join chat c on c.ROWID = j.chat_id\n  left join handle h on h.ROWID = m.handle_id\n where m.is_from_me = 1\n   and m.ROWID > 1\n   and (h.id = 'test@example.com' or c.guid = 'test@example.com')\n order by m.date desc\n limit 3;",
+  "output": "2|iMessage;-;test@example.com|test@example.com|1|0|0|2000-12-31 22:00:00\n",
+  "result": {
+    "verified": true,
+    "row": {
+      "rowid": 2,
+      "chat": "iMessage;-;test@example.com",
+      "sent": true
+    }
+  },
+  "sentRealMessage": false
+}

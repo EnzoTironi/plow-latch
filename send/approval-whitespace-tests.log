@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 <send-checkout>
+
+ ✓ apps/desktop/test/copyRenderer.test.ts (2 tests) 149ms
+ ✓ apps/desktop/test/viewModel.test.ts (40 tests) 12ms
+
+ Test Files  2 passed (2)
+      Tests  42 passed (42)
+   Start at  08:19:17
+   Duration  929ms (transform 401ms, setup 0ms, collect 622ms, tests 160ms, environment 0ms, prepare 91ms)
+

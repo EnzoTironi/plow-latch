@@ -1,0 +1,9 @@
+{
+  "macOS": "27.2",
+  "arch": "arm64",
+  "swift": "Apple Swift version 6.4 (swiftlang-6.4.0.30.4 clang-2100.3.30.1)\nTarget: arm64-apple-macosx27.2.0",
+  "node": "v22.22.3",
+  "npm": "10.9.8",
+  "sqlite": "3.54.0 2026-04-09 12:25:13 8fa8248e303219400c646a885e36dfc52eae33d83f4412e3f369b2be5373aapl (64-bit)",
+  "vitest": "vitest/2.1.9 darwin-arm64 node-v22.22.3"
+}

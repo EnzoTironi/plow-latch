@@ -1,0 +1,52 @@
+{
+  "latch": "0171b62615d8d981411aa6ffe827741014eac632",
+  "cli": "493614d4398c04754e6a5006f0eb78de16947b87",
+  "sourceBinaryOverride": true,
+  "shippingPinValidated": false,
+  "realStores": true,
+  "privateOutputRedacted": true,
+  "results": [
+    {
+      "app": "imessage",
+      "status": "completed",
+      "exitCode": 0,
+      "keys": [
+        "exit_code",
+        "handle",
+        "output",
+        "output_length",
+        "status"
+      ],
+      "jsonRows": 3,
+      "shape": true
+    },
+    {
+      "app": "whatsapp",
+      "status": "completed",
+      "exitCode": 0,
+      "keys": [
+        "exit_code",
+        "handle",
+        "output",
+        "output_length",
+        "status"
+      ],
+      "jsonRows": 3,
+      "shape": true
+    }
+  ],
+  "overrideRejectedBeforeApproval": true,
+  "missingBinary": {
+    "status": "completed",
+    "exitCode": 71,
+    "errorPresent": false,
+    "keys": [
+      "exit_code",
+      "handle",
+      "host_gate",
+      "output",
+      "output_length",
+      "status"
+    ]
+  }
+}

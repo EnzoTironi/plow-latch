@@ -1,0 +1,129 @@
+
+ RUN  v2.1.9 <cli-checkout>
+
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-guhqtR/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-guhqtR/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-guhqtR/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-guhqtR/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+ ❯ test/whatsappCli.test.ts (15 tests | 2 failed) 367ms
+   × plow-messages --app whatsapp > ignores system events in search, thread, and the latest chat timestamp 12ms
+     → expected { …(3) } to match object { code: +0, rows: [] }
+(1 matching property omitted from actual)
+   × plow-messages --app whatsapp > bases unreplied on real direct messages and preserves bodiless media and unknown types 8ms
+     → expected [ '123456@lid', …(3) ] to deeply equal [ '123456@lid', …(2) ]
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/whatsappCli.test.ts > plow-messages --app whatsapp > ignores system events in search, thread, and the latest chat timestamp
+AssertionError: expected { …(3) } to match object { code: +0, rows: [] }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  Object {
+    "code": 0,
+-   "rows": Array [],
++   "rows": Array [
++     Object {
++       "at": "2026-09-27T11:19:11Z",
++       "body": "system-event metadata only",
++       "chat_guid": "15550004@s.whatsapp.net",
++       "chat_identifier": "15550004@s.whatsapp.net",
++       "display_name": "Only events",
++       "is_from_me": false,
++       "rowid": 16,
++       "sender": "15550004@s.whatsapp.net",
++     },
++     Object {
++       "at": "2026-09-27T11:19:11Z",
++       "body": "system-event inbound metadata",
++       "chat_guid": "15557777@s.whatsapp.net",
++       "chat_identifier": "15557777@s.whatsapp.net",
++       "display_name": "Wren",
++       "is_from_me": false,
++       "rowid": 15,
++       "sender": "15557777@s.whatsapp.net",
++     },
++     Object {
++       "at": "2026-09-27T11:19:11Z",
++       "body": "system-event group metadata",
++       "chat_guid": "99887@g.us",
++       "chat_identifier": "99887@g.us",
++       "display_name": "Book Club",
++       "is_from_me": false,
++       "rowid": 14,
++       "sender": null,
++     },
++     Object {
++       "at": "2026-09-27T11:19:11Z",
++       "body": "system-event outgoing metadata",
++       "chat_guid": "15551234@s.whatsapp.net",
++       "chat_identifier": "15551234@s.whatsapp.net",
++       "display_name": "O'Brien",
++       "is_from_me": true,
++       "rowid": 13,
++       "sender": null,
++     },
++   ],
+  }
+
+ ❯ test/whatsappCli.test.ts:158:65
+    156| 
+    157|   itMac("ignores system events in search, thread, and the latest chat …
+    158|     expect(cli("--store", edgeStore, "search", "system-event")).toMatc…
+       |                                                                 ^
+    159|     const thread = cli("--store", edgeStore, "thread", "--chat-id", "1…
+    160|     expect(thread.code).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  test/whatsappCli.test.ts > plow-messages --app whatsapp > bases unreplied on real direct messages and preserves bodiless media and unknown types
+AssertionError: expected [ '123456@lid', …(3) ] to deeply equal [ '123456@lid', …(2) ]
+
+- Expected
++ Received
+
+  Array [
+    "123456@lid",
++   "15550004@s.whatsapp.net",
+    "15550005@s.whatsapp.net",
+-   "15551234@s.whatsapp.net",
++   "15557777@s.whatsapp.net",
+  ]
+
+ ❯ test/whatsappCli.test.ts:171:62
+    169|     const result = cli("--store", edgeStore, "unreplied");
+    170|     expect(result.code).toBe(0);
+    171|     expect(result.rows.map((r) => r.chat_identifier).sort()).toEqual([
+       |                                                              ^
+    172|       "123456@lid", "15550005@s.whatsapp.net", "15551234@s.whatsapp.ne…
+    173|     ]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 13 passed (15)
+   Start at  08:19:35
+   Duration  696ms (transform 74ms, setup 0ms, collect 69ms, tests 367ms, environment 0ms, prepare 47ms)
+

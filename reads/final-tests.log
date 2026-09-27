@@ -1,0 +1,566 @@
+
+ RUN  v2.1.9 <reads-checkout>
+
+ ✓ packages/device-core/test/plowGog.test.ts (63 tests) 13ms
+stderr | packages/device-core/test/deviceCore.test.ts > AuditLog > does not fail record() when a change listener throws
+[audit] change listener failed after a recorded event: Error: webContents destroyed
+    at EventEmitter.<anonymous> (<reads-checkout>/packages/device-core/test/deviceCore.test.ts:460:13)
+    at EventEmitter.emit (node:events:519:28)
+    at AuditLog.notify (<reads-checkout>/packages/device-core/src/auditLog.ts:98:19)
+    at AuditLog.record (<reads-checkout>/packages/device-core/src/auditLog.ts:66:10)
+    at <reads-checkout>/packages/device-core/test/deviceCore.test.ts:467:22
+    at Proxy.assertThrows (file://<reads-checkout>/node_modules/chai/index.js:2767:5)
+    at Proxy.methodWrapper (file://<reads-checkout>/node_modules/chai/index.js:1686:25)
+    at Proxy.<anonymous> (file://<reads-checkout>/node_modules/@vitest/expect/dist/index.js:1029:16)
+    at Proxy.overwritingMethodWrapper (file://<reads-checkout>/node_modules/chai/index.js:1735:33)
+    at Proxy.<anonymous> (file://<reads-checkout>/node_modules/@vitest/expect/dist/index.js:1509:21)
+[audit] change listener failed after a recorded event: Error: webContents destroyed
+    at EventEmitter.<anonymous> (<reads-checkout>/packages/device-core/test/deviceCore.test.ts:460:13)
+    at EventEmitter.emit (node:events:519:28)
+    at AuditLog.notify (<reads-checkout>/packages/device-core/src/auditLog.ts:98:19)
+    at AuditLog.clear (<reads-checkout>/packages/device-core/src/auditLog.ts:110:10)
+    at <reads-checkout>/packages/device-core/test/deviceCore.test.ts:469:22
+    at Proxy.assertThrows (file://<reads-checkout>/node_modules/chai/index.js:2767:5)
+    at Proxy.methodWrapper (file://<reads-checkout>/node_modules/chai/index.js:1686:25)
+    at Proxy.<anonymous> (file://<reads-checkout>/node_modules/@vitest/expect/dist/index.js:1029:16)
+    at Proxy.overwritingMethodWrapper (file://<reads-checkout>/node_modules/chai/index.js:1735:33)
+    at Proxy.<anonymous> (file://<reads-checkout>/node_modules/@vitest/expect/dist/index.js:1509:21)
+
+stderr | packages/device-core/test/deviceCore.test.ts > AuditLog > emits "recorded" with the entry itself, under the same never-fail contract
+[audit] recorded listener failed after a recorded event: Error: sink offline
+    at EventEmitter.<anonymous> (<reads-checkout>/packages/device-core/test/deviceCore.test.ts:530:13)
+    at EventEmitter.emit (node:events:519:28)
+    at AuditLog.record (<reads-checkout>/packages/device-core/src/auditLog.ts:62:19)
+    at <reads-checkout>/packages/device-core/test/deviceCore.test.ts:532:22
+    at Proxy.assertThrows (file://<reads-checkout>/node_modules/chai/index.js:2767:5)
+    at Proxy.methodWrapper (file://<reads-checkout>/node_modules/chai/index.js:1686:25)
+    at Proxy.<anonymous> (file://<reads-checkout>/node_modules/@vitest/expect/dist/index.js:1029:16)
+    at Proxy.overwritingMethodWrapper (file://<reads-checkout>/node_modules/chai/index.js:1735:33)
+    at Proxy.<anonymous> (file://<reads-checkout>/node_modules/@vitest/expect/dist/index.js:1509:21)
+    at Proxy.<anonymous> (file://<reads-checkout>/node_modules/@vitest/expect/dist/index.js:972:17)
+
+ ✓ packages/device-core/test/deviceCore.test.ts (30 tests) 156ms
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > returns a click_at result and rejects missing coordinates
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > the reduced tool surface (§4.5) > advertises exactly the surviving tools and no device selection
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > plow_history > shows every agent's requests joined to their decision and outcome, newest first
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > plow_history > without a runtime, open and widen are refused before any intent, and the history stays empty
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > a tool call end to end, in process > plow_read_file builds a capability set, runs policy, executes and audits
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > a tool call end to end, in process > returns a binary file as an embedded resource, not base64 text
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > advertises the browsing skill via plow_list_skills + plow_read_skill
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > narrows the vault listing on a query, by name or site, ignoring case
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > the server tells the agent what it is for > server/discover carries the instructions block
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_read_file names the user's own machine
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_write_file names the user's own machine
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_run_command names the user's own machine
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_run_applescript names the user's own machine
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_browser_open names the user's own machine
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_read_file and plow_write_file distinguish this Mac from the agent's workspace
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_run_command leads with when to choose it, names Latch, not the sandbox
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool with a strong built-in alternative says whose Mac this is > plow_browser_open says why it beats a plain web fetch
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_read_file carries the blocked sentence
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_write_file carries the blocked sentence
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_run_command carries the blocked sentence
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_run_applescript carries the blocked sentence
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > the script tool says why it exists, how it takes values, and where a sandboxed refusal goes
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > the script tool says exit 0 is not delivery, and that a send goes out as the owner
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > the browser tool sends a hard block to the owner's Safari, and the script tool names it
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_run_command explains a running result that carries a diagnosis
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_device_status is for the user's question or after a block — never a way to avoid trying
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > plow_get_output and plow_get_result name the blocked answer
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool this Mac can stop says so > every skill body carries the host-gate note, before the footer, with no tool names
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > the goal field says a human reads it > names the reader, and does not offer access for a better answer
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > the handshake says what this server is > initialize carries a titled, described identity
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > the handshake says what this server is > reports the version it was given, and flags the default as a bug
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool says what kind of tool it is > carries a title and annotations for every tool
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool says what kind of tool it is > the tools that 'cannot change this Mac' are exactly the ones marked 'readOnlyHint'
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > every tool says what kind of tool it is > the tools that 'reach the open internet' are exactly the ones marked 'openWorldHint'
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > what the agent-facing copy must and must not say > explains threshold payment authorization for the bundled v1 bank registry
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > what the agent-facing copy must and must not say > all three surfaces interpolate the one live-web routing sentence
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/toolCopy.test.ts > what the agent-facing copy must and must not say > both copy homes interpolate the one tooling list
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/mcp-server/test/toolCopy.test.ts (49 tests) 144ms
+stderr | packages/mcp-server/test/mcpServer.test.ts > a tool call end to end, in process > goal text cannot widen the sandbox: a path outside its permitted region is blocked
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > a tool call end to end, in process > a policy denial reaches the agent as denied, and nothing runs
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > a tool call end to end, in process > out of credits is distinguishable by the calling agent, and still runs nothing
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > a tool call end to end, in process > a reviewer that does not exist is distinguishable by the calling agent, and still runs nothing
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > agent identity > fails closed when no agent is asserted
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > the deferred-result contract (§4.3) > a call that outruns the budget returns a pending handle, then the real result
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > the deferred-result contract (§4.3) > a call that outruns the budget returns a pending handle, then the real result
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > the deferred-result contract (§4.3) > a deferred binary read returns the same resource as a direct one
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > open → browse → screenshot image block → scope lockout → extend → fill_secret → close
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/device-core/test/hostGate.test.ts (77 tests) 563ms
+   ✓ nodeProbes — the real answers, against fixtures > answers 'hung' for an open that never returns, and kills the child 306ms
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > a widen against an unknown session still creates an intent, and the log attributes the failure to it
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > splits a code across single-character boxes when 'selectors' crosses the seam
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > the deferred-result contract (§4.3) > a handle belongs to the agent that created it — another agent gets `unknown`
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/device-core/test/passwordImport.test.ts (30 tests) 380ms
+ ✓ packages/device-core/test/skills.test.ts (93 tests) 68ms
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > types a date of birth in the page's shape when 'format' crosses the seam
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > the protocol posture (§4.2) > GET is answered 405 Method not allowed, deliberately
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > subscriptions/listen is refused outright > is refused, with the caller's id, and never streams
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > rejects an array
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > rejects a non-empty array
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > rejects an object
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > rejects a number
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > rejects zero
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > rejects a boolean
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > rejects null
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > rejects an empty string
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > rejects whitespace only
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > a non-string agent name is dropped rather than carried into the dialog
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the identity guard requires a non-empty string id > tools/list and server/discover are served without identity, deliberately
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the call budget can actually bound filesystem work > a read over the size ceiling is refused rather than blocking
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the call budget can actually bound filesystem work > the budget timer still fires while a read is in flight
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > a symlink is resolved before the approver sees it
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > swapping the symlink after approval cannot redirect the read
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > plow_run_command's declared bounds are resolved before approval too
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > plow-gog file flags derive the paths the approver sees
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > a provider's capability carries no cwd, even when the caller supplies one
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > defers a slow fill_secret as running without filling twice
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > a plow-gog command implies network
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > and an explicit false does not disarm it
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > plow-gog --help does not, like the mint it also skips
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > and an ordinary command still asks
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > ...and still means false when it says so
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > apple_events true grants it
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > omitted means no apple_events capability at all
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > the human approves the path that actually executes > explicit false also means no capability, not a denied one
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a command outrunning the budget defers, then yields its job handle > takes two hops: pending handle, then a ready payload containing the job handle
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/device-core/test/vaultItems.test.ts (25 tests) 10ms
+ ↓ packages/mcp-server/test/browser.integration.test.ts (4 tests | 4 skipped)
+ ✓ packages/device-core/test/registry.test.ts (52 tests) 16ms
+ ✓ packages/device-core/test/approvalStore.test.ts (19 tests) 143ms
+ ✓ packages/device-core/test/maskClassification.test.ts (49 tests) 77ms
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > refuses an off-allowlist argv before an intent is ever built, never reaching approval
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > refuses archive selectors before an intent: "--store"
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > refuses archive selectors before an intent: "chats"
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > refuses archive selectors before an intent: "chats"
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > refuses archive selectors before an intent: "--app"
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > refuses archive selectors before an intent: "--app"
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > refuses a provider's command when the owner turned its plugin off, before an intent is ever built
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > refuses a caller-supplied cwd for a plugin before an intent is ever built
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > refuses a caller-supplied cwd equal to the plugin's own directory too
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > offers the plugin's own directory as the approved cwd, so the card shows the true run location
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > a staged plugin with no cwd argument still runs normally
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > review findings > a staged plugin's own argv belt gates before an intent exists too > a non-plugin command's cwd is unaffected
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > per-agent isolation (§4.4) > one agent cannot read another's job output — even sharing a name
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ apps/desktop/test/pluginsModel.test.ts (30 tests) 5ms
+stderr | packages/mcp-server/test/mcpServer.test.ts > per-agent isolation (§4.4) > one agent's read cannot advance another's cursor
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/hostGate.test.ts > a file this Mac refused > plow_read_file answers blocked, as an error, with the whole diagnosis
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/hostGate.test.ts > a file this Mac refused > a TCC refusal is told in the owner's terms, with the switch named
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/hostGate.test.ts > a file this Mac refused > a missing file stays failed, and keeps the facts this Mac gathered
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/hostGate.test.ts > a file this Mac refused > a path a running command can still write is refused with its retry hint on the wire
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/hostGate.test.ts > a file this Mac refused > a blocked deferred call lands as blocked on its handle
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/hostGate.test.ts > a file this Mac refused > a blocked deferred call lands as blocked on its handle
+[audit] exec_end lost for handle 1E19700E-770B-4BE6-9E80-1D0D7C35F80D: Error: ENOENT: no such file or directory, open '/private/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/domo-mcpgate-My97ys/device/audit.ndjson'
+    at Object.writeFileSync (node:fs:2430:20)
+    at Object.appendFileSync (node:fs:2512:6)
+    at AuditLog.record (<reads-checkout>/packages/device-core/src/auditLog.ts:54:8)
+    at <reads-checkout>/packages/device-core/src/deviceAgent.ts:1320:22
+    at <reads-checkout>/packages/device-core/src/executor.ts:356:33
+    at OutputBuffer.finish (<reads-checkout>/packages/device-core/src/executor.ts:315:30)
+    at settle (<reads-checkout>/packages/device-core/src/executor.ts:620:16)
+    at ChildProcess.<anonymous> (<reads-checkout>/packages/device-core/src/executor.ts:637:9)
+    at ChildProcess.emit (node:events:519:28)
+    at maybeClose (node:internal/child_process:1101:16) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/private/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/domo-mcpgate-My97ys/device/audit.ndjson'
+}
+
+stderr | packages/mcp-server/test/hostGate.test.ts > a command this Mac refused > plow_run_command answers blocked with the run's output and handle, and the handle still polls
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/hostGate.test.ts > a command this Mac refused > an ordinary failing command is still completed with its exit code
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/hostGate.test.ts > plow_device_status > answers the standing inventory with no intent and no approval
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/mcp-server/test/hostGate.test.ts (8 tests) 331ms
+stderr | packages/mcp-server/test/mcpServer.test.ts > per-agent isolation (§4.4) > one agent's read cannot advance another's cursor
+[audit] exec_end lost for handle 4A24708B-79DB-4E76-9588-6F1A7F3AF426: Error: ENOENT: no such file or directory, open '/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/domo-mcp-yhqz4u/device/audit.ndjson'
+    at Object.writeFileSync (node:fs:2430:20)
+    at Object.appendFileSync (node:fs:2512:6)
+    at AuditLog.record (<reads-checkout>/packages/device-core/src/auditLog.ts:54:8)
+    at <reads-checkout>/packages/device-core/src/deviceAgent.ts:1320:22
+    at <reads-checkout>/packages/device-core/src/executor.ts:356:33
+    at OutputBuffer.finish (<reads-checkout>/packages/device-core/src/executor.ts:315:30)
+    at settle (<reads-checkout>/packages/device-core/src/executor.ts:620:16)
+    at ChildProcess.<anonymous> (<reads-checkout>/packages/device-core/src/executor.ts:637:9)
+    at ChildProcess.emit (node:events:519:28)
+    at maybeClose (node:internal/child_process:1101:16) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/domo-mcp-yhqz4u/device/audit.ndjson'
+}
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > per-agent isolation (§4.4) > a deferred handle is not shared by two agents with the same name
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > per-agent isolation (§4.4) > an always-allow rule from one agent does not approve another's identical request
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/mcpServer.test.ts > per-agent isolation (§4.4) > the audit trail names the agent and keys on the id
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/mcp-server/test/mcpServer.test.ts (62 tests) 2365ms
+   ✓ review findings > a command outrunning the budget defers, then yields its job handle > takes two hops: pending handle, then a ready payload containing the job handle 437ms
+   ✓ per-agent isolation (§4.4) > one agent's read cannot advance another's cursor 745ms
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > an action that failed tells the agent what its own requests did
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > denyKinds credential blocks fill grants while browsing still works
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > plow_browser_open is refused before any intent when the owner turned the browser off
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > plow_browser_request is refused before any intent when the owner turned the browser off
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > the shipped default is headless, and a session can ask to be watched
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > DOMO_BROWSER_HEADED=1 puts the window back, and a session can still hide
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/browser.test.ts > browser tools (fake runtime) > a second session is decided entirely by rules — the unattended-pizza oracle
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/device-core/test/onePux.test.ts (9 tests) 629ms
+   ✓ parseOnePux > refuses an export.data the declared size does not bound, before inflating any of it 455ms
+ ✓ packages/mcp-server/test/browser.test.ts (15 tests) 2942ms
+   ✓ browser tools (fake runtime) > defers a slow fill_secret as running without filling twice 1600ms
+ ✓ packages/device-core/test/localVault.test.ts (13 tests) 496ms
+ ✓ packages/device-core/test/imessageRecipes.test.ts (5 tests) 85ms
+ ✓ packages/device-core/test/hostInventory.test.ts (13 tests) 108ms
+stderr | packages/mcp-server/test/applescript.test.ts > plow_run_applescript > runs the script with osascript, hands it its args, and returns its result
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/applescript.test.ts > plow_run_applescript > the approver sees the app, its bundle id resolved on this Mac, the whole script, and its args
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/applescript.test.ts > plow_run_applescript > a script error comes back as osascript's message, a non-zero exit, and no gate
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/applescript.test.ts > plow_run_applescript > an app this Mac does not have is refused before any intent exists
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/applescript.test.ts > plow_run_applescript > a denial runs nothing
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/applescript.test.ts > plow_run_applescript > the script's always-allow is still decided fresh: no rule is stored for it
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/device-core/test/sandbox.test.ts (12 tests) 324ms
+stderr | packages/mcp-server/test/applescript.test.ts > plow_run_applescript > Automation refused by macOS is blocked, with the named app as the target — the Capabilities row's case
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/waitingForApproval.test.ts > a timeout is not a refusal > an approval nobody answered says so, and says it can be retried
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/applescript.test.ts > plow_run_applescript > -10004 from a script that ran outside the sandbox is the app's own refusal: no gate
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/waitingForApproval.test.ts > a timeout is not a refusal > the two denials are distinguishable
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/waitingForApproval.test.ts > a timeout is not a refusal > the two denials are distinguishable
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/waitingForApproval.test.ts > a pending handle says what to do about it > the first answer tells the agent to speak up, poll, and not ask twice
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/applescript.test.ts > plow_run_applescript > output of a long script streams through plow_get_output like a command's
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/waitingForApproval.test.ts > a pending handle says what to do about it > polling the handle repeats the advice, so it survives a lost first answer
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+stderr | packages/mcp-server/test/waitingForApproval.test.ts > a pending handle says what to do about it > the note promises nothing
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/mcp-server/test/waitingForApproval.test.ts (6 tests) 301ms
+ ✓ packages/device-core/test/brokerCore.test.ts (11 tests) 269ms
+ ✓ packages/device-core/test/fillSecretMasking.test.ts (50 tests) 3816ms
+   ✓ fill_secret marking > does not let a fill outlive the session that approved it 660ms
+ ✓ packages/device-core/test/pluginManifest.test.ts (46 tests) 5ms
+ ✓ packages/device-core/test/vaultMigrate.test.ts (21 tests) 3874ms
+   ✓ migrateLegacyVault > refuses to migrate while a legacy server is still WRITING this database 709ms
+ ✓ packages/device-core/test/providerExec.test.ts (72 tests) 4221ms
+   ✓ plow-gog through the exec path > waits out a fan-out child that outlives wait_ms instead of degrading it 1047ms
+ ✓ packages/device-core/test/browserRuntime.test.ts (12 tests) 38ms
+ ✓ packages/mcp-server/test/applescript.test.ts (9 tests) 1027ms
+   ✓ plow_run_applescript > output of a long script streams through plow_get_output like a command's 604ms
+ ✓ packages/device-core/test/credentialExchange.test.ts (16 tests) 5ms
+stderr | packages/mcp-server/test/budget.test.ts > the budget fires while a slow path resolution is still in flight > plow_read_file defers instead of returning late
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/device-core/test/contactsRecipes.test.ts (6 tests) 95ms
+stderr | packages/mcp-server/test/budget.test.ts > the budget fires while a slow path resolution is still in flight > plow_run_command defers while its declared bounds are still resolving
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/mcp-server/test/budget.test.ts (5 tests) 180ms
+ ✓ packages/device-core/test/pluginRegistry.test.ts (11 tests) 82ms
+stderr | packages/mcp-server/test/approvalBudget.test.ts > the budget fires while persisting the approval is still in flight > returns a handle instead of overrunning, and the result lands later
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/device-core/test/vaultTotp.test.ts (22 tests) 24ms
+stderr | packages/mcp-server/test/approvalBudget.test.ts > the budget fires while persisting the approval is still in flight > the record is on disk before the human is asked, not after
+responseMode: 'json' drops mid-call notifications. subscriptions/listen streams are always served over SSE regardless; other notifications emitted before a result are dropped.
+
+ ✓ packages/mcp-server/test/approvalBudget.test.ts (2 tests) 258ms
+ ✓ packages/device-core/test/gogFlags.test.ts (24 tests) 3ms
+ ✓ packages/device-core/test/vaultSecretState.test.ts (11 tests) 42ms
+ ✓ packages/device-core/test/plowFolder.test.ts (14 tests) 15ms
+ ✓ packages/device-core/test/fileOpsAsync.test.ts (1 test) 35ms
+ ✓ packages/device-core/test/pluginSkills.test.ts (18 tests) 3ms
+ ✓ packages/device-core/test/pluginStage.test.ts (7 tests) 499ms
+ ✓ packages/device-core/test/credentialFieldFlags.test.ts (5 tests) 180ms
+ ✓ packages/device-core/test/browserFormsScan.test.ts (5 tests) 2ms
+ ✓ packages/device-core/test/dateFormat.test.ts (47 tests) 4ms
+ ✓ packages/device-core/test/vaultKeyStore.test.ts (7 tests) 36ms
+ ✓ packages/device-core/test/fullDiskAccess.test.ts (5 tests) 9ms
+ ✓ packages/device-core/test/executorEnv.test.ts (4 tests) 228ms
+ ✓ packages/device-core/test/browserSessions.test.ts (47 tests) 5503ms
+   ✓ every browser opens as the user, already signed in > opens with the user's cookies, and two at once both have them 392ms
+   ✓ every browser opens as the user, already signed in > keeps what BOTH browsers signed into, and the user's own logins with them 359ms
+   ✓ every browser opens as the user, already signed in > does not let a browser that only READ a site undo one that signed in again 390ms
+   ✓ every browser opens as the user, already signed in > serializes concurrent closes so no merge is lost to a locked profile 881ms
+   ✓ every browser opens as the user, already signed in > waits for a crashed session's cookies before it calls the Mac clear 382ms
+   ✓ every browser opens as the user, already signed in > closes once, and nothing calls the Mac clear until that close is done 341ms
+ ✓ packages/device-core/test/appleScript.test.ts (4 tests) 30ms
+ ✓ packages/device-core/test/pluginArgvRules.test.ts (10 tests) 2ms
+ ✓ packages/device-core/test/credentialBrokerEnv.test.ts (2 tests) 98ms
+ ✓ packages/device-core/test/vaultSearch.test.ts (5 tests) 3ms
+ ✓ packages/device-core/test/policyRuleView.test.ts (2 tests) 21ms
+ ✓ packages/device-core/test/hostGateDevice.test.ts (34 tests) 5684ms
+   ✓ a file operation this Mac refused > a write answered blocked never lands, however the dialog is answered later 308ms
+   ✓ a command this Mac refused > a silent run parked on a consent dialog: running with the diagnosis, then blocked once reaped 420ms
+   ✓ a command this Mac refused > a provisional 'parked' verdict that returns after the exit's own never overwrites it 956ms
+   ✓ a command this Mac refused > a poll that lands between the exit and its diagnosis waits for the verdict 1166ms
+   ✓ a command this Mac refused > a run swapping its approved folder's entries while it is diagnosed is never followed 450ms
+   ✓ a command this Mac refused > a silent run that is simply running is left alone 556ms
+ ✓ packages/device-core/test/vaultKeychain.test.ts (3 tests) 3ms
+ ✓ packages/device-core/test/financialCredentialGate.test.ts (7 tests) 3ms
+ ✓ packages/device-core/test/pluginEnv.test.ts (1 test) 3ms
+ ✓ packages/device-core/test/browserHost.test.ts (12 tests) 1869ms
+   ✓ BrowserHost > trips the circuit breaker after repeated crashes 395ms
+   ✓ BrowserHost > bounds a hung action by actionTimeoutMs instead of blocking forever 337ms
+   ✓ BrowserHost > fails fast when the server never becomes ready 504ms
+   ✓ BrowserHost > viewFrame is best-effort: a hung view action yields null, not a throw 325ms
+ ✓ packages/device-core/test/executorReap.test.ts (9 tests) 6399ms
+   ✓ a run that produces nothing and never exits > is killed once it outlives the reap window: 'the child itself' 372ms
+   ✓ a run that produces nothing and never exits > is killed once it outlives the reap window: 'a descendant of a shell that does not…' 363ms
+   ✓ a run that produces nothing and never exits > leaves a silent run approved for 'write' alone 988ms
+   ✓ a run that produces nothing and never exits > leaves a silent run approved for 'network' alone 997ms
+   ✓ a run that produces nothing and never exits > leaves a run that has produced output alone 1930ms
+   ✓ a run that produces nothing and never exits > ends when the command ends, not when a job it backgrounded lets go 1348ms
+   ✓ the audit record of a reaped run > closes the run out once, marked reaped 324ms
+
+ Test Files  57 passed | 1 skipped (58)
+      Tests  1227 passed | 4 skipped (1231)
+   Start at  08:12:22
+   Duration  8.58s (transform 1.07s, setup 0ms, collect 8.21s, tests 43.72s, environment 5ms, prepare 1.83s)
+

@@ -1,0 +1,16 @@
+{
+  "readOnlyNoRetry": true,
+  "checks": [
+    {
+      "elapsedMs": 44,
+      "states": [
+        {
+          "sent": 0,
+          "delivered": 0,
+          "error": 22,
+          "rows": 1
+        }
+      ]
+    }
+  ]
+}

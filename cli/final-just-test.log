@@ -1,0 +1,63 @@
+mkdir -p dist
+swiftc -O -target "$(uname -m)-apple-macos13.0" -import-objc-header plow-messages-bridge.h plow-messages.swift -o dist/plow-messages
+1 warning generated.
+plow-messages-bridge.h:19:30: warning: 'NSUnarchiver' is deprecated: first deprecated in macOS 10.13 - Use NSKeyedUnarchiver instead
+17 | static inline id PlowMessagesUnarchive(NSData *data) {
+18 |     @try {
+19 |         return [NSUnarchiver unarchiveObjectWithData:data];
+   |                              `- warning: 'NSUnarchiver' is deprecated: first deprecated in macOS 10.13 - Use NSKeyedUnarchiver instead
+20 |     } @catch (NSException *exception) {
+21 |         // Swallowed: the reason string embeds untrusted blob bytes.
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/System/Library/Frameworks/Foundation.framework/Headers/NSArchiver.h:126:12: note: 'NSUnarchiver' has been explicitly marked deprecated here
+124 | /// }
+125 | API_DEPRECATED("Use NSKeyedUnarchiver instead", macos(10.0,10.13), ios(2.0,11.0), watchos(2.0,4.0), tvos(9.0,11.0))
+126 | @interface NSUnarchiver : NSCoder {
+    |            `- note: 'NSUnarchiver' has been explicitly marked deprecated here
+127 | @private
+128 |     void *		datax;
+npx vitest run
+
+ RUN  v2.1.9 <cli-checkout>
+
+--limit wants a positive number, not -1
+--limit wants a positive number, not -1
+--limit wants a positive number, not 0
+--after wants an ISO-8601 date like 2026-09-01 or 2026-09-01T18:30:00-07:00
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-Tbz9vs/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-Tbz9vs/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+thread needs --chat-id N or --handle H (run `chats` to find one)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --store (try --help)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-Tbz9vs/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --app=imessage (try --help)
+plow-messages: unknown option -a (try --help)
+plow-messages: unknown option --app (try --help)
+plow-messages: unknown option --store (try --help)
+plow-messages: unknown option --store=/var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-wa-Tbz9vs/ChatStorage.sqlite (try --help)
+plow-messages: unknown option -s (try --help)
+--app wants imessage or whatsapp, not signal
+plow-messages: unknown option --sql (try --help)
+plow-messages: cannot read the Messages store at /var/folders/m6/5dg5gpgd1k5c4zkf38dc9lqr0000gn/T/plow-messages-absent/chat.db. On a Mac this usually means Full Disk Access has not been granted to the app running this command, or the path is wrong.
+ ✓ test/cli.test.ts (35 tests) 529ms
+ ✓ test/whatsappCli.test.ts (15 tests) 547ms
+
+ Test Files  2 passed (2)
+      Tests  50 passed (50)
+   Start at  08:19:53
+   Duration  761ms (transform 92ms, setup 0ms, collect 102ms, tests 1.08s, environment 0ms, prepare 65ms)
+

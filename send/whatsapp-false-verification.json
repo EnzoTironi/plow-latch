@@ -1,0 +1,14 @@
+{
+  "fixture": "one outbound WhatsApp row with ZMESSAGESTATUS=1 and ZMESSAGEERRORSTATUS=99",
+  "query": "select m.rowid, s.ZCONTACTJID, 1 from ZWAMESSAGE m join ZWACHATSESSION s on m.ZCHATSESSION = s.Z_PK where m.ZISFROMME = 1 and m.rowid > 0 and s.ZCONTACTJID = '15555550100@s.whatsapp.net';",
+  "output": "1|15555550100@s.whatsapp.net|1\n",
+  "result": {
+    "verified": true,
+    "row": {
+      "rowid": 1,
+      "chat": "15555550100@s.whatsapp.net",
+      "sent": true
+    }
+  },
+  "sentRealMessage": false
+}

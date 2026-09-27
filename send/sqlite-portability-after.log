@@ -1,0 +1,11 @@
+
+ RUN  v2.1.9 <send-checkout>
+
+ ✓ packages/device-core/test/skills.test.ts (116 tests) 50ms
+ ✓ packages/device-core/test/whatsappRecipes.test.ts (8 tests) 212ms
+
+ Test Files  2 passed (2)
+      Tests  124 passed (124)
+   Start at  08:15:51
+   Duration  1.28s (transform 507ms, setup 0ms, collect 1.27s, tests 262ms, environment 0ms, prepare 170ms)
+
