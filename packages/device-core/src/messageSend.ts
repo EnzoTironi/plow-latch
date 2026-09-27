@@ -8,8 +8,9 @@
  * the same approval becomes two messages.
  */
 import { execFile } from "node:child_process";
+import { FileOpsError } from "./fileOps.js";
 import { APP_DISPLAY_NAME } from "./hostGate/diagnose.js";
-import { stderrHint } from "./hostGate/errors.js";
+import { errnoFromHint, stderrHint } from "./hostGate/errors.js";
 import { IMESSAGE_QUERIES, imessageStorePath } from "./imessageSkill.js";
 
 export type MessageApp = "imessage" | "whatsapp";
@@ -94,9 +95,9 @@ export interface OutboundRow {
 export function verifyOutcome(
   rows: readonly OutboundRow[],
 ): { verified: true; row: OutboundRow } | { verified: false; reason: "none" | "many" } {
-  const ok = rows.filter((r) => r.sent);
-  if (ok.length === 1) return { verified: true, row: ok[0] };
-  return { verified: false, reason: ok.length === 0 ? "none" : "many" };
+  if (rows.length > 1) return { verified: false, reason: "many" };
+  if (rows[0]?.sent) return { verified: true, row: rows[0] };
+  return { verified: false, reason: "none" };
 }
 
 function sqlLiteral(value: string): string {
@@ -152,6 +153,21 @@ export interface MessageSendRequest {
   accessibility: "granted" | "denied" | "not_asked" | "unknown";
 }
 
+/** The app may return before its database records the send. Keep the same
+ * pre-send snapshot and only re-read; a second script would duplicate it. */
+async function waitForOutbound(
+  query: MessageSendDeps["query"],
+  sql: string,
+  whatsapp: boolean,
+): Promise<ReturnType<typeof verifyOutcome>> {
+  const deadline = Date.now() + 5_000;
+  for (;;) {
+    const outcome = verifyOutcome(parseOutbound(await query(sql), whatsapp));
+    if (outcome.verified || outcome.reason === "many" || Date.now() >= deadline) return outcome;
+    await new Promise<void>((resolve) => setTimeout(resolve, 250));
+  }
+}
+
 /**
  * One attempt. `runScript` is called at most once. A WhatsApp send whose
  * Accessibility grant is missing is refused before any keystroke.
@@ -165,19 +181,27 @@ export async function performMessageSend(
     return { status: "blocked", error: accessibilityRefusal(), host_gate: "accessibility" };
   }
   const snapshotSql = req.app === "imessage" ? IMESSAGE_QUERIES.verifySendSnapshot : whatsappSnapshotSql();
-  const before = Number((await deps.query(snapshotSql)).trim());
-  if (!Number.isInteger(before) || before < 0) {
+  let snapshot: string;
+  try {
+    snapshot = (await deps.query(snapshotSql)).trim();
+  } catch (error) {
+    deps.audit("message_send_refused", { intentId: req.intentId, app: req.app, cause: "snapshot" });
+    throw error;
+  }
+  const before = Number(snapshot);
+  if (!/^[0-9]+$/.test(snapshot) || !Number.isSafeInteger(before)) {
     deps.audit("message_send_refused", { intentId: req.intentId, app: req.app, cause: "snapshot" });
     return { status: "error", error: "could not read the store before sending" };
   }
   const script = req.app === "imessage" ? imessageScript(req.recipient) : WHATSAPP_SCRIPT;
   const args = req.app === "imessage" ? [req.body, req.recipient] : [req.body, whatsappOpenUrl(req.recipient)];
+  deps.audit("message_send_start", { intentId: req.intentId, app: req.app, recipient: req.recipient });
   const ran = await deps.runScript(script, args);
   const verifySql =
     req.app === "imessage" ? imessageVerifySql(before, req.recipient) : whatsappVerifySql(before, req.recipient);
-  let listed: string;
+  let outcome: ReturnType<typeof verifyOutcome>;
   try {
-    listed = await deps.query(verifySql);
+    outcome = await waitForOutbound(deps.query, verifySql, req.app === "whatsapp");
   } catch {
     deps.audit("message_send_result", {
       intentId: req.intentId,
@@ -189,8 +213,6 @@ export async function performMessageSend(
     });
     return unverified(req, ran.exitCode, ran.stderr, "none");
   }
-  const rows = parseOutbound(listed, req.app === "whatsapp");
-  const outcome = verifyOutcome(rows);
   deps.audit("message_send_result", {
     intentId: req.intentId,
     app: req.app,
@@ -232,9 +254,14 @@ export function storePathFor(app: MessageApp, home: string): string {
 
 export function sqliteText(db: string, sql: string): Promise<string> {
   return new Promise((resolve, reject) => {
-    execFile("/usr/bin/sqlite3", ["-readonly", "-list", db, sql], { encoding: "utf8" }, (error, stdout) => {
-      if (error) reject(error);
-      else resolve(stdout);
+    execFile("/usr/bin/sqlite3", ["-readonly", "-list", db, sql], {
+      encoding: "utf8", timeout: 5_000, killSignal: "SIGKILL",
+    }, (error, stdout, stderr) => {
+      if (error) {
+        reject(new FileOpsError("could not read the message store", false, {
+          code: errnoFromHint(stderrHint(stderr)), syscall: "open", path: db,
+        }));
+      } else resolve(stdout);
     });
   });
 }

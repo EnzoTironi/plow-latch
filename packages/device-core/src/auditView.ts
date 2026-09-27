@@ -592,6 +592,7 @@ function classifyActivity(
       if (cause === "accessibility") return ran("Blocked · Accessibility", "amber", "blocked");
       return ran("Error", "red", "failed");
     }
+    if (!sent && has("message_send_start")) return ran("Running", "blue", "running");
     return ran("Completed", "green", "completed");
   }
   if (events.some((e) => (jv(e).get("event").str ?? "").startsWith("browser_"))) {
@@ -847,6 +848,9 @@ function describeStep(e: JSONValue): AuditStep {
       state = ev.get("exit_code").int === 0 ? "ok" : "bad";
       break;
     case "applescript_error": text = `Script error: ${ev.get("error").str ?? ""}`; state = "bad"; break;
+    case "message_send_start":
+      text = `Message send started: ${ev.get("app").str ?? ""} to ${ev.get("recipient").str ?? ""}`;
+      break;
     case "message_send_refused": {
       const cause = ev.get("cause").str;
       text = cause === "accessibility"

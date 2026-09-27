@@ -1,11 +1,11 @@
 /**
- * A message send is one script and one store check.
+ * A message send is one script followed by bounded, read-only store checks.
  *
  * The body rides in argv. A display name never becomes a recipient. WhatsApp
  * is refused before any keystroke when Accessibility is not granted. Zero
  * new rows, or more than one, is unverified, and the script is not run again.
  */
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
@@ -68,6 +68,8 @@ const imessage = (over: Partial<MessageSendRequest> = {}): MessageSendRequest =>
   ...over,
 });
 
+afterEach(() => vi.useRealTimers());
+
 describe("canonicalRecipient", () => {
   it("keeps a phone, an email, a chat guid, and a jid, and drops a display name", () => {
     expect(canonicalRecipient("imessage", " +1 (415) 555-0100 ")).toBe("+14155550100");
@@ -84,10 +86,12 @@ describe("canonicalRecipient", () => {
 
 describe("verifyOutcome", () => {
   it("accepts exactly one successful row", () => {
-    expect(verifyOutcome([{ rowid: 1, chat: "c", sent: false }, { rowid: 2, chat: "c", sent: true }])).toEqual({
+    expect(verifyOutcome([{ rowid: 2, chat: "c", sent: true }])).toEqual({
       verified: true,
       row: { rowid: 2, chat: "c", sent: true },
     });
+    expect(verifyOutcome([{ rowid: 1, chat: "c", sent: false }, { rowid: 2, chat: "c", sent: true }]))
+      .toEqual({ verified: false, reason: "many" });
     expect(verifyOutcome([])).toEqual({ verified: false, reason: "none" });
     expect(
       verifyOutcome([
@@ -119,11 +123,45 @@ describe("performMessageSend", () => {
   });
 
   it("a failed outbound row is unverified, and the script still ran once", async () => {
+    vi.useFakeTimers();
     const h = harness({ listed: "9|chat|ada@example.com|0|0|22|now" });
-    const result = await performMessageSend(imessage(), h.deps);
+    const pending = performMessageSend(imessage(), h.deps);
+    await vi.advanceTimersByTimeAsync(5_000);
+    const result = await pending;
     expect(result).toMatchObject({ status: "unverified", reason: "none" });
     expect(h.scripts).toBe(1);
     expect(parseOutbound("9|chat|ada@example.com|0|0|22|now", false)[0]?.sent).toBe(false);
+  });
+
+  it("waits for the app to record and mark a row sent without sending again", async () => {
+    vi.useFakeTimers();
+    const h = harness({});
+    const query = vi.fn()
+      .mockResolvedValueOnce("4")
+      .mockResolvedValueOnce("")
+      .mockResolvedValueOnce("9|chat|ada@example.com|0|0|0|now")
+      .mockResolvedValue("9|chat|ada@example.com|1|0|0|now");
+    h.deps.query = query;
+    const pending = performMessageSend(imessage(), h.deps);
+    await vi.advanceTimersByTimeAsync(500);
+    expect(await pending).toMatchObject({ status: "verified", row: { rowid: 9 } });
+    expect(h.scripts).toBe(1);
+    expect(query.mock.calls.slice(1).map(([sql]) => sql)).toEqual(Array(3).fill(imessageVerifySql(4, "ada@example.com")));
+  });
+
+  it("stops after the verification window when no row appears", async () => {
+    vi.useFakeTimers();
+    const h = harness({});
+    const query = vi.fn(h.deps.query);
+    h.deps.query = query;
+    const pending = performMessageSend(imessage(), h.deps);
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(await pending).toMatchObject({ status: "unverified", reason: "none" });
+    expect(h.scripts).toBe(1);
+    const reads = query.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(5_000);
+    expect(query).toHaveBeenCalledTimes(reads);
+    expect(reads).toBeLessThanOrEqual(22);
   });
 
   it("does not send when the snapshot cannot be read", async () => {
@@ -131,6 +169,24 @@ describe("performMessageSend", () => {
     const result = await performMessageSend(imessage(), h.deps);
     expect(result).toMatchObject({ status: "error" });
     expect(h.scripts).toBe(0);
+  });
+
+  it.each(["", " \n", "1e3", "0x10", "9007199254740993", "-1", "1.5", "1\n2"])(
+    "does not send with an invalid snapshot %j",
+    async (snapshot) => {
+      const h = harness({ snapshot });
+      expect(await performMessageSend(imessage(), h.deps)).toMatchObject({ status: "error" });
+      expect(h.scripts).toBe(0);
+    },
+  );
+
+  it("records a snapshot failure before propagating it to the host diagnosis", async () => {
+    const h = harness({ snapshotThrows: true });
+    const events: string[] = [];
+    h.deps.audit = (event) => events.push(event);
+    await expect(performMessageSend(imessage(), h.deps)).rejects.toThrow("sqlite down");
+    expect(h.scripts).toBe(0);
+    expect(events).toEqual(["message_send_refused"]);
   });
 
   it("stays unverified when the check itself fails, without a second script", async () => {

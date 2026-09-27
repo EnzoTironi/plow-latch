@@ -1307,7 +1307,14 @@ export class DeviceAgent {
           query: (sql) => sqliteText(db, sql),
           runScript: async (script, args) => {
             try {
-              const ran = await this.executor.runAppleScript({ script, args, waitMs: 20_000 });
+              let ran = await this.executor.runAppleScript({ script, args, waitMs: 20_000 });
+              // The MCP deferred handle owns this whole operation. An inner
+              // job still running cannot be called an unverified send: it
+              // may not have reached the send yet.
+              if (ran.running) {
+                await new Promise<void>((resolve) => this.executor.onExit(ran.handle, () => resolve()));
+                ran = this.executor.output(ran.handle, 0);
+              }
               return { exitCode: ran.exitCode, stderr: ran.stderr.toString("utf8") };
             } catch {
               return { exitCode: null, stderr: "" };
@@ -1317,8 +1324,11 @@ export class DeviceAgent {
         },
       );
       return result as JSONValue;
-    } catch {
-      return this.execError(intent.intentId, "the message was not sent");
+    } catch (error) {
+      // A store error can escape only before the script; a failed check
+      // after it is explicitly unverified in performMessageSend.
+      if (error instanceof FileOpsError) return this.fileOpFailed(intent.intentId, "read", db, error);
+      return this.execError(intent.intentId, "the message send could not be verified; do not retry automatically");
     }
   }
 
