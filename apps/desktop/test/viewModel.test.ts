@@ -56,15 +56,16 @@ describe("approvalViewModel", () => {
   });
 
   it("a message_send card shows the recipient and the body, and still offers Always Allow", () => {
+    const body = `first line\n  indented line\twith a tab\n${"long".repeat(100)}\nlast line`;
     const vm = approvalViewModel(
       intentOf({
         capabilities: [
-          { kind: "message_send", app: "whatsapp", recipient: "14155550100@s.whatsapp.net", bodyPreview: "on my way" },
+          { kind: "message_send", app: "whatsapp", recipient: "14155550100@s.whatsapp.net", bodyPreview: body },
         ],
       }),
     );
     expect(vm.capabilities.map((c) => c.display)).toEqual([
-      "Send whatsapp to 14155550100@s.whatsapp.net: on my way",
+      `Send whatsapp to 14155550100@s.whatsapp.net: ${body}`,
     ]);
     expect(vm.sendsAppleEvents).toBe(false);
     expect(vm.scriptsApp).toBeNull();
