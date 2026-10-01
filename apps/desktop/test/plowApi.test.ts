@@ -706,6 +706,7 @@ describe("PlowApi", () => {
 describe("mintAccountTokens", () => {
   const TOKEN = "ya29.a0AfB_byExampleTokenValue0000000000";
   const CRED = "plow-credential-value";
+  const CAPABILITIES = { mail_read: true, mail_write: true, calendar_read: true, calendar_write: true };
   const mint = (responses: { status: number; body: unknown }[]) => {
     const { calls, fetchImpl } = recordingFetch(responses);
     return {
@@ -723,11 +724,11 @@ describe("mintAccountTokens", () => {
     const { calls, run } = mint([
       {
         status: 200,
-        body: { data: { accounts: [{ account: "a@example.com", access_token: TOKEN, is_default: true }] } },
+        body: { data: { accounts: [{ account: "a@example.com", access_token: TOKEN, is_default: true, capabilities: CAPABILITIES }] } },
       },
     ]);
     expect(await run()).toEqual({
-      accounts: [{ account: "a@example.com", token: TOKEN, isDefault: true }],
+      accounts: [{ account: "a@example.com", token: TOKEN, isDefault: true, capabilities: { mail_read: true, calendar_read: true } }],
       degraded: [],
     });
     expect(calls[0].url).toBe("https://api.plow.co/v1/connectors/gmail/access-token");
@@ -736,6 +737,37 @@ describe("mintAccountTokens", () => {
     // second copy of a fact the server owns.
     expect(calls[0].init.body).toBe('{"all":true}');
   });
+
+  it.each([
+    { mail_read: false, calendar_read: true },
+    { mail_read: true, calendar_read: false },
+  ])("preserves the read grants used by Latch: %j", async (capabilities) => {
+    const result = await mint([{
+      status: 200,
+      body: { data: { accounts: [{ account: "a@example.com", access_token: TOKEN, is_default: true, capabilities }] } },
+    }]).run();
+    expect(result.accounts[0]).toMatchObject({ capabilities });
+  });
+
+  it.each([
+    undefined,
+    null,
+    {},
+    { ...CAPABILITIES, mail_read: "true" },
+    { ...CAPABILITIES, calendar_read: 1 },
+    { mail_read: true },
+  ])(
+    "degrades an account with missing or malformed capabilities: %j", async (capabilities) => {
+      const result = await mint([{
+        status: 200,
+        body: { data: { accounts: [{ account: "a@example.com", access_token: TOKEN, capabilities }] } },
+      }]).run();
+      expect(result).toEqual({
+        accounts: [],
+        degraded: [{ account: "a@example.com", reason: "malformed entry" }],
+      });
+    },
+  );
 
   it.each([
     ["no accounts in the body", { status: 200, body: { data: {} } }],

@@ -3,7 +3,7 @@
  *
  * What matters is that a provider's CLI is authorised and run WITHOUT anything
  * tool-shaped: the capability is the argv the owner approved, the token never
- * touches it, and a refusal or a failed mint never spawns a child.
+ * touches it, and a rejected argv or a failed mint never spawns a child.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { execFileSync } from "node:child_process";
@@ -23,6 +23,7 @@ import {
   MintError,
   providerFor,
   type Minter,
+  type GoogleCapabilities,
   type PolicyDelegate,
   type Provider,
   type StagedPlugin,
@@ -42,6 +43,7 @@ const ON_MAC = process.platform === "darwin";
 const itSpawns = it.skipIf(!ON_MAC);
 
 const TOKEN = "ya29.a0AfB_byExampleTokenValue0000000000";
+const FULL_CAPABILITIES = { mail_read: true, calendar_read: true };
 /**
  * Neither end of the token appears in `text`.
  *
@@ -165,7 +167,7 @@ function execEnd(d: DeviceAgent): number | undefined {
 function minterOf(mint: (provider: Provider) => Promise<string>): Minter {
   return {
     mintAll: async (provider) => ({
-      accounts: [{ account: "a@example.com", token: await mint(provider), isDefault: true }],
+      accounts: [{ account: "a@example.com", token: await mint(provider), isDefault: true, capabilities: FULL_CAPABILITIES }],
       degraded: [],
     }),
   };
@@ -747,16 +749,67 @@ esac
   }
 
   function accountsMinter(
-    accounts: { account: string; token: string; isDefault: boolean }[],
+    accounts: { account: string; token: string; isDefault: boolean; capabilities?: GoogleCapabilities }[],
     degraded: { account: string; reason: string }[] = [],
   ): Minter {
-    return { mintAll: async () => ({ accounts, degraded }) };
+    return { mintAll: async () => ({
+      accounts: accounts.map((a) => ({ ...a, capabilities: a.capabilities ?? FULL_CAPABILITIES })), degraded,
+    }) };
   }
 
   const AB = [
     { account: "a@example.com", token: "tok-a", isDefault: true },
     { account: "b@example.com", token: "tok-b", isDefault: false },
   ];
+
+  itSpawns.each(["gmail", "calendar"])("skips accounts without %s read access in a fan-out", async (group) => {
+    const accounts = [
+      { ...AB[0]!, capabilities: { ...FULL_CAPABILITIES, mail_read: false, calendar_read: false } },
+      { ...AB[1]!, capabilities: FULL_CAPABILITIES },
+    ];
+    const d = device(accountsMinter(accounts), plowGogPlugin());
+    const response = await run(d, ["plow-gog", group, group === "gmail" ? "search" : "calendars", "--account", "a@example.com,b@example.com"]);
+    expect(jv(response).get("items").arr.length).toBeGreaterThan(0);
+    expect(jv(response).get("items").arr.every((item) => jv(item).get("account").str === "b@example.com")).toBe(true);
+    expect(response).toMatchObject({ degraded: [{ account: "a@example.com", reason: expect.stringMatching(/reconnect/i) }] });
+  });
+
+  itSpawns.each([
+    { why: "skips a Gmail-only account", capabilities: { ...FULL_CAPABILITIES, calendar_read: false }, blocked: false },
+    { why: "checks a Calendar-readable account", capabilities: FULL_CAPABILITIES, blocked: true },
+  ])("$why when booking a timed event", async ({ capabilities, blocked }) => {
+    const accounts = [{ ...AB[0]!, capabilities }, { ...AB[1]!, capabilities: FULL_CAPABILITIES }];
+    const d = device(accountsMinter(accounts), plowGogPlugin());
+    const response = await run(d, [
+      "plow-gog", "calendar", "create", "primary", "--summary", "X",
+      "--from", "2026-08-28T10:00:00Z", "--to", "2026-08-28T11:00:00Z", "--account", "b@example.com",
+    ]);
+    if (blocked) {
+      expect(response).toMatchObject({ status: "error", error: expect.stringContaining("a@example.com: busy") });
+      expect(JSON.stringify(response)).not.toContain("evt-1");
+    } else expect(String(jv(response).get("output").str ?? "")).toContain("evt-1");
+  });
+
+  itSpawns.each([
+    ["direct command", ["mail", "get", "m1"]],
+    ["timed create", ["calendar", "create", "primary", "--from", "2026-08-28T10:00:00Z", "--to", "2026-08-28T11:00:00Z"]],
+  ] as const)("preserves gog's permission denial for a selected-account %s", async (_why, tail) => {
+    const accounts = [AB[0]!, AB[1]!];
+    const d = device(accountsMinter(accounts), stagedGog(`#!/bin/sh
+case "$*" in
+  *"calendar calendars"*) echo '[{"id":"primary","selected":true}]'; exit 0 ;;
+  *"calendar freebusy"*) echo '{"primary":{"busy":[]}}'; exit 0 ;;
+esac
+if [ "$GOG_ACCESS_TOKEN" = tok-b ]; then
+  echo 'permission denied for resource' >&2
+  exit 6
+fi
+exit 0
+`));
+    const response = await run(d, ["plow-gog", ...tail, "--account", "b@example.com"]);
+    expect(response).toMatchObject({ status: "completed", exit_code: 6, output: expect.stringContaining("permission denied for resource") });
+    expect(execEnd(d)).toBe(6);
+  });
 
   describe("calendar discovery", () => {
     afterEach(() => { while (cleanups.length) cleanups.pop()!(); });
@@ -1242,7 +1295,7 @@ esac
   });
 
   itSpawns("runs help without minting for any account", async () => {
-    const mintAll = vi.fn(async () => ({ accounts: AB, degraded: [] }));
+    const mintAll = vi.fn(async () => ({ accounts: AB.map((a) => ({ ...a, capabilities: FULL_CAPABILITIES })), degraded: [] }));
     const d = device({ mintAll }, plowGogPlugin());
     const out = String(jv(await run(d, ["plow-gog", "gmail", "--help"])).get("output").str ?? "");
     expect(out).toContain("ARGV=--no-input --wrap-untrusted --enable-commands=gmail,calendar gmail --help");

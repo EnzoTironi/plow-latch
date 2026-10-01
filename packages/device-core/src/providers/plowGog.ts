@@ -19,6 +19,7 @@
  * rule (`gogFlags.ts`): they may name a rule, never the caller's text.
  */
 import { isHelpInvocation, reservedRefusal, shapeRefusal } from "./gogGate.js";
+import type { GoogleCapabilities } from "./mint.js";
 import { GOG_ALIAS_OF } from "./gogGroups.js";
 
 export type PlowGogSort = "gmail-date" | "cal-start" | "none";
@@ -74,12 +75,24 @@ const FANOUT: Readonly<Record<string, Readonly<Record<string, PlowGogSort>>>> = 
   },
 };
 
+/** Account grants are server-owned. Refusals use only local sentences, never
+ * argv values or provider-authored output. argv has already been planned, so
+ * the account/confirmation flags are gone and the group comes first. */
+export function gogCapabilityRefusal(argv: readonly string[], capabilities: GoogleCapabilities): string | null {
+  const group = GOG_ALIAS_OF[argv[1]!] ?? argv[1];
+  const mail = group === "gmail";
+  const read = mail ? "mail_read" : "calendar_read";
+  const service = mail ? "Gmail" : "Calendar";
+  if (!capabilities[read]) {
+    return `this Google account wasn't granted ${service} access — ask the owner to reconnect Google and allow it`;
+  }
+  return null;
+}
+
 /**
  * The one shape whose run is conflict-gated: `calendar create` and its
  * aliases (verified against the staged binary's help at 0.36.0).
- * Deliberately the ONLY verb recognition outside the fan-out table — there is
- * no read-vs-write classification to mirror gog's grammar with, because with
- * more than one account connected EVERY single-account command requires
+ * With more than one account connected every single-account command requires
  * `--account`, whatever it does. CREATE only: an update whose new window
  * overlaps its own old one would self-conflict, since the probe cannot
  * exclude the event being updated — and the gate exists for bookings.

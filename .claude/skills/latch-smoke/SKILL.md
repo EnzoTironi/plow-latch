@@ -133,10 +133,7 @@ Only success exits 0.
 gog is a bundled plugin on `main` (plow-pbc/latch#183), driven through
 `plow-gog` — a bare `gog` argv is refused with a sentence naming it. A build
 has the plugin staged; a from-source checkout needs `just stage-plugins gog`
-first. The mint also needs
-`gmail:access-token` in the device's scopes, which is plow-pbc/plow#1416 and is
-not landed — until it is, this section's commands reach gog and fail at the
-mint, not at the binary.
+first. The stored Plow credential must authorize `gmail:access-token`.
 
 Same command, its own argv:
 
@@ -145,17 +142,19 @@ scripts/latch-smoke --config ~/.latch/<client>.json --server plow-mbp \
   --home "~/Library/Application Support/Plow-Latch" -- plow-gog gmail search newer_than:1d --json
 ```
 
-Three things distinguish a working provider path from a broken one, all visible
-without touching Google:
+The example above is a fan-out. Smoke output omits its account-level `degraded`
+reasons; inspect the normal tool response for those details.
 
 | Output | Means |
 |---|---|
 | `FAILED — the executor threw` … `not installed` | the gog plugin is not staged — run `just stage-plugins gog` and repackage |
-| `FAILED — the executor threw` … `could not reach Plow` / `returned 4xx` | the mint failed; the stored credential is the owner's Plow login session, so check that it is still live rather than its scopes — a session carries them all |
-| `OK` | the whole path works |
+| `FAILED — the executor threw` … `could not reach Plow` / `returned 4xx` | the mint failed; check that the owner's stored Plow login session is still live. Session authority does not grant Google access |
+| `FAILED — it ran and exited 1` on a fan-out | no account answered; this includes every account lacking read access. Inspect `degraded` in the normal tool response |
+| `FAILED — it ran and exited 6` on a selected-account command | gog denied access. Inspect the normal tool response for Google's error; this can be a resource permission denial, so do not infer a missing write grant |
+| `OK` | an eligible account answered; smoke output does not show skipped accounts |
 
-A `403` *inside* gog's own output is not a Latch failure — the token carries
-four Google scopes and refuses everything else by design.
+A `403` *inside* gog's own output comes from Google. Tokens carry only the
+owner's grants: Gmail and Calendar read/write access differ per account.
 
 ## Failure triage
 
