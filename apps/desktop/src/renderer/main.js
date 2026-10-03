@@ -1346,13 +1346,33 @@ function openMenu(anchor, items, { align = "right" } = {}) {
   menu.querySelector("button:not(:disabled)")?.focus();
 }
 
-/** One titled card: a prominent title, an optional description, then the body.
-    Shared by Settings' groups and the Agents pane, which is one of them. */
+/** One group: a small label, an optional description, then one card holding
+    the body's rows. Settings' sections and the Plugins tab are built from it. */
 function group(title, desc, body) {
   return el("div", { class: "item" }, [
     el("div", { class: "group-title", text: title }),
     desc ? el("p", { class: "faint group-desc", text: desc }) : null,
-    ...body,
+    el("div", { class: "group-body" }, body),
+  ]);
+}
+
+/** A setting laid out the macOS way: what it is and what it does on the
+    left, its switch on the right. The checkbox stays the control; the switch
+    draws it. `sentence` names the switch for assistive tech by what turning
+    it on does; without one, the visible title names it. */
+let settingRowSeq = 0;
+function settingRow(title, desc, box, { sentence = null, note = null } = {}) {
+  const titleId = `setting-title-${++settingRowSeq}`;
+  const sw = switchEl(box);
+  if (sentence) sw.append(el("span", { class: "sr-only", text: sentence }));
+  else box.setAttribute("aria-labelledby", titleId);
+  return el("div", { class: "setting-row" }, [
+    el("div", { class: "setting-copy" }, [
+      el("div", { class: "setting-title", text: title, attrs: { id: titleId } }),
+      desc ? el("p", { class: "setting-desc", text: desc }) : null,
+      note,
+    ]),
+    sw,
   ]);
 }
 
@@ -2040,6 +2060,8 @@ function clientEntityRow(row, redraw) {
         el("span", { class: "entity-name", text: name }),
       ]),
       el("div", { class: "entity-context", text: context }),
+      // What this client may do, as words on the row — never icons, never a
+      // hover label: it is the one line here that must be read, not decoded.
       el("div", { class: "entity-perms" }, rosterPermissionCopy(row).map((text) =>
         el("span", { text }),
       )),
@@ -2364,7 +2386,7 @@ function whenText(iso) {
  * Returns the drawn container and how to refresh it; `display: contents`
  * keeps its cards in Settings' own column.
  */
-function permissionsPane() {
+function permissionsPane({ reveal = false } = {}) {
   // The inventory is a probe sweep — seconds on a Mac where a target app is
   // not answering Apple events — so the node is handed back at once with this
   // line in it, and the rows replace it when the read lands.
@@ -2467,6 +2489,11 @@ function permissionsPane() {
     }
     nodes.push(group("Connected Accounts", null, [connectorBox, connectorNote]));
     panel.replaceChildren(...nodes);
+    // Opened to show a blocked switch: the rows exist now, so bring them up.
+    if (reveal) {
+      reveal = false;
+      panel.firstElementChild?.scrollIntoView({ block: "start" });
+    }
   };
 
   const act = async (key, button) => {
@@ -2724,12 +2751,12 @@ function permissionsPane() {
 async function renderPlugins() {
   const panel = el("div", { class: "panel settings" });
   view.replaceChildren(panel);
-  // The three statuses, in the row's own vocabulary: the dot's class and the
-  // word beside the toggle. Amber for needs-setup — it is the owner's to fix.
+  // The three statuses, in the row's own vocabulary: the word beside the
+  // toggle and its tone. Amber for needs-setup — it is the owner's to fix.
   const STATUS = {
-    off: { dot: "", tone: "zinc", word: "Off" },
-    "needs-setup": { dot: " off", tone: "amber", word: "Needs setup" },
-    ready: { dot: " on", tone: "green", word: "Ready" },
+    off: { tone: "zinc", word: "Off" },
+    "needs-setup": { tone: "amber", word: "Needs setup" },
+    ready: { tone: "green", word: "Ready" },
   };
   const reload = async () => draw(await window.domo.pluginsGet());
 
@@ -2777,8 +2804,10 @@ async function renderPlugins() {
         box.disabled = false;
       }
     });
+    // Setup's plugin row: the kind's tile, the name with its kind beside it,
+    // what it does — then the status in words and the switch.
     const head = el("div", { class: "cap-row plugin-row" }, [
-      el("span", { class: "status-dot" + s.dot, attrs: { title: s.word } }),
+      el("span", { class: "plugin-tile" }, [icon(r.kind === "Browser" ? "browser" : "command")]),
       el("div", {}, [
         el("div", { class: "cap-name plugin-name" }, [
           el("span", { text: r.title }),
@@ -2786,7 +2815,7 @@ async function renderPlugins() {
         ]),
         r.description ? el("div", { class: "cap-sub", text: r.description }) : null,
       ]),
-      badge(s.tone, s.word),
+      el("span", { class: `dec dec-${s.tone}` }, [el("span", { class: "dec-dot", attrs: { "aria-hidden": "true" } }), el("span", { text: s.word })]),
       switchEl(box, { title: "Turn this plugin on or off" }),
     ]);
     // Every requirement, met or not, is on the row now — off hides them all
@@ -2826,7 +2855,7 @@ async function renderSettings() {
   // The machine's own name, for the one row this group keeps. Already on the
   // bridge for the titlebar; no new IPC and no API call for it.
   const status = await window.domo.statusGet();
-  const relayNote = el("p", { class: "faint", text: relayStatusText(relay) });
+  const relayNote = el("span", { text: relayStatusText(relay) });
   // The "Connect a Client" button that used to sit here is gone: connecting a
   // client is now a subsection of this same group, so a button navigating to it
   // would only point at itself. Signing in is still a real action — unreachable
@@ -2862,10 +2891,8 @@ async function renderSettings() {
     accountBox.replaceChildren(
       ...(relay.hasCredential
         ? [
-            el("div", { class: "field" }, [
-              el("label", { text: "This Mac" }),
-              el("div", { class: "mono faint", text: `Plow Latch (${status.name || "Mac"})` }),
-            ]),
+            el("div", { class: "setting-title", text: "This Mac" }),
+            el("div", { class: "setting-desc mono", text: `Plow Latch (${status.name || "Mac"})` }),
           ]
         : []),
     );
@@ -2878,7 +2905,7 @@ async function renderSettings() {
   // patch them in place (refreshUpdates below) rather than re-rendering the
   // pane, which would reset its scroll position on every phase change.
   let u = await window.domo.updatesGet();
-  const updateStatus = el("p", { class: "faint" });
+  const updateStatus = el("div", { class: "setting-title" });
   const updateAction = el("button", { class: "btn" });
   updateAction.addEventListener("click", async () => {
     if (u.phase === "ready") await window.domo.updatesRestart();
@@ -2887,16 +2914,10 @@ async function renderSettings() {
   });
   const autoCheckBox = el("input", { attrs: { type: "checkbox" } });
   autoCheckBox.addEventListener("change", () => window.domo.updatesSetAutoCheck(autoCheckBox.checked));
-  const autoCheckLabel = el("label", { class: "check block" }, [
-    autoCheckBox,
-    el("span", { text: "Automatically check for updates" }),
-  ]);
+  const autoCheckRow = settingRow("Automatically check for updates", null, autoCheckBox);
   const autoInstallBox = el("input", { attrs: { type: "checkbox" } });
   autoInstallBox.addEventListener("change", () => window.domo.updatesSetAutoInstall(autoInstallBox.checked));
-  const autoInstallLabel = el("label", { class: "check block" }, [
-    autoInstallBox,
-    el("span", { text: "Install downloaded updates when quitting Plow Latch" }),
-  ]);
+  const autoInstallRow = settingRow("Install downloaded updates when quitting Plow Latch", null, autoInstallBox);
   const applyUpdates = () => {
     const ready = u.phase === "ready";
     updateStatus.textContent = updateStatusText(u);
@@ -2907,8 +2928,6 @@ async function renderSettings() {
     autoCheckBox.disabled = !u.supported;
     autoInstallBox.checked = u.autoInstall;
     autoInstallBox.disabled = !u.supported;
-    autoCheckLabel.classList.toggle("disabled", !u.supported);
-    autoInstallLabel.classList.toggle("disabled", !u.supported);
   };
   applyUpdates();
 
@@ -2918,18 +2937,19 @@ async function renderSettings() {
   // what the OS answered, not what was clicked.
   let launch = await window.domo.launchGet();
   const launchBox = el("input", { attrs: { type: "checkbox" } });
-  const launchLabel = el("label", { class: "check" }, [
-    launchBox,
-    el("span", { text: "Open Plow Latch when you log in" }),
-  ]);
   // Why the toggle is dead, when it is: a disabled control that says nothing
   // is a dead end.
   const launchNote = el("p", { class: "faint cap-note", text:
     "Only the installed app can add itself as a login item, so this from-source run can't." });
+  const launchRow = settingRow(
+    "Launch at Login",
+    "Open Plow Latch automatically, so a restart doesn't take this Mac off the roster.",
+    launchBox,
+    { sentence: "Open Plow Latch when you log in", note: launchNote },
+  );
   const applyLaunch = () => {
     launchBox.checked = launch.openAtLogin;
     launchBox.disabled = !launch.supported;
-    launchLabel.classList.toggle("disabled", !launch.supported);
     launchNote.hidden = launch.supported;
   };
   launchBox.addEventListener("change", async () => {
@@ -2944,10 +2964,13 @@ async function renderSettings() {
   // than a hold that isn't held.
   let awake = await window.domo.keepAwakeGet();
   const awakeBox = el("input", { attrs: { type: "checkbox" } });
-  const awakeLabel = el("label", { class: "check" }, [
+  const awakeRow = settingRow(
+    "Keep Mac Awake",
+    "Prevent idle and display sleep while plugged in, so the screen never locks out work an agent is doing on it. " +
+      "On battery it sleeps normally to conserve power, and closing the lid still sleeps it.",
     awakeBox,
-    el("span", { text: "Keep this Mac awake while plugged in" }),
-  ]);
+    { sentence: "Keep this Mac awake while plugged in" },
+  );
   const applyAwake = () => { awakeBox.checked = awake.enabled; };
   awakeBox.addEventListener("change", async () => {
     try {
@@ -2966,10 +2989,14 @@ async function renderSettings() {
   // must not promise more privacy than the wire delivers.
   let stats = await window.domo.telemetryGet();
   const statsBox = el("input", { attrs: { type: "checkbox" } });
-  const statsLabel = el("label", { class: "check" }, [
+  const statsRow = settingRow(
+    "Usage Statistics",
+    "Help improve Plow Latch by sharing which features are used and when something breaks, " +
+      "linked to your Plow account. " +
+      "Never shared: file paths, commands, goal text, credentials, or anything an agent typed.",
     statsBox,
-    el("span", { text: "Share usage statistics and error reports" }),
-  ]);
+    { sentence: "Share usage statistics and error reports" },
+  );
   const applyStats = () => { statsBox.checked = stats.enabled; };
   statsBox.addEventListener("change", async () => {
     try {
@@ -3000,7 +3027,7 @@ async function renderSettings() {
   // tab of their own: the machine-configuration view, where it belongs. Not
   // awaited — selecting a tab never waits on a probe sweep (#446); the rows
   // fill in when the read lands.
-  const permissions = permissionsPane();
+  const permissions = permissionsPane({ reveal: revealPermissions });
   if (generation !== settingsRenderGeneration || currentTab !== "settings") return;
   permissionsMounted = permissions.mounted;
 
@@ -3031,47 +3058,27 @@ async function renderSettings() {
     // activation flow learns it server-side from the inbound SMS, so say what
     // is true of what is on screen.
     group("Plow Account", "The account agents reach this Mac through.", [
-      accountBox,
-      el("div", { class: "row" }, [relayNote, el("div", { class: "spacer" }), viewAccount, signOut, signIn]),
+      el("div", { class: "setting-row" }, [
+        el("div", { class: "setting-copy" }, [
+          accountBox,
+          el("div", { class: "setting-desc" }, [relayNote]),
+        ]),
+        el("div", { class: "setting-actions" }, [viewAccount, signOut, signIn]),
+      ]),
     ]),
     group("Availability", "Agents can reach this Mac only while Plow Latch is running and the Mac is awake.", [
-      el("div", { class: "support-row" }, [
-        el("div", { class: "support-copy" }, [
-          el("div", { class: "support-title", text: "Launch at Login" }),
-          el("p", { class: "faint", text:
-            "Open Plow Latch automatically, so a restart doesn't take this Mac off the roster." }),
-          launchLabel,
-          launchNote,
-        ]),
-      ]),
-      el("div", { class: "support-row" }, [
-        el("div", { class: "support-copy" }, [
-          el("div", { class: "support-title", text: "Keep Mac Awake" }),
-          el("p", { class: "faint", text:
-            "Prevent idle and display sleep while plugged in, so the screen never locks out work an agent is doing on it. " +
-            "On battery it sleeps normally to conserve power, and closing the lid still sleeps it." }),
-          awakeLabel,
-        ]),
-      ]),
+      launchRow,
+      awakeRow,
     ]),
-    permissions.node,
     group("Software Updates", `Version ${u.currentVersion}`, [
-      el("div", { class: "row" }, [updateStatus, el("div", { class: "spacer" }), updateAction]),
-      autoCheckLabel,
-      autoInstallLabel,
-    ]),
-    group("Privacy", null, [
-      el("div", { class: "support-row" }, [
-        el("div", { class: "support-copy" }, [
-          el("div", { class: "support-title", text: "Usage Statistics" }),
-          el("p", { class: "faint", text:
-            "Help improve Plow Latch by sharing which features are used and when something breaks, " +
-            "linked to your Plow account. " +
-            "Never shared: file paths, commands, goal text, credentials, or anything an agent typed." }),
-          statsLabel,
-        ]),
+      el("div", { class: "setting-row" }, [
+        el("div", { class: "setting-copy" }, [updateStatus]),
+        el("div", { class: "setting-actions" }, [updateAction]),
       ]),
+      autoCheckRow,
+      autoInstallRow,
     ]),
+    group("Privacy", null, [statsRow]),
     group("Support", null, [
       supportRow(
         discordIcon(),
@@ -3088,7 +3095,15 @@ async function renderSettings() {
         "website",
       ),
     ]),
+    // Last on the page because they land last: the permission sweep can take
+    // seconds, and nothing below it should move when it does.
+    permissions.node,
   ]));
+  if (revealPermissions) {
+    revealPermissions = false;
+    // Toward them now; the pane scrolls again once the slow sweep draws them.
+    permissions.node.firstElementChild?.scrollIntoView({ block: "start" });
+  }
 }
 
 function render() {
@@ -3213,7 +3228,11 @@ window.domo.onShowSettings(async () => {
 });
 // A block by this Mac lands on its switch in Settings; one that named no
 // permission goes to onShowAuditBlocked instead.
+// The permission rows sit at the foot of Settings, so the pane opens there.
+let revealPermissions = false;
 window.domo.onShowCapabilities(async () => {
+  if (currentTab === "settings") view.querySelector(".permissions > *")?.scrollIntoView({ block: "start" });
+  else revealPermissions = true;
   if (await selectTab("settings")) window.domo.uiSetTab("settings");
 });
 window.domo.onShowAuditBlocked(() => showAuditBlocked());

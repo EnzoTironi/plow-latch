@@ -740,10 +740,15 @@ textarea.text { min-height: 70px; resize: vertical; }
 .btn:disabled { opacity: 0.45; cursor: default; }
 .btn:disabled:hover { background: var(--raised); }
 
-/* Settings groups: more air between groups, a prominent group heading with a
-   divider, and a settled-in description under it. */
-.settings .item { padding: 16px 18px; margin-bottom: 16px; }
-.settings .item:last-child { margin-bottom: 0; }
+/* ---- Settings and Plugins: grouped rows, the macOS way ----
+   A small label over each group, one card under it, and a row per setting
+   with its control on the right — a calm column instead of a wall of cards. */
+.panel.settings { padding: 26px 20px 32px; }
+.panel.settings .item {
+  max-width: var(--column); margin: 0 auto 26px;
+  padding: 0; background: none; border: 0; box-shadow: none;
+}
+.panel.settings .item:last-child { margin-bottom: 0; }
 .group-title {
   font-size: 15px;
   font-weight: 600;
@@ -753,39 +758,59 @@ textarea.text { min-height: 70px; resize: vertical; }
   border-bottom: 1px solid var(--border);
 }
 .item .group-desc { margin: -4px 0 14px; }
+/* Small capitals rather than an uppercase transform: the same look, and the
+   page keeps its real words — "Plow Account", not "PLOW ACCOUNT" — for find,
+   copy, and anything reading the text aloud. */
+.panel.settings .group-title {
+  margin: 0 2px 8px; padding: 0; border: 0;
+  color: var(--faint); font: 500 12.5px var(--mono); font-variant-caps: all-small-caps; letter-spacing: 0.08em;
+}
+.panel.settings .item .group-desc { margin: -2px 2px 10px; max-width: 68ch; font-size: 12px; line-height: 1.45; }
+.panel.settings .group-body {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--card-shadow); padding: 0 16px;
+}
+/* One hairline between neighbours, whatever kind of row they are. */
+.panel.settings .group-body > * + * { border-top: 1px solid var(--border); }
 .settings .chips { flex-wrap: wrap; }
 .item p.conn-note { margin-bottom: 16px; }
+.setting-row { display: flex; align-items: center; gap: 16px; min-height: 52px; padding: 12px 0; }
+.setting-copy { flex: 1; min-width: 0; }
+.setting-title { font-weight: 500; }
+.panel.settings .setting-desc { margin: 3px 0 0; max-width: 64ch; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.panel.settings .setting-desc.mono { font: 400 11.5px var(--mono); }
+.panel.settings .setting-copy .cap-note { margin: 6px 0 0; font-size: 12px; }
+.setting-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.setting-row > .switch { flex: none; }
 
 /* Support rows. The Discord mark is filled, unlike the stroked .ico; the
    globe is the shared line art scaled up, so its stroke thins to match. */
-.support-row { display: flex; align-items: center; gap: 14px; }
-.support-row + .support-row { margin-top: 14px; }
-.support-row .discord-ico { width: 28px; height: 22px; fill: currentColor; color: var(--muted); flex: none; }
-.support-row .support-globe { width: 26px; height: 26px; stroke-width: 1.5; color: var(--muted); flex: none; }
+.support-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; }
+.support-row .discord-ico { width: 24px; height: 19px; fill: currentColor; color: var(--muted); flex: none; }
+.support-row .support-globe { width: 22px; height: 22px; stroke-width: 1.5; color: var(--muted); flex: none; }
 .support-row .btn { white-space: nowrap; }
 .support-copy { min-width: 0; }
-.support-title { font-weight: 600; margin-bottom: 2px; }
+.support-title { font-weight: 500; margin-bottom: 2px; }
+.panel.settings .support-copy p { font-size: 12px; line-height: 1.45; }
 
 /* The Permissions section (capabilitiesModel.ts). Dots: green granted, red
    will not work as things stand (refused, or never asked), grey unknown. */
 .status-dot.off { background: var(--dot-off); }
 .cap-banner {
   display: flex; align-items: center; gap: 12px;
-  padding: 10px 14px; margin-bottom: 14px;
+  max-width: var(--column); margin: 0 auto 18px;
+  padding: 12px 14px;
   border-radius: var(--radius);
-  border: 1px solid var(--amber-bd); background: var(--amber-bg); color: var(--amber-fg);
+  border: 1px solid var(--amber-bd); background: var(--amber-bg); color: var(--fg);
 }
-.cap-banner-icon { width: 18px; height: 18px; flex: none; stroke-width: 2; }
+.cap-banner-icon { width: 18px; height: 18px; flex: none; stroke-width: 2; color: var(--amber-fg); }
 .cap-banner .bt { font-weight: 600; }
-.cap-banner .bs { opacity: 0.85; font-size: 12px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cap-banner .bs { color: var(--muted); font-size: 12px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cap-banner > div { min-width: 0; }
 .cap-banner .spacer { flex: 1; }
-/* The strip's two actions wear the ordinary button, in the strip's ink. */
-.cap-banner .btn { color: inherit; border-color: var(--amber-bd); background: transparent; }
-.cap-banner .btn:hover { background: var(--amber-bd); }
 .cap-row {
   display: grid; grid-template-columns: 8px 20px 1fr auto; align-items: center; gap: 12px;
-  padding: 10px 0; border-top: 1px solid var(--border);
+  padding: 12px 0;
 }
 /* macOS's own icon for the switch (an app's, a folder's, or the symbol
    System Settings uses on its tile). An empty cell keeps the columns when
@@ -805,7 +830,7 @@ textarea.text { min-height: 70px; resize: vertical; }
    circular person glyph stands where the row's icon goes. */
 .cap-account-rows { margin-left: 52px; }
 .cap-account-row { grid-template-columns: 20px 1fr auto; }
-.cap-account-rows .cap-row:first-of-type { border-top: 1px solid var(--border); }
+.cap-account-rows > .cap-row, .cap-group-rows > .cap-row, .cap-group-rows > .cap-group { border-top: 1px solid var(--border); }
 .cap-person {
   display: grid; place-items: center; border-radius: 50%;
   background: var(--zinc-bg); border: 1px solid var(--zinc-bd); color: var(--muted); box-sizing: border-box;
@@ -817,9 +842,9 @@ textarea.text { min-height: 70px; resize: vertical; }
 /* "Default": a quiet grey pill, no dot — a label, not a status. */
 .cap-default-pill { font-weight: 500; }
 .cap-account-email { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cap-account-menu-btn { padding: 5px 9px; font-size: 9px; letter-spacing: 1px; line-height: 1; }
+.cap-account-menu-btn { min-height: 28px; padding: 0 9px; font-size: 9px; letter-spacing: 1px; line-height: 1; }
 /* The connector's status line under Connected Accounts. */
-.settings-connectors + .connector-note { margin: 12px 0 0; color: var(--muted); }
+.settings-connectors + .connector-note { margin: 0; padding: 10px 0; color: var(--muted); }
 .settings-connectors + .connector-note.error { color: var(--red-fg); }
 
 /* A small popup menu (openMenu in main.js): a card floated over the page. */
@@ -845,80 +870,88 @@ textarea.text { min-height: 70px; resize: vertical; }
 .menu-label { display: block; font-weight: 600; }
 .menu-description { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.35; }
 .menu-item.danger .menu-label { color: var(--red-fg); }
-.cap-row:first-of-type { border-top: 0; }
 .cap-row .status-dot { flex: none; }
-.cap-row .cap-name { font-weight: 600; }
-.cap-row .cap-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.cap-row .cap-name { font-weight: 500; }
+.cap-row .cap-sub { color: var(--muted); font-size: 12px; line-height: 1.4; margin-top: 2px; }
 .cap-row .cap-asks { font-variant-numeric: tabular-nums; }
 /* The count in the text red, same weight as the rest of the line. */
 .cap-row .cap-count { color: var(--red-fg); }
-/* A group of switches behind one line (Folders, Automation). The head is a
-   full-width button in the row grid's clothes; the rows beneath indent past
-   the chevron so they read as the group's. */
-/* The Plugins tab's rows. Same rhythm as a switch row, without the icon
-   column macOS fills there: the dot, the name and its lines, the status
-   badge, and the on/off switch. A requirement under it drops the badge. */
-.plugin-row { grid-template-columns: 8px 1fr auto auto; }
+/* The Plugins tab's rows: setup's plugin row — the kind's tile, the name and
+   its lines, the status in words, and the on/off switch. A requirement under
+   it indents past the tile and keeps its own dot. */
+.plugin-row { grid-template-columns: 34px 1fr auto auto; gap: 14px; }
+.plugin-tile {
+  width: 34px; height: 34px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: var(--bg); border: 1px solid var(--border); color: var(--muted);
+}
+.plugin-tile .ico { width: 16px; height: 16px; stroke-width: 1.8; }
+.plugin-row .dec { min-width: 0; }
 .plugin-req { grid-template-columns: 8px 1fr auto; }
+.plugin-req .status-dot.off { background: var(--amber-fg); }
 .plugin-name { display: flex; align-items: center; gap: 8px; }
+.plugin-name .badge {
+  padding: 1px 6px; border-radius: 5px;
+  background: transparent; border-color: var(--border-strong); color: var(--faint);
+  font: 500 10px var(--mono); letter-spacing: 0.06em; text-transform: uppercase;
+}
+.plugin-name .badge .dot { display: none; }
 /* Settings holds the permission inventory in a container of its own so it can
    be drawn and refreshed as one thing; `contents` keeps its cards in the
-   pane's own column, and the last one keeps the gap before what follows. */
+   pane's own column. */
 .permissions { display: contents; }
-.settings .permissions .item:last-child { margin-bottom: 16px; }
-.cap-group { border-top: 1px solid var(--border); }
-.cap-group:first-of-type { border-top: 0; }
+.panel.settings .permissions > p.faint { max-width: var(--column); margin: 0 auto; }
+.panel.settings .permissions .item:last-child { margin-bottom: 0; }
 /* The head IS a .cap-row (same grid, padding and type), made a button. */
 .cap-group-head {
   width: 100%; margin: 0; appearance: none; -webkit-appearance: none;
-  /* A button's own border and fill go; the group's container draws the
-     divider above it. */
   border: 0; background: transparent; color: var(--fg); font: inherit; text-align: left; cursor: pointer;
 }
-.cap-group-head:hover .cap-name { text-decoration: underline; }
+.cap-group-head:hover .cap-name { text-decoration: underline; text-underline-offset: 3px; }
+.cap-group-head:hover .cap-chevron { color: var(--fg); }
 /* The chevron sits in the dot's 8px column, centred on it. */
 .cap-chevron-cell { width: 8px; display: flex; justify-content: center; align-items: center; }
 /* 16px box, and a stroke of 3 in the glyph's 24-unit viewBox is 2px on
    screen at that size. */
-.cap-chevron { width: 16px; height: 16px; stroke-width: 3; flex: none; color: var(--muted); transform: rotate(-90deg); transition: transform 0.12s; }
+.cap-chevron { width: 16px; height: 16px; stroke-width: 3; flex: none; color: var(--muted); transform: rotate(-90deg); transition: transform var(--dur) var(--ease), color var(--dur) var(--ease); }
 .cap-chevron.open { transform: rotate(0deg); }
 /* The count wears a button's box so the line is a button's height. */
-.cap-group-count { display: inline-flex; align-items: center; padding: 5px 0; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cap-group-count { display: inline-flex; align-items: center; min-height: 30px; color: var(--muted); font: 400 11.5px var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cap-group-rows { padding-left: 20px; padding-bottom: 4px; }
-.cap-group-rows .cap-row:first-of-type { border-top: 1px solid var(--border); }
+/* A plugin's requirements line up under its name, past the tile. */
+.cap-group:has(> .plugin-row) > .cap-group-rows { padding-left: 48px; }
 @media (prefers-reduced-motion: reduce) { .cap-chevron { transition: none; } }
-/* The nudge: a red arrow just left of a hit row's button, pointing at it
-   and rocking toward it — the grant panel's own filled arrow, turned right. */
+/* The nudge: an arrow just left of a hit row's button, pointing at it and
+   rocking toward it — the grant panel's own filled arrow, turned right. */
 .cap-action { display: inline-flex; align-items: center; gap: 12px; }
 .cap-nudge {
-  width: 14px; height: 14px; flex: none; color: var(--red-fg);
+  width: 14px; height: 14px; flex: none; color: var(--amber-fg);
   transform: rotate(90deg);
-  animation: cap-nudge 0.9s ease-in-out infinite alternate;
+  animation: cap-nudge 1.2s var(--ease) infinite alternate;
 }
 @keyframes cap-nudge {
   from { transform: rotate(90deg) translateY(2px); }
   to { transform: rotate(90deg) translateY(-3px); }
 }
 @media (prefers-reduced-motion: reduce) { .cap-nudge { animation: none; } }
-/* The pointed-at button keeps its own look and gains a second, red edge:
-   1px, standing 2px clear of the button's border. */
-.btn.attention { outline: 1px solid var(--red-fg); outline-offset: 4px; }
+/* The button a row is waiting on: an amber edge and a soft halo. */
+.btn.attention { border-color: var(--amber-bd); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber-fg) 14%, transparent); }
 .btn.attention:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 /* "See blocked requests…": a link, so it reads as something to click,
    where a bare row did not. */
 .cap-more {
   font: inherit; font-size: 12px; border: 0; background: transparent; padding: 0;
-  color: var(--blue-fg); cursor: pointer; text-align: left;
+  color: var(--accent); cursor: pointer; text-align: left;
 }
-.cap-more:hover { text-decoration: underline; }
+.cap-more:hover { text-decoration: underline; text-underline-offset: 3px; }
 .cap-expand {
-  grid-column: 3 / -1; margin: 2px 0 6px; padding: 10px 12px;
+  grid-column: 3 / -1; margin: 2px 0 6px; padding: 12px 14px;
   background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm);
 }
-.cap-expand .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 0 0 6px; }
+.cap-expand .lbl { color: var(--faint); font: 500 10.5px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 6px; }
 .cap-req { display: grid; grid-template-columns: 74px 1fr; gap: 2px 12px; padding: 6px 0; border-top: 1px solid var(--border); font-size: 12.5px; }
 .cap-req:first-of-type { border-top: 0; }
-.cap-req .t { color: var(--faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cap-req .t { color: var(--faint); font: 400 11.5px var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .cap-req .who { font-weight: 600; }
 .cap-req .goal { color: var(--muted); }
 .cap-sentence {
@@ -928,10 +961,10 @@ textarea.text { min-height: 70px; resize: vertical; }
 }
 .cap-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
 .cap-actions .spacer { flex: 1; }
-.btn.quiet { border-color: transparent; color: var(--muted); }
 /* "Granted" in the button slot: the same box as a button so the column lines
    up, but it is a word, not a control — no border, no hover. */
-.cap-granted { display: inline-flex; align-items: center; padding: 5px 12px; color: var(--green-fg); font-weight: 600; white-space: nowrap; }
+.cap-granted { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 2px; color: var(--green-fg); font-weight: 500; white-space: nowrap; }
+.cap-granted::before { content: "✓" / ""; font-weight: 600; }
 
 .agent-status {
   margin: 0;
@@ -1127,78 +1160,87 @@ pre.script {
 .settings .connect .linkbtn:hover { color: var(--fg); }
 
 /* ---------- Agents inventory ---------- */
-.agents-roster { padding: 10px 16px 16px; }
-.list-section + .list-section { margin-top: 10px; }
+.agents-roster { padding: 26px 20px 32px; }
+.agents-roster > * { max-width: var(--column); margin-left: auto; margin-right: auto; }
+.list-section + .list-section { margin-top: 26px; }
 .list-section-head {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 5px;
+  display: flex; align-items: center; gap: 10px; min-height: 30px; margin-bottom: 10px;
 }
-.list-section-head h2 { font-size: 15px; margin: 0; }
-.list-section-head .faint { font-size: 12px; }
+.list-section-head h2 { font-size: 15px; font-weight: 600; margin: 0; }
+.list-section-head .faint { font: 400 11.5px var(--mono); font-variant-numeric: tabular-nums; }
 .entity-list {
   background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); box-shadow: var(--shadow);
+  border-radius: var(--radius); box-shadow: var(--card-shadow);
 }
 .entity-row {
-  min-height: 53px; display: flex; align-items: center; gap: 9px;
-  padding: 5px 10px; position: relative;
+  min-height: 60px; display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; position: relative;
+  transition: background-color var(--dur) var(--ease);
 }
+/* Rows keep the list's rounded corners when they light up. */
+.entity-row:first-child { border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0; }
+.entity-row:last-child { border-radius: 0 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px); }
+.entity-row:only-child { border-radius: calc(var(--radius) - 1px); }
 .entity-row + .entity-row { border-top: 1px solid var(--border); }
+/* An agent's row opens its detail: the whole row answers the pointer. */
+.entity-row:has(.cloud-agent-open:hover) { background: var(--hover); }
+.entity-row:has(.cloud-agent-open:active) { background: var(--press); }
 .entity-mark {
-  width: 28px; height: 28px; flex: none; display: grid; place-items: center;
-  border-radius: 8px; background: var(--sel); color: var(--blue-fg);
-  font-weight: 700;
+  width: 32px; height: 32px; flex: none; display: grid; place-items: center;
+  border-radius: 9px; background: var(--volt-dim); color: var(--accent);
+  font-weight: 600;
 }
-.entity-mark.logo { overflow: hidden; background: #fff; }
+.entity-mark.logo { overflow: hidden; background: #fff; box-shadow: inset 0 0 0 1px var(--border); }
 .entity-mark.logo img { width: 100%; height: 100%; object-fit: cover; }
 .entity-mark.client {
   font-family: var(--mono); background: var(--bg); color: var(--muted);
-  border: 1px solid var(--border); font-size: 11px;
+  border: 1px solid var(--border); font-size: 11px; font-weight: 500;
 }
 .entity-main { flex: 1; min-width: 0; }
 .cloud-agent-open { cursor: pointer; border-radius: 6px; outline: none; }
-.cloud-agent-open:focus-visible {
-  box-shadow: 0 0 0 2px var(--blue-bd);
-}
-.entity-top { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+.cloud-agent-open:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+.entity-top { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
 .entity-name { font-weight: 600; overflow-wrap: anywhere; }
 .entity-context {
-  color: var(--muted); font-size: 11.5px; white-space: nowrap;
+  color: var(--muted); font-size: 12px; white-space: nowrap;
   overflow: hidden; text-overflow: ellipsis;
 }
 .entity-perms {
-  color: var(--fg); font-size: 11.5px; line-height: 1.3;
-  margin-top: 3px; white-space: normal;
+  color: var(--fg); font-size: 12px; line-height: 1.35;
+  margin-top: 4px; white-space: normal;
 }
 .entity-perms span + span::before { content: " · "; color: var(--faint); }
 .entity-actions { display: flex; align-items: center; gap: 6px; flex: none; }
 .message-btn { white-space: nowrap; }
-.more { width: 28px; height: 28px; justify-content: center; padding: 0; font-size: 18px; line-height: 1; }
+.more { width: 30px; min-height: 30px; justify-content: center; padding: 0; font-size: 16px; line-height: 1; }
 .more-menu {
-  position: absolute; z-index: 4; right: 9px; top: 42px; width: 124px;
-  padding: 5px; background: var(--card); border: 1px solid var(--border-strong);
-  border-radius: 8px; box-shadow: var(--shadow);
+  position: absolute; z-index: 4; right: 9px; top: 46px; width: 132px;
+  padding: 5px; background: var(--raised); border: 1px solid var(--border-strong);
+  border-radius: 10px; box-shadow: var(--shadow);
+  animation: menu-in var(--dur) var(--ease) both;
 }
 .more-menu button {
   -webkit-app-region: no-drag; width: 100%; text-align: left; border: 0;
   border-radius: 6px; background: none; color: var(--fg);
   padding: 7px 9px; font: inherit; cursor: pointer;
+  transition: background-color var(--dur) var(--ease);
 }
 .more-menu button:hover { background: var(--hover); }
 .more-menu button.danger { color: var(--red-fg); }
 .more-menu button.danger:hover { background: var(--red-bg); }
 .status-setting {
-  display: inline-flex; align-items: center; gap: 6px;
-  color: var(--amber-fg); font-size: 11px; font-weight: 600;
+  display: inline-flex; align-items: center; gap: 7px;
+  color: var(--amber-fg); font-size: 12px; font-weight: 500;
 }
 .status-setting .cloud-spinner { margin: 0; }
 .status-removing { color: var(--muted); }
-.entity-empty { padding: 16px 10px; text-align: left; }
-.roster-notices { margin-bottom: 10px; }
+.entity-empty { padding: 18px 14px; text-align: left; }
+.roster-notices { margin-bottom: 14px; }
 .roster-notices .cloud-callout + .cloud-callout { margin-top: 8px; }
 .list-section-head + .cloud-callout,
-.list-section-head + .cloud-progress { margin-bottom: 8px; }
+.list-section-head + .cloud-progress { margin-bottom: 10px; }
 .cloud-callout + .entity-list,
-.cloud-progress + .entity-list { margin-top: 8px; }
+.cloud-progress + .entity-list { margin-top: 10px; }
 
 /* ---------- Cloud agents and status ---------- */
 .cloud-progress {
@@ -1206,17 +1248,22 @@ pre.script {
   margin-top: 10px; color: var(--muted); font-size: 12px;
 }
 .cloud-loading { margin: 4px 0 12px; }
+/* Work under way (setting up, deploying, loading chats): a dot breathing in
+   its context's colour — Audit's live signal, not a spinner. */
 .cloud-spinner {
-  width: 13px; height: 13px; flex: none; border-radius: 50%;
-  border: 2px solid var(--border-strong); border-top-color: var(--blue-fg);
-  animation: cloud-spin 0.8s linear infinite;
+  width: 7px; height: 7px; flex: none; border-radius: 50%;
+  background: currentColor;
+  animation: breathe 1.6s var(--ease) infinite;
 }
-@keyframes cloud-spin { to { transform: rotate(360deg); } }
+@keyframes breathe {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 45%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 6px transparent; }
+}
 @media (prefers-reduced-motion: reduce) {
   .cloud-spinner { animation: none; }
 }
 .cloud-callout {
-  padding: 10px 12px; border: 1px solid var(--border);
+  padding: 12px 14px; border: 1px solid var(--border);
   border-radius: var(--radius-sm); background: var(--bg);
 }
 .cloud-callout + .cloud-callout { margin-top: 10px; }
@@ -1225,26 +1272,28 @@ pre.script {
 .cloud-callout .btn { margin-top: 10px; }
 .cloud-error { border-color: var(--red-bd); background: var(--red-bg); }
 .cloud-error .cloud-callout-title { color: var(--red-fg); }
-.cloud-modal-actions { margin-top: 18px; }
+.cloud-modal-actions { margin-top: 20px; }
 .cloud-modal .field + .field { margin-top: 14px; }
 /* ---------- Deploy an agent ---------- */
 .modal.deploy-modal { max-width: 780px; padding: 0; display: flex; flex-direction: column; }
 .deploy-head {
   display: flex; align-items: baseline; gap: 10px;
-  padding: 16px 20px 12px; border-bottom: 1px solid var(--border);
+  padding: 18px 22px 14px; border-bottom: 1px solid var(--border);
 }
 .deploy-grid {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
-  align-items: start; padding: 14px 20px; overflow: auto;
+  align-items: start; padding: 16px 22px; overflow: auto;
 }
 .deploy-card {
-  display: flex; flex-direction: column; gap: 6px; padding: 12px; text-align: left;
+  display: flex; flex-direction: column; gap: 6px; padding: 14px; text-align: left;
   border: 1px solid var(--border); border-radius: var(--radius);
   background: var(--card); color: var(--fg); font: inherit; cursor: pointer;
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-.deploy-card:hover { background: var(--hover); }
+.deploy-card:hover { background: var(--hover); border-color: var(--border-strong); }
+.deploy-card:active { background: var(--press); }
 .deploy-card:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
-.deploy-card.selected { border-color: var(--blue-fg); box-shadow: 0 0 0 2px var(--blue-bd); }
+.deploy-card.selected { border-color: var(--accent); background: var(--sel); box-shadow: 0 0 0 3px var(--volt-dim); }
 .deploy-card-top { display: flex; align-items: center; gap: 8px; }
 .deploy-card-name { font-weight: 600; }
 .deploy-card-blurb {
@@ -1252,38 +1301,39 @@ pre.script {
   display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
 .deploy-card.selected .deploy-card-blurb { display: block; -webkit-line-clamp: unset; }
-.deploy-card-byline { color: var(--faint); font-size: 12px; }
+.deploy-card-byline { color: var(--faint); font: 400 11.5px var(--mono); }
 .deploy-foot {
   display: flex; align-items: center; gap: 10px;
-  padding: 12px 20px; border-top: 1px solid var(--border);
+  padding: 14px 22px; border-top: 1px solid var(--border);
 }
 .deploy-note { flex: 1; }
 .deploy-note.error { color: var(--red-fg); }
 .deploy-wait {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  padding: 36px 30px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 40px 30px; text-align: center;
 }
-.deploy-wait .cloud-spinner { width: 22px; height: 22px; border-width: 3px; }
-.deploy-wait-title { font-size: 16px; font-weight: 600; }
-.deploy-wait p { max-width: 440px; margin: 0; }
-.cloud-agent-new { animation: cloud-agent-new 2.5s ease-out; }
+.deploy-wait .cloud-spinner { width: 10px; height: 10px; color: var(--live); }
+.deploy-wait-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.deploy-wait p { max-width: 440px; margin: 0; line-height: 1.5; }
+/* A just-deployed agent arrives lit, and settles. */
+.cloud-agent-new { animation: cloud-agent-new 2.5s var(--ease); }
 @keyframes cloud-agent-new { from { background: var(--sel); } to { background: transparent; } }
 @media (prefers-reduced-motion: reduce) { .cloud-agent-new { animation: none; } }
 .cloud-detail-meta {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-  margin-top: 14px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  margin-top: 16px;
 }
-.cloud-detail-field { display: flex; flex-direction: column; gap: 5px; }
+.cloud-detail-field { display: flex; flex-direction: column; gap: 6px; }
 .cloud-detail-field > .badge,
 .cloud-detail-field > .status-setting { align-self: flex-start; }
-.cloud-detail-threads { margin-top: 18px; }
-.cloud-detail-heading { font-weight: 600; margin-bottom: 7px; }
+.cloud-detail-threads { margin-top: 20px; }
+.cloud-detail-heading { font-weight: 600; margin-bottom: 8px; }
 .cloud-thread-list {
   margin: 0; padding: 0; list-style: none;
   border: 1px solid var(--border); border-radius: var(--radius-sm);
   background: var(--bg); overflow: hidden;
 }
-.cloud-thread-list li { padding: 8px 10px; }
+.cloud-thread-list li { padding: 9px 12px; }
 .cloud-thread-list li + li { border-top: 1px solid var(--border); }
 .cloud-thread-empty { margin: 0; }
 /* Quiet secondary actions in the connect flow. */
@@ -1300,17 +1350,22 @@ pre.script {
   position: fixed; inset: 0; z-index: 50;
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
-  background: rgba(0, 0, 0, 0.35);
+  background: var(--scrim);
+  backdrop-filter: blur(3px);
+  animation: pane-in var(--dur) var(--ease) both;
 }
 .modal {
   width: 100%; max-width: 460px;
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
   box-shadow: var(--shadow);
-  padding: 18px 20px;
+  padding: 20px 22px;
   max-height: 100%; overflow: auto;
+  animation: modal-in 180ms var(--ease) both;
 }
+@keyframes modal-in { from { opacity: 0; transform: translateY(6px) scale(0.985); } }
+@media (prefers-reduced-motion: reduce) { .modal-backdrop, .modal { animation: none; } }
 .modal-title-row { display: flex; align-items: center; gap: 8px; }
 .modal-title-row h2 { margin: 0; font-size: 16px; }
 .rules-modal { max-width: 640px; }
@@ -1328,8 +1383,8 @@ pre.script {
 .gatekeeper-suggestion-actions { display: flex; justify-content: flex-end; margin-top: 14px; }
 .gatekeeper-suggestion-loading { display: flex; align-items: center; gap: 8px; padding: 18px 0; color: var(--muted); }
 .gatekeeper-inline-spinner {
-  width: 12px; height: 12px; border: 2px solid var(--border-strong);
-  border-top-color: var(--blue-fg); border-radius: 50%; animation: reviewing-spin 0.8s linear infinite;
+  width: 7px; height: 7px; flex: none; border-radius: 50%;
+  background: var(--live); color: var(--live); animation: breathe 1.6s var(--ease) infinite;
 }
 .modal .group-title { font-size: 15px; }
 .modal .field { margin-bottom: 0; }

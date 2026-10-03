@@ -118,6 +118,8 @@ export function icon(name, opts = {}) {
  *  the control — check it, disable it, listen to it — and the track and knob
  *  draw its state. `attrs` go on the label (a title, say). */
 export function switchEl(box, attrs) {
+  // Announced as the switch it looks like ("on"/"off"), not a checkbox.
+  box.setAttribute("role", "switch");
   return el("label", { class: "switch", attrs }, [
     box,
     el("span", { class: "track", attrs: { "aria-hidden": "true" } }),
