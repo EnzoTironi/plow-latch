@@ -976,25 +976,48 @@ textarea.text { min-height: 70px; resize: vertical; }
 }
 
 /* Approval window */
-.approve { padding: 18px; display: flex; flex-direction: column; height: 100vh; }
+/* The approval window. Restyled, never softened: every word, every bound and
+   every button's weight is what it was. Nothing here may make a grant look
+   like good news — the accent stays off this window except on the one
+   primary button it always had. */
+.approve {
+  padding: 20px 20px 18px; display: flex; flex-direction: column; height: 100vh;
+  /* The system's own type, as macOS's own prompts use: nothing to load, so
+     nothing reflows while the window arms, and nothing branded about a
+     decision the owner must read cold. */
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
 .approve .who { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
-.approve .who .name { font-size: 16px; font-weight: 600; }
-.approve .goal { color: var(--muted); margin: 6px 0 14px; }
+.approve .who .name { font-size: 17px; font-weight: 600; letter-spacing: -0.015em; }
+/* Who is asking is a fact, not news: plain ink, not the accent. */
+.approve .who .badge { background: var(--zinc-bg); color: var(--fg); border-color: var(--border-strong); }
+.approve .goal { color: var(--muted); margin: 8px 0 16px; line-height: 1.45; }
 .approve .fine {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 12px; margin-bottom: 14px;
+  background: var(--bg); border: 1px solid var(--border-strong);
+  border-radius: var(--radius); padding: 14px; margin-bottom: 14px;
   /* A floor nothing above can take. `flex: 1` alone lets a sibling with a tall
      natural height eat this block's share of a 560pt window, and the capability
      list is the one thing on this card that must never be the part that
      scrolled out of view. */
   flex: 1; min-height: 120px; overflow: auto;
 }
-.approve .fine .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 8px; }
+/* The headers of what is being granted read in full ink, ahead of the rest. */
+.approve .fine .lbl { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--fg); margin-bottom: 10px; }
+.approve .fine .lbl:not(:first-child) { margin-top: 14px; }
+.approve .fine .warn { margin-top: 10px; line-height: 1.45; }
+/* The three answers at one width. Allow Once alone is filled; Always Allow —
+   a permanent grant, the most dangerous answer here — wears Deny's plain face
+   and must never be promoted past it (approval-screenshot.mjs checks). */
 .approve .actions { display: flex; gap: 8px; }
 .approve .actions .action-slot { flex: 1; position: relative; display: flex; }
 /* The opacity transition makes the arming delay (buttons start disabled for a
    beat so stray input can't land — approval.js) read as deliberate, not lag. */
-.approve .actions .btn { flex: 1; justify-content: center; padding: 9px; transition: opacity 0.3s ease; }
+.approve .actions .btn {
+  flex: 1; justify-content: center; min-height: 36px; padding: 0 10px;
+  transition: opacity 300ms var(--ease), background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease), filter var(--dur) var(--ease);
+}
 .warn { color: var(--amber-fg); }
 /* The whole AppleScript on the approval card: it runs outside the sandbox,
    so its text is the bound the owner is approving. */
@@ -1013,25 +1036,20 @@ pre.script {
   border-radius: 6px;
 }
 
-/* A tiny rainbow spinner pinned to the window's bottom-right corner, shown while
-   an adversarial review is in flight (Ask mode + suggestions on). It's a small
-   conic-gradient ring (masked hollow center) that rotates. Cleared when the
-   verdict lands (whether it recommends a button or defers to you). */
+/* A small dot breathing in the window's bottom-right corner while the AI
+   Reviewer is still reading (Ask mode + suggestions on) — the app's sign for
+   work under way. Cleared when the verdict lands, whether it recommends a
+   button or defers to you. */
 .reviewing-spinner {
   position: fixed;
-  right: 8px;
-  bottom: 8px;
-  width: 8px;
-  height: 8px;
+  right: 10px;
+  bottom: 10px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  opacity: 0.5;
-  background: conic-gradient(
-    #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #00ff80,
-    #00ffff, #0080ff, #0000ff, #8000ff, #ff00ff, #ff0080, #ff0000
-  );
-  -webkit-mask: radial-gradient(closest-side, transparent 40%, #000 42%);
-  mask: radial-gradient(closest-side, transparent 40%, #000 42%);
-  animation: reviewing-spin 0.8s linear infinite;
+  background: var(--muted);
+  color: var(--muted);
+  animation: breathe 1.6s var(--ease) infinite;
   pointer-events: none;
 }
 @keyframes reviewing-spin { to { transform: rotate(360deg); } }
@@ -1039,42 +1057,17 @@ pre.script {
   .reviewing-spinner { animation: none; }
 }
 
-/* Checkbox row (settings) */
-.check { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; cursor: pointer; }
-/* One checkbox per line (the inline default lets several share one). */
-.check.block { display: flex; }
-.check.disabled { opacity: 0.45; cursor: default; }
-.check input { margin: 0; }
-
-/* Adversarial-agent suggestion: a color-wheel glow BEHIND the suggested button.
-   It lives on the slot (a layer behind the button, not the button itself), so
-   the button's opaque face covers the center and only a soft blurred halo shows
-   around the edges — and the blur is never clipped. The gradient ANGLE animates
-   (via @property) so the box stays put while the colors rotate. */
-@property --suggest-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
+/* The AI Reviewer's suggestion: a plain, still ring around the button it
+   suggests — the same ring whichever button that is, so advice never reads as
+   the window leaning on one answer. Its reasons are in the note above. It
+   lives on the slot, outside the button, so it is never clipped. */
 .action-slot.suggested::before {
   content: "";
   position: absolute;
-  inset: -6px;               /* a few pixels bigger than the button */
-  border-radius: 12px;
-  z-index: -1;               /* behind the button (which has an opaque face) */
-  background: conic-gradient(
-    from var(--suggest-angle),
-    #ff0000, #ff8000, #ffff00, #80ff00, #00ff00, #00ff80,
-    #00ffff, #0080ff, #0000ff, #8000ff, #ff00ff, #ff0080, #ff0000
-  );
-  filter: blur(4px);         /* soft, unclipped glow */
-  opacity: 0.5;
+  inset: -4px;
+  border-radius: 11px;
+  border: 1.5px solid color-mix(in srgb, var(--fg) 55%, transparent);
   pointer-events: none;
-  animation: suggest-spin 2.5s linear infinite;
-}
-@keyframes suggest-spin { to { --suggest-angle: 360deg; } }
-@media (prefers-reduced-motion: reduce) {
-  .action-slot.suggested::before { animation: none; }
 }
 
 /* A value the user must copy — never editable, never truncated silently. */
@@ -1094,14 +1087,18 @@ pre.script {
 .approve > .reviewer-note:not(:empty) {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
   margin: 0 0 14px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: var(--sel);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  /* Neutral: advice in the accent would read as an endorsement. */
+  background: var(--zinc-bg);
+  border: 1px solid var(--border);
   font-size: 12px;
+  line-height: 1.45;
   color: var(--fg);
 }
+.approve > .reviewer-note .lbl { color: var(--muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 
 /* ---- Connect an MCP client ------------------------------------------------
    Agents and Rules carry `.settings` because they reuse the same group card —
