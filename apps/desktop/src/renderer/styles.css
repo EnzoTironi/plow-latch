@@ -1,75 +1,128 @@
-/* Design system lifted from docs/mockups/audit-mockups.html (Alternative 1,
-   "closest to today's app"): zinc-based neutral palette, soft cards, status
-   badges, capability chips, vertical timeline. Light + dark via tokens. */
+/* The main window's design system is the setup wizard's (onboarding.css):
+   DM Sans and DM Mono, warm near-black and cream, one volt accent, quiet
+   hairlines. An app people sit in all day keeps a light theme, built from the
+   same parts. Panes name tokens, never colours. */
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 300 700;
+  /* Block, not swap: the files are local, and a fallback face swapped out a
+     frame later moves every line of text on the first paint. */
+  font-display: block;
+  src: url("fonts/dm-sans-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "DM Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("fonts/dm-mono-400-latin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "DM Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url("fonts/dm-mono-500-latin.woff2") format("woff2");
+}
+
 :root {
-  --bg: #f4f4f5;
-  --card: #ffffff;
-  --fg: #18181b;
-  --muted: #71717a;
-  --faint: #a1a1aa;
-  --border: #e4e4e7;
-  --border-strong: #d4d4d8;
-  --hover: #f4f4f5;
-  --sel: #eef2ff;
-  --radius: 10px;
-  --radius-sm: 7px;
+  /* Scrollbars and form controls follow the theme too: without this the dark
+     theme drew a white scrollbar track down the middle of Audit. */
+  color-scheme: light dark;
+  --bg: #f2f2ec;
+  --card: #fbfbf8;
+  --chrome: #f6f6f1;
+  --raised: #ffffff;
+  --fg: #121211;
+  --muted: #5d5d57;
+  --faint: #6d6d67;
+  --border: rgba(18, 18, 17, 0.09);
+  --border-strong: rgba(18, 18, 17, 0.16);
+  --hover: rgba(18, 18, 17, 0.045);
+  --press: rgba(18, 18, 17, 0.08);
+  --sel: #eef5d6;
+  --radius: 12px;
+  --radius-sm: 8px;
   /* Named because the enlarged live view centres itself below this strip. */
   --titlebar-h: 44px;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.06);
-  --green-bg: #ecfdf5; --green-fg: #047857; --green-bd: #a7f3d0;
-  --red-bg: #fef2f2; --red-fg: #b91c1c; --red-bd: #fecaca;
-  --amber-bg: #fffbeb; --amber-fg: #b45309; --amber-bd: #fde68a;
-  --blue-bg: #eff6ff; --blue-fg: #1d4ed8; --blue-bd: #bfdbfe;
-  --zinc-bg: #f4f4f5; --zinc-fg: #52525b; --zinc-bd: #e4e4e7;
-  /* Light enough to read against the --blue-fg primary button. */
-  --focus: #60a5fa;
-  /* The Permissions section's "will not work" dot: the text red lifted and
-     desaturated, so a column of them reads as status rather than alarm. */
-  --dot-off: #d9555b;
-  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-  /* The onboarding accent (onboarding.css), shared so the app's dark-theme
-     primary buttons match the welcome screen. */
+  /* The reading column every list-and-settings tab sits in, centred. */
+  --column: 800px;
+  --shadow: 0 1px 2px rgba(18, 18, 17, 0.05), 0 12px 32px -14px rgba(18, 18, 17, 0.2);
+  --card-shadow: 0 1px 2px rgba(18, 18, 17, 0.04);
+  --scrim: rgba(18, 18, 17, 0.28);
+  /* The accent: volt as a fill everywhere, and as ink only where it reads —
+     on dark. Light ink is the same hue taken down to olive. */
   --volt: #d5ef8a;
-  --volt-glow: rgba(213, 239, 138, 0.28);
-  --midnight: #01000a;
-  /* The shared switch (switch.css) in this window's colors: the primary
-     button's fill when on — blue here, volt in the dark theme, which keeps
-     switch.css's own look. */
-  --switch-track: var(--hover);
+  --volt-ink: #11120a;
+  --volt-dim: rgba(150, 190, 40, 0.16);
+  --volt-glow: rgba(150, 190, 40, 0.38);
+  --accent: #4b6500;
+  /* What is happening right now: running work, allowed steps, the on state. */
+  --live: #6a9a00;
+  --green-bg: #e9f4ec; --green-fg: #276b41; --green-bd: #c3e1cc;
+  /* Clay, setup's denial colour, darkened until it reads as text. */
+  --red-bg: #fbede8; --red-fg: #a63c22; --red-bd: #efc5b8;
+  --amber-bg: #fbf2dd; --amber-fg: #8a5800; --amber-bd: #eed8a4;
+  /* "Blue" is the informational tone; in this language that is the accent. */
+  --blue-bg: #eef5d6; --blue-fg: #4b6500; --blue-bd: #cfe29b;
+  --zinc-bg: rgba(18, 18, 17, 0.05); --zinc-fg: #5d5d57; --zinc-bd: rgba(18, 18, 17, 0.1);
+  --focus: #4b6500;
+  /* The Permissions section's "will not work" dot: status, not alarm. */
+  --dot-off: #c0573c;
+  --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  /* One curve and one duration for every response to a person. */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 160ms;
+  /* The shared switch (switch.css) in this window's colours: a volt track
+     with a dark knob when on. The dark theme unsets these below so
+     switch.css's own setup look wins there. */
+  --switch-track: var(--press);
   --switch-border: var(--border-strong);
-  --switch-knob: var(--faint);
-  --switch-on-track: var(--blue-fg);
-  --switch-on-border: var(--blue-fg);
-  --switch-on-knob: #fff;
+  --switch-knob: #8d8d86;
+  --switch-on-track: var(--volt);
+  --switch-on-border: #a9c45a;
+  --switch-on-knob: var(--volt-ink);
   --switch-on-shadow: none;
   --switch-focus: var(--focus);
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Secondary text sits one zinc step lighter than the light theme's
-       mirror-image would give: #a1a1aa muted / #71717a faint read too dark
-       against the near-black --bg. */
-    --bg: #09090b; --card: #131316; --fg: #fafafa; --muted: #b7b7c0;
-    --faint: #8b8b94; --border: #27272a; --border-strong: #3f3f46;
-    --hover: #1c1c20; --sel: #1e213a;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.5);
-    --green-bg: #052e2b; --green-fg: #6ee7b7; --green-bd: #134e4a;
-    --red-bg: #2a0f12; --red-fg: #fca5a5; --red-bd: #7f1d1d;
-    --amber-bg: #2a1e05; --amber-fg: #fcd34d; --amber-bd: #78530f;
-    --blue-bg: #0c1b33; --blue-fg: #93c5fd; --blue-bd: #1e3a8a;
-    --zinc-bg: #1c1c20; --zinc-fg: #b7b7c0; --zinc-bd: #27272a;
-    --focus: #93c5fd;
-    --dot-off: #e47278;
+    --bg: #0c0c0b;
+    --card: #141413;
+    --chrome: #0f0f0e;
+    --raised: #1c1c1a;
+    --fg: #f0f0e8;
+    --muted: #a8a8a0;
+    --faint: #8d8d86;
+    --border: rgba(240, 240, 232, 0.08);
+    --border-strong: rgba(240, 240, 232, 0.14);
+    --hover: rgba(240, 240, 232, 0.05);
+    --press: rgba(240, 240, 232, 0.09);
+    --sel: rgba(213, 239, 138, 0.085);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 16px 40px -16px rgba(0, 0, 0, 0.75);
+    --card-shadow: none;
+    --scrim: rgba(0, 0, 0, 0.5);
+    --volt-dim: rgba(213, 239, 138, 0.14);
+    --volt-glow: rgba(213, 239, 138, 0.3);
+    --accent: #d5ef8a;
+    --live: #d5ef8a;
+    --green-bg: rgba(52, 199, 89, 0.1); --green-fg: #6fd08a; --green-bd: rgba(52, 199, 89, 0.3);
+    --red-bg: rgba(192, 115, 85, 0.13); --red-fg: #e9967a; --red-bd: rgba(216, 148, 120, 0.38);
+    --amber-bg: rgba(254, 188, 46, 0.1); --amber-fg: #f7c04a; --amber-bd: rgba(254, 188, 46, 0.3);
+    --blue-bg: rgba(213, 239, 138, 0.1); --blue-fg: #d5ef8a; --blue-bd: rgba(213, 239, 138, 0.3);
+    --zinc-bg: rgba(240, 240, 232, 0.06); --zinc-fg: #a8a8a0; --zinc-bd: rgba(240, 240, 232, 0.1);
+    --focus: #d5ef8a;
+    --dot-off: #e9967a;
     /* `initial` unsets a custom property, so switch.css's volt fallbacks win. */
+    --switch-track: initial; --switch-border: initial; --switch-knob: initial;
     --switch-on-track: initial; --switch-on-border: initial; --switch-on-knob: initial;
-    --switch-on-shadow: initial;
+    --switch-on-shadow: initial; --switch-focus: initial;
   }
 }
 
 * { box-sizing: border-box; }
-/* Replace Chromium's dark-blue default ring, which disappears against the
-   blue primary button; the offset keeps it legible even on same-hue fills. */
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 html, body { margin: 0; height: 100%; }
 body {
@@ -78,28 +131,49 @@ body {
   color: var(--fg);
   font-size: 13px;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   /* Fill the window exactly: titlebar + content, no leftover strip. */
   height: 100vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
+h1, h2, h3, h4 { letter-spacing: -0.01em; }
+/* The main window's first paint waits for DM Sans (main.js lifts this the
+   moment it loads), so no line is ever set in a fallback face and then moved.
+   The animation is the failsafe: shown after 400ms whatever happens, with no
+   script involved. Opt-in per page, so the approval window never waits. */
+html.await-fonts:not(.fonts-ready) body { visibility: hidden; animation: fonts-failsafe 0s 400ms forwards; }
+@keyframes fonts-failsafe { to { visibility: visible; } }
 #view {
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
 
-/* Passive update notice between the titlebar and the content. Uses the blue
-   status tokens: informational, not alarming. */
+/* Thin scrollbars that sit on the surface instead of carving a gutter out of it. */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent; border-radius: 10px;
+  background: var(--border-strong); background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background-color: var(--faint); }
+
+/* Passive update notice between the titlebar and the content. Uses the
+   informational tone: news, not alarm. */
 .update-banner {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 14px;
+  padding: 8px 16px;
   background: var(--blue-bg);
-  color: var(--blue-fg);
+  color: var(--fg);
   border-bottom: 1px solid var(--blue-bd);
   flex: 0 0 auto;
 }
@@ -113,40 +187,82 @@ body {
   padding: 2px 6px;
   border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: background-color var(--dur) var(--ease);
 }
 .banner-close:hover { background: var(--blue-bd); }
 
+/* ---- The window's chrome: mark, sections, connection ---- */
 .titlebar {
   height: var(--titlebar-h);
-  display: flex;
+  display: grid;
+  /* Equal outer columns keep the sections centred on the window itself, and
+     never grow to fit their text — a device name arriving must not nudge them. */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 12px;
-  padding: 0 14px 0 84px; /* leave room for traffic lights (hiddenInset) */
+  padding: 0 14px;
   -webkit-app-region: drag;
   border-bottom: 1px solid var(--border);
-  background: var(--card);
+  background: var(--chrome);
   flex: none;
 }
-.wtitle { font-weight: 600; }
+/* Clear of the traffic lights (hiddenInset). */
+.brand { display: flex; align-items: center; gap: 8px; min-width: 0; padding-left: 70px; }
+.brand-mark { width: 14px; height: 14px; flex: none; fill: var(--fg); fill-rule: evenodd; }
+.wtitle { font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
 .seg {
-  margin-left: auto;
   display: inline-flex;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 2px;
+  align-items: center;
+  gap: 2px;
   -webkit-app-region: no-drag;
 }
 .seg button {
-  border: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 11px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   background: transparent;
   color: var(--muted);
-  padding: 4px 12px;
-  border-radius: 6px;
   font: inherit;
+  font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-.seg button.active { background: var(--card); color: var(--fg); box-shadow: var(--shadow); }
+.seg button .ico { width: 14px; height: 14px; stroke-width: 1.8; }
+.seg button:hover { background: var(--hover); color: var(--fg); }
+.seg button:active { background: var(--press); }
+.seg button.active {
+  background: var(--raised);
+  color: var(--fg);
+  border-color: var(--border);
+  box-shadow: var(--card-shadow);
+}
+.seg button.active .ico { color: var(--accent); }
+/* The saved tab takes over from the HTML's default without a crossfade. */
+html:not(.booted) .seg button { transition: none; }
+.conn {
+  justify-self: end;
+  max-width: 100%;
+  /* Shown once it has words: growing from "…" would move it. */
+  visibility: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.conn.ready { visibility: visible; animation: pane-in var(--dur) var(--ease) both; }
+#statusText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conn .status-dot { width: 7px; height: 7px; background: var(--amber-fg); }
+.conn .status-dot.on { background: var(--green-fg); box-shadow: 0 0 0 3px var(--green-bg); }
+/* A narrow window keeps the sections whole and gives up the wordmark. */
+@media (max-width: 900px) { .wtitle { display: none; } }
+
 .toolbar {
   display: flex;
   align-items: center;
@@ -426,56 +542,59 @@ dl.meta dd { margin: 0; }
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 14px;
+  padding: 14px 16px;
   margin-bottom: 10px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--card-shadow);
 }
 .item h4 { margin: 0 0 4px; }
 .item p { margin: 0; color: var(--muted); }
 .row { display: flex; align-items: center; gap: 10px; }
 .btn {
   -webkit-app-region: no-drag;
-  display: inline-flex; align-items: center; gap: 6px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 30px;
+  padding: 0 12px;
   border: 1px solid var(--border-strong);
-  background: var(--card);
+  background: var(--raised);
   color: var(--fg);
   border-radius: 8px;
-  padding: 5px 12px;
   font: inherit;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease), filter var(--dur) var(--ease), opacity var(--dur) var(--ease);
 }
-.btn:hover { background: var(--hover); }
+.btn:hover { background: color-mix(in srgb, var(--fg) 5%, var(--raised)); }
+.btn:active { background: color-mix(in srgb, var(--fg) 9%, var(--raised)); }
 /* The external-link ↗, on any control that opens something outside the app. */
 .ext-arrow { color: var(--faint); font-size: 13px; }
 .btn.danger { color: var(--red-fg); border-color: var(--red-bd); }
-.btn.primary { background: var(--blue-fg); color: white; border-color: var(--blue-fg); }
-/* Dark theme's primary is the welcome screen's volt button, not blue: the
-   dark --blue-fg (#93c5fd) is a TEXT color, far too bright as a fill. */
-@media (prefers-color-scheme: dark) {
-  .btn.primary {
-    background: var(--volt); color: var(--midnight); border-color: var(--volt);
-    box-shadow: 0 8px 26px -10px var(--volt-glow);
-  }
-  .btn.primary:hover { background: var(--volt); filter: brightness(1.06); }
-  .btn.primary:disabled:hover { background: var(--volt); filter: none; }
+/* The primary action is setup's volt button, in both themes. */
+.btn.primary {
+  background: var(--volt); color: var(--volt-ink);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--volt));
+  box-shadow: 0 8px 26px -12px var(--volt-glow);
+  font-weight: 600;
 }
-input.text, textarea.text {
+.btn.primary:hover { background: var(--volt); filter: brightness(1.04); }
+.btn.primary:active { background: var(--volt); filter: brightness(0.97); }
+.btn.primary:disabled:hover { background: var(--volt); filter: none; }
+.btn.quiet { border-color: transparent; background: transparent; color: var(--muted); }
+.btn.quiet:hover { background: var(--hover); color: var(--fg); }
+input.text, textarea.text, select.text {
   width: 100%; font: inherit; color: var(--fg);
-  background: var(--bg); border: 1px solid var(--border);
+  background: var(--bg); border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm); padding: 8px 10px; outline: none;
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
-select.text {
-  width: 100%; font: inherit; color: var(--fg);
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 8px 10px; outline: none;
-}
+input.text:focus, textarea.text:focus, select.text:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--volt-dim); }
 textarea.text { min-height: 70px; resize: vertical; }
 .field { margin-bottom: 10px; }
 .field label { display: block; color: var(--muted); margin-bottom: 4px; }
 
-.btn.small { padding: 3px 10px; font-size: 12px; }
-.btn:disabled { opacity: 0.4; cursor: default; }
-.btn:disabled:hover { background: var(--card); }
+.btn.small { min-height: 26px; padding: 0 10px; font-size: 12px; }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn:disabled:hover { background: var(--raised); }
 
 /* Settings groups: more air between groups, a prominent group heading with a
    divider, and a settled-in description under it. */
@@ -561,19 +680,23 @@ textarea.text { min-height: 70px; resize: vertical; }
 
 /* A small popup menu (openMenu in main.js): a card floated over the page. */
 .menu {
-  position: fixed; z-index: 50; min-width: 160px; padding: 4px;
-  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  position: fixed; z-index: 50; min-width: 160px; padding: 5px;
+  background: var(--raised); border: 1px solid var(--border-strong); border-radius: 10px;
   box-shadow: var(--shadow);
+  animation: menu-in var(--dur) var(--ease) both;
 }
+@keyframes menu-in { from { opacity: 0; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .menu { animation: none; } }
 .menu-item {
-  display: block; width: 100%; text-align: left; padding: 6px 10px;
+  display: block; width: 100%; text-align: left; padding: 7px 10px;
   border: 0; border-radius: 6px; background: transparent; color: var(--fg); font: inherit; cursor: pointer;
+  transition: background-color var(--dur) var(--ease);
 }
 .menu-item:hover:not(:disabled), .menu-item:focus-visible { background: var(--hover); outline: none; }
 .menu-item:disabled { color: var(--faint); cursor: default; }
 /* A pick-one menu: every item leaves room for the check; the current one shows it. */
 .menu-item.checkable { position: relative; padding-left: 26px; }
-.menu-item.checked::before { content: "✓"; position: absolute; left: 9px; }
+.menu-item.checked::before { content: "✓"; position: absolute; left: 9px; color: var(--accent); }
 .menu:has(.menu-description) { min-width: 300px; }
 .menu-label { display: block; font-weight: 600; }
 .menu-description { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.35; }

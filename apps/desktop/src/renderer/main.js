@@ -7,7 +7,7 @@ import {
 } from "./approvals.js";
 import { attentionMatches, createSerialAutosave, modeView } from "./gatekeeperState.js";
 
-import { el, icon, switchEl } from "./dom.js";
+import { el, icon, PLW_PATH, switchEl } from "./dom.js";
 import { singleFlight } from "./onboardingAction.js";
 import { googleCapabilityBadges } from "../connectorBadges.js";
 import { renderVault, vaultConfirmLeave } from "./vault.js";
@@ -18,10 +18,22 @@ import {
   deployCards,
 } from "../cloudAgentViewModel.js";
 
+// Lift styles.css's hold on the first paint once the faces are in.
+Promise.race([
+  Promise.all([document.fonts.load('500 13px "DM Sans"'), document.fonts.load('11px "DM Mono"')]),
+  new Promise((resolve) => setTimeout(resolve, 400)),
+]).finally(() => document.documentElement.classList.add("fonts-ready"));
+
 const view = document.getElementById("view");
 const seg = document.getElementById("seg");
 const statusDot = document.getElementById("statusDot");
 const statusText = document.getElementById("statusText");
+
+// The chrome's glyphs come from the one icon registry, so the HTML carries
+// only words: the mark, and an icon beside each section's (always visible) label.
+const TAB_ICONS = { agents: "agent", audit: "activity", vault: "lock", plugins: "plug", settings: "sliders" };
+document.getElementById("brandMark").setAttribute("d", PLW_PATH);
+for (const b of seg.querySelectorAll("button")) b.prepend(icon(TAB_ICONS[b.dataset.tab]));
 
 // Null until boot() picks one: the HTML marks Audit active for the first paint,
 // but boot must still RENDER that pane, and "already on this tab" now returns
@@ -96,7 +108,12 @@ function badge(tone, text) {
 async function refreshStatus() {
   const status = await window.domo.statusGet();
   statusDot.className = "status-dot" + (status.connected ? " on" : "");
-  statusText.textContent = status.connected ? `Connected · ${status.name}` : "Not connected";
+  statusDot.parentElement.classList.add("ready");
+  // Connected shows which Mac; the word is there for a screen reader, and the
+  // other state says itself in words, so the dot is never the only signal.
+  statusText.replaceChildren(...(status.connected && status.name
+    ? [el("span", { class: "sr-only", text: "Connected · " }), status.name]
+    : [status.connected ? "Connected" : "Not connected"]));
 }
 
 const gatekeeperNotice = document.getElementById("gatekeeperNotice");
@@ -2961,7 +2978,12 @@ async function selectTab(tab) {
   if (tab !== "settings") settingsMounted = permissionsMounted = null;
   if (tab !== "plugins") pluginsMounted = null;
   if (tab !== "agents") agentsMounted = null;
-  for (const b of seg.querySelectorAll("button")) b.classList.toggle("active", b.dataset.tab === tab);
+  for (const b of seg.querySelectorAll("button")) {
+    const on = b.dataset.tab === tab;
+    b.classList.toggle("active", on);
+    if (on) b.setAttribute("aria-current", "page");
+    else b.removeAttribute("aria-current");
+  }
   render();
   return true;
 }
@@ -2975,7 +2997,8 @@ async function confirmCurrentTabLeave() {
 // Let the headless preload probe drive the tabs without synthesising clicks.
 window.__domoSelectTab = selectTab;
 
-seg.addEventListener("mousedown", async (e) => {
+// Click, not mousedown: Return and Space press a focused section button too.
+seg.addEventListener("click", async (e) => {
   const btn = e.target.closest("button");
   if (!btn) return;
   if (await selectTab(btn.dataset.tab)) window.domo.uiSetTab(btn.dataset.tab); // persist across launches
@@ -3079,6 +3102,8 @@ async function boot() {
   const saved = await window.domo.uiGetTab();
   const known = ["agents", "audit", "vault", "plugins", "settings"];
   selectTab(known.includes(saved) ? saved : "audit");
+  // From here on the nav animates; the first selection above lands instantly.
+  requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add("booted")));
   // A credential exchange can arrive before this window exists (the system
   // launches the app for it); the push above then had no listener, so ask.
   // Only when landing elsewhere: a boot onto the Vault tab found it already.
