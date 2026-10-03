@@ -9,8 +9,10 @@ plow-screenpipe search [--query TEXT] [--content-type all|ocr|audio|input|access
   [--app-name TEXT] [--window-name TEXT] [--start-time RFC3339] [--end-time RFC3339]
   [--limit 1..100] [--offset 0..1000000] [--order asc|desc]
 plow-screenpipe --help
+plow-screenpipe install
 
 Requires Screenpipe running on this Mac. API calls need network=true in plow_run_command.
+Install needs network=true and write_paths=["~/.screenpipe"]. It installs the CLI without starting capture.
 Search defaults: all content, newest first, 20 results; requests API text truncation at 2000 characters.
 Output: JSON response with search data and pagination.'
 }
@@ -25,6 +27,10 @@ query='' app='' window='' start='' end=''
 content_type=all limit=20 offset=0 order=desc
 
 case "$command" in
+  install)
+    [ "$#" -eq 0 ] || invalid 'Install takes no arguments.'
+    exec /bin/sh ./install.sh
+    ;;
   --help)
     [ "$#" -eq 0 ] || invalid 'Help takes no arguments.'
     usage
@@ -65,7 +71,7 @@ case "$command" in
     case "$offset" in ''|*[!0-9]*) invalid 'Offset must be an integer from 0 to 1000000.' ;; esac
     [ "${#offset}" -le 7 ] && [ "$offset" -le 1000000 ] || invalid 'Offset must be an integer from 0 to 1000000.'
     ;;
-  *) invalid 'Only health, search and --help are supported.' ;;
+  *) invalid 'Only health, search, --help and install are supported.' ;;
 esac
 
 # The owner configures a port in the manifest. Callers cannot supply a host,
@@ -76,8 +82,9 @@ case "$port" in ''|*[!0-9]*) fail 'Screenpipe API port must be an integer from 1
 
 set -- --url "http://127.0.0.1:$port/$command"
 if [ "$command" = search ]; then
+  case "$order" in asc) api_order=ascending ;; desc) api_order=descending ;; esac
   set -- "$@" --data-urlencode "content_type=$content_type" --data-urlencode "limit=$limit" \
-    --data-urlencode "offset=$offset" --data-urlencode "order=$order" \
+    --data-urlencode "offset=$offset" --data-urlencode "order=$api_order" \
     --data-urlencode 'include_frames=false' --data-urlencode 'include_cloud=false' \
     --data-urlencode 'max_content_length=2000'
   [ -z "$query" ] || set -- "$@" --data-urlencode "q=$query"

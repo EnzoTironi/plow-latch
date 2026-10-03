@@ -36,6 +36,9 @@ describe("Screenpipe through Latch MCP", () => {
     expect(JSON.stringify(listed.payload)).toContain("plow-screenpipe");
     const skill = await callTool(server, "plow_read_skill", { name: "plow-screenpipe" }, agent);
     expect(JSON.stringify(skill.payload)).toContain("network=true");
+    expect(jv(skill.payload).get("body").str).toContain(
+      'plow_run_command(argv=["plow-screenpipe", "install"], network=true, write_paths=["~/.screenpipe"])',
+    );
 
     await device.setDisabledPlugins(["screenpipe"]);
     const off = await callTool(server, "plow_list_skills", {}, agent);
@@ -80,6 +83,22 @@ describe("Screenpipe through Latch MCP", () => {
     const { server } = fixture({ async decideIntent(intent) { offered = intent; return "deny"; } });
     await callTool(server, "plow_run_command", { argv: ["plow-screenpipe", "health"] }, agent);
     expect(offered).toMatchObject({ capabilities: expect.arrayContaining([{ kind: "network", allowed: false }]) });
+  });
+
+  it("requires approval for installation with its network and owner directory write; denial prevents execution", async () => {
+    let offered: Intent | null = null;
+    const { server, device, dir } = fixture({ async decideIntent(intent) { offered = intent; return "deny"; } });
+    const argv = ["plow-screenpipe", "install"];
+    const result = await callTool(server, "plow_run_command", {
+      argv, network: true, write_paths: ["~/.screenpipe"],
+    }, agent);
+    expect(result.payload).toMatchObject({ status: "denied" });
+    expect(offered).toMatchObject({ capabilities: expect.arrayContaining([
+      { kind: "process.exec", argv, cwd: dir }, { kind: "network", allowed: true },
+      { kind: "fs.write", paths: [expect.stringMatching(/\/\.screenpipe$/)] },
+    ]) });
+    expect(events(device)).toContain("intent_decision");
+    expect(events(device)).not.toContain("exec_start");
   });
 
   it("refuses a caller-supplied working directory before an intent exists", async () => {

@@ -38,6 +38,7 @@ const backend = http.createServer((req, res) => {
     res.writeHead(302, { Location: "/must-not-follow" }).end("redirect body must not reach the agent");
   } else {
     assert.equal(url.pathname, "/search");
+    assert.ok(["ascending", "descending"].includes(url.searchParams.get("order")), "Order must use Screenpipe's API vocabulary.");
     res.end(JSON.stringify(history));
   }
 });
@@ -95,7 +96,7 @@ try {
   assert.equal(search.payload.exit_code, 0);
   assert.equal(cases.at(-1).httpRequests, 1);
   assert.deepEqual(JSON.parse(search.payload.output), history);
-  assert.deepEqual(requests.at(-1).query, { content_type: "accessibility", limit: "10", offset: "0", order: "desc", include_frames: "false", include_cloud: "false", max_content_length: "2000", q: "design & review", app_name: "Safari" });
+  assert.deepEqual(requests.at(-1).query, { content_type: "accessibility", limit: "10", offset: "0", order: "descending", include_frames: "false", include_cloud: "false", max_content_length: "2000", q: "design & review", app_name: "Safari" });
   assert.equal(requests.at(-1).authenticated, true);
   fs.writeFileSync(path.join(outputDir, "approval-view.json"), JSON.stringify({ kind: "intent", view: approvalViewModel(approvals.at(-1)) }, null, 2));
 

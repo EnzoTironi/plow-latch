@@ -1,4 +1,5 @@
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,6 +14,46 @@ const pluginDir = fileURLToPath(new URL("../../../apps/desktop/plugins/screenpip
 const manifest = parseManifest(fs.readFileSync(path.join(pluginDir, "latch-plugin.json"), "utf8"));
 const { tmp, cleanup } = tempDirs("latch-screenpipe-");
 afterEach(cleanup);
+
+function installer(incomplete = false, arch = "arm64") {
+  const root = tmp();
+  const installRoot = path.join(root, "Owner Profile", ".screenpipe", "latch-cli");
+  const payload = path.join(root, "payload", "package");
+  fs.mkdirSync(path.join(payload, "bin"), { recursive: true });
+  fs.writeFileSync(path.join(payload, "bin", "screenpipe"), "synthetic engine");
+  const resource = arch === "arm64" ? "mlx.metallib" : "libonnxruntime.dylib";
+  fs.writeFileSync(path.join(payload, "bin", resource), "synthetic native resource");
+  if (!incomplete) fs.writeFileSync(path.join(payload, "LICENSE.md"), "synthetic license");
+  const archive = path.join(root, "release.tgz");
+  execFileSync("/usr/bin/tar", ["-czf", archive, "-C", path.join(root, "payload"), "package"]);
+  const checksum = createHash("sha512").update(fs.readFileSync(archive)).digest("hex");
+  const capture = path.join(root, "request.json");
+  const curl = path.join(root, "curl");
+  fs.writeFileSync(curl, `#!${process.execPath}
+import fs from "node:fs";
+const argv = process.argv.slice(2);
+fs.writeFileSync(process.env.TEST_CAPTURE, JSON.stringify(argv));
+if (process.env.TEST_NETWORK_ERROR) process.exit(7);
+fs.copyFileSync(process.env.TEST_ARCHIVE, argv[argv.indexOf("--output") + 1]);
+if (process.env.TEST_CORRUPT) fs.appendFileSync(argv[argv.indexOf("--output") + 1], "corrupt");
+`, { mode: 0o755 });
+  const uname = path.join(root, "uname");
+  fs.writeFileSync(uname, `#!${process.execPath}
+process.stdout.write(process.argv[2] === "-s" ? (process.env.TEST_OS ?? "Darwin") : (process.env.TEST_ARCH ?? "arm64"));
+`, { mode: 0o755 });
+  const source = fs.readFileSync(path.join(pluginDir, "install.sh"), "utf8");
+  fs.writeFileSync(path.join(root, "install.sh"), source.replace("/usr/bin/curl", curl)
+    .replaceAll("/usr/bin/uname", uname).replace(/checksum=[a-f0-9]{128}/g, `checksum=${checksum}`));
+  fs.copyFileSync(path.join(pluginDir, "cli.sh"), path.join(root, "cli.sh"));
+  return {
+    root, installRoot, capture, checksum,
+    release: (arch = "arm64") => path.join(installRoot, `0.4.52-${arch}`),
+    run: (env: NodeJS.ProcessEnv = {}, argv: string[] = []) => spawnSync("/bin/sh", ["cli.sh", "install", ...argv], {
+      cwd: root, encoding: "utf8", env: { PATH: process.env.PATH, HOME: root, TMPDIR: root,
+        SCREENPIPE_INSTALL_DIR: installRoot, TEST_CAPTURE: capture, TEST_ARCHIVE: archive, ...env },
+    }),
+  };
+}
 
 // Substitute only curl in a disposable copy. Production always uses the
 // system binary; the fixture records its argv/stdin without opening a port.
@@ -56,6 +97,7 @@ describe("bundled Screenpipe manifest", () => {
     expect(manifest.hooks).toEqual({});
     expect(resolveEnv(manifest, { pluginHome: pluginDir, ownerHome: "/owner" })).toEqual({
       SCREENPIPE_API_PORT: "3030", SCREENPIPE_API_KEY_FILE: "/owner/.config/plow-latch/screenpipe-api-key",
+      SCREENPIPE_INSTALL_DIR: "/owner/.screenpipe/latch-cli",
     });
   });
 
@@ -70,7 +112,9 @@ describe("bundled Screenpipe manifest", () => {
   it("uses the existing read-prefix rule for different searches", () => {
     expect(ruleArgv(manifest, ["plow-screenpipe", "search", "--query", "one"])).toEqual(["plow-screenpipe", "search"]);
     expect(ruleArgv(manifest, ["plow-screenpipe", "search", "--query", "two", "--content-type", "audio"])).toEqual(["plow-screenpipe", "search"]);
-    expect(manifest.argv.write).toEqual([]);
+    expect(manifest.argv.write).toEqual([["install"]]);
+    expect(classifyArgv(manifest, ["plow-screenpipe", "install"]).kind).toBe("write");
+    expect(ruleArgv(manifest, ["plow-screenpipe", "install"])).toEqual(["plow-screenpipe", "install"]);
   });
 });
 
@@ -111,7 +155,7 @@ describe("Screenpipe CLI", () => {
     expect(result.status).toBe(0);
     expect(fixture.request()).toMatchObject({ argv: expect.arrayContaining([
       "--data-urlencode", `q=${query}`, "content_type=audio", "app_name=Google Chrome", "window_name=Design & review",
-      "start_time=2026-10-01T09:00:00-03:00", "end_time=2026-10-01T10:00:00-03:00", "limit=100", "offset=20", "order=asc",
+      "start_time=2026-10-01T09:00:00-03:00", "end_time=2026-10-01T10:00:00-03:00", "limit=100", "offset=20", "order=ascending",
     ]) });
   });
 
@@ -119,8 +163,15 @@ describe("Screenpipe CLI", () => {
     expect(cli().run(["search", "--content-type", type]).status).toBe(0);
   });
 
+  it.each([["asc", "ascending"], ["desc", "descending"]])("translates --order %s into Screenpipe's %s API value", (order, value) => {
+    const fixture = cli();
+    expect(fixture.run(["search", "--order", order]).status).toBe(0);
+    expect(fixture.request()).toMatchObject({ argv: expect.arrayContaining([`order=${value}`]) });
+    expect(fixture.request()).toMatchObject({ argv: expect.not.arrayContaining([`order=${order}`]) });
+  });
+
   it.each([
-    [], ["record"], ["health", "--url", "https://example.com"], ["--help", "extra"],
+    [], ["record"], ["install", "--url", "https://example.com"], ["health", "--url", "https://example.com"], ["--help", "extra"],
     ["search", "--query"], ["search", "--url", "https://example.com"], ["search", "--config", "/tmp/config"],
     ["search", "--header", "Authorization: Bearer other"], ["search", "--include-frames", "true"],
     ["search", "--content-type", "video"], ["search", "--order", "random"],
@@ -180,5 +231,67 @@ describe("Screenpipe CLI", () => {
     expect(result.status).toBe(1);
     expect(result.stdout).toBe("");
     expect(fs.readdirSync(fixture.root).filter((name) => name.startsWith("latch-screenpipe."))).toEqual([]);
+  });
+});
+
+describe("owner-approved Screenpipe installation", () => {
+  it.each(["arm64", "x86_64"])("installs the pinned %s release with native resources and license", (arch) => {
+    const fixture = installer(false, arch);
+    const result = fixture.run({ TEST_ARCH: arch });
+    expect(result.status, result.stderr).toBe(0);
+    expect(fs.readFileSync(path.join(fixture.release(arch), ".package-integrity"), "utf8").trim()).toBe(fixture.checksum);
+    expect(fs.readFileSync(path.join(fixture.release(arch), "bin", arch === "arm64" ? "mlx.metallib" : "libonnxruntime.dylib"), "utf8")).toBe("synthetic native resource");
+    expect(fs.existsSync(path.join(fixture.release(arch), "LICENSE.md"))).toBe(true);
+    const argv: unknown = JSON.parse(fs.readFileSync(fixture.capture, "utf8"));
+    expect(argv).toEqual(expect.arrayContaining(["-q", "--proto", "=https", "--max-time", "300",
+      `https://registry.npmjs.org/@screenpipe/cli-darwin-${arch === "arm64" ? "arm64" : "x64"}/-/cli-darwin-${arch === "arm64" ? "arm64" : "x64"}-0.4.52.tgz`]));
+    expect(fs.readdirSync(fixture.installRoot)).toEqual([`0.4.52-${arch}`]);
+  });
+
+  it("reuses the installed release with no network access or archive extraction", () => {
+    const fixture = installer();
+    expect(fixture.run().status).toBe(0);
+    fs.rmSync(fixture.capture);
+    const repeat = fixture.run({ TEST_NETWORK_ERROR: "1" });
+    expect(repeat.status).toBe(0);
+    expect(repeat.stdout).toContain("already installed");
+    expect(fs.existsSync(fixture.capture)).toBe(false);
+  });
+
+  it.each([{ TEST_OS: "Linux" }, { TEST_ARCH: "riscv64" }])("refuses unsupported platform %j before download or writes", (env) => {
+    const fixture = installer();
+    expect(fixture.run(env).status).toBe(1);
+    expect(fs.existsSync(fixture.capture)).toBe(false);
+    expect(fs.existsSync(fixture.installRoot)).toBe(false);
+  });
+
+  it.each([{ TEST_NETWORK_ERROR: "1" }, { TEST_CORRUPT: "1" }])("cleans up a failed or corrupt download %j without publishing a release", (env) => {
+    const fixture = installer();
+    expect(fixture.run(env).status).toBe(1);
+    expect(fs.readdirSync(fixture.installRoot)).toEqual([]);
+    expect(fs.readdirSync(fixture.root).some((name) => name.startsWith("latch-screenpipe-install."))).toBe(false);
+  });
+
+  it("refuses an incomplete verified package and removes its staging directory", () => {
+    const fixture = installer(true);
+    expect(fixture.run().status).toBe(1);
+    expect(fs.readdirSync(fixture.installRoot)).toEqual([]);
+  });
+
+  it("preserves an existing incomplete release instead of overwriting it", () => {
+    const fixture = installer();
+    fs.mkdirSync(fixture.release(), { recursive: true });
+    fs.writeFileSync(path.join(fixture.release(), "keep"), "owner data");
+    expect(fixture.run().status).toBe(1);
+    expect(fs.readFileSync(path.join(fixture.release(), "keep"), "utf8")).toBe("owner data");
+    expect(fs.existsSync(fixture.capture)).toBe(false);
+  });
+
+  it("does not interfere with an installation holding the lock", () => {
+    const fixture = installer();
+    fs.mkdirSync(path.join(fixture.installRoot, ".install-lock"), { recursive: true });
+    expect(fixture.run().status).toBe(1);
+    expect(fs.existsSync(fixture.capture)).toBe(false);
+    expect(fs.existsSync(path.join(fixture.installRoot, ".install-lock"))).toBe(true);
   });
 });

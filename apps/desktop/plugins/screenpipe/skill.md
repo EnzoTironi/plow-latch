@@ -1,6 +1,6 @@
 ---
 name: plow-screenpipe
-description: Search your screen history and audio transcripts. Requires Screenpipe running on this Mac.
+description: Search your screen history and audio transcripts. Can install the Screenpipe CLI on this Mac with the owner's approval.
 ---
 
 # Screenpipe history
@@ -14,9 +14,52 @@ Start with help, then check the recorder before searching:
     plow_run_command(argv=["plow-screenpipe", "--help"])
     plow_run_command(argv=["plow-screenpipe", "health"], network=true)
 
-Screenpipe must already be installed and running on this Mac. This plugin reads its local HTTP API.
-The owner configures authentication using the plugin README. Never retrieve, print, or pass the API key
-through tool arguments, chat, goal text, or logs. If authentication fails, ask the owner to complete setup.
+## Install and set up Screenpipe
+
+If `health` cannot connect, check whether the owner already runs the Screenpipe desktop app before
+installing another recorder. When the owner requests installation, run:
+
+    plow_run_command(argv=["plow-screenpipe", "install"], network=true, write_paths=["~/.screenpipe"])
+
+This installs the official native CLI, pinned to 0.4.52, under
+`~/.screenpipe/latch-cli/0.4.52-<uname -m>/bin/screenpipe`. The installer selects Apple Silicon or Intel,
+verifies npm's SHA-512 package integrity before extracting, and preserves native resources and the license.
+It needs no Node, Homebrew, administrator password or npm lifecycle scripts. Repeating it reuses the
+installed release. It does not start capture, add a login service or edit other agents' configurations.
+Installation requires both network and the declared write path. If it returns a running job, poll
+`plow_get_output`; if the call itself defers with a pending handle, poll `plow_get_result` first, then use
+the returned job handle for output. Inspect the exit code before claiming installation succeeded.
+
+Start recording in the owner's terminal while the owner is present:
+
+```sh
+"$HOME/.screenpipe/latch-cli/0.4.52-$(uname -m)/bin/screenpipe" record --disable-telemetry
+```
+
+For a screen-only first test, add `--disable-audio`. The owner grants Screen Recording and Accessibility
+in macOS System Settings, and Microphone for audio capture. Do not grant these permissions automatically,
+reset TCC, or remove quarantine to suppress an OS warning. Stop a foreground test with Ctrl+C.
+An always-on service is a separate owner decision. If FFmpeg is missing, follow Screenpipe's own startup
+diagnostic; installing the engine does not prove that capture dependencies or permissions are ready.
+
+Once the recorder is running, copy its existing local API key directly into the adapter's private file:
+
+```sh
+mkdir -p "$HOME/.config/plow-latch"
+(umask 077; "$HOME/.screenpipe/latch-cli/0.4.52-$(uname -m)/bin/screenpipe" auth token > "$HOME/.config/plow-latch/screenpipe-api-key" 2>/dev/null)
+chmod 600 "$HOME/.config/plow-latch/screenpipe-api-key"
+```
+
+An agent with an owner-approved local shell may perform this copy using redirection and declare
+`~/.config/plow-latch` as a write path. Keep token stdout inside the file, suppress token-bearing diagnostic
+output, and report only success or failure. Never return the key through tool output, arguments, chat, goal
+text or logs. For an existing desktop installation, use its supported CLI to export the same key. Recopy
+after rotation; never disable API authentication to make setup pass.
+
+Run `health` again and try a narrow search. Report missing permissions or stale capture timestamps
+accurately. An installed executable and a reachable API are separate from a working recorder.
+
+## Search
 
 Every API call needs `network=true`, even though it connects to loopback. Search also declares the owner's
 configuration directory as a read path. Do not supply `cwd`; Latch chooses the plugin's staged directory.

@@ -1,27 +1,55 @@
 # Screenpipe history for Latch
 
-Adds `plow-screenpipe`, a read-only adapter to an existing [Screenpipe](https://github.com/screenpipe/screenpipe)
-installation. Agents can search screen text and audio transcripts through `plow_run_command`. The Plugins
-tab lists **Screenpipe history**; turning it off withdraws its skill and refuses its commands.
+Adds `plow-screenpipe`, an adapter to [Screenpipe](https://github.com/screenpipe/screenpipe) with read-only
+history queries and an opt-in CLI installer. Agents can install the engine and search screen text and audio
+transcripts through `plow_run_command`. The Plugins tab lists **Screenpipe history**; turning it off
+withdraws its skill and refuses its commands.
 
 ## Setup
 
-1. Install and run Screenpipe separately. Grant its capture permissions in Screenpipe's own setup.
-2. Stage this plugin with `just stage-plugins screenpipe`, then restart a from-source Latch. Packaged builds
+1. Stage this plugin with `just stage-plugins screenpipe`, then restart a from-source Latch. Packaged builds
    include it through the existing `vendor/plugins` resource entry.
-3. If Screenpipe requires authentication, run this in the owner's terminal with Screenpipe's CLI installed:
+2. Ask the agent to install Screenpipe on this Mac. The published [skill.md](skill.md) includes the exact
+   `plow_run_command` call with `network=true` and `write_paths=["~/.screenpipe"]`. The owner approves both.
+   It installs native CLI 0.4.52 from the official npm platform package, verifies its pinned SHA-512 digest,
+   and keeps the engine, native resources and license under `~/.screenpipe/latch-cli/0.4.52-<uname -m>/`.
+   Node, Homebrew and administrator access are unnecessary. Existing releases are reused. If the owner
+   already runs the desktop app, use its API directly; a second recorder is unnecessary.
+3. Start a foreground test in the owner's terminal:
+
+   ```sh
+   "$HOME/.screenpipe/latch-cli/0.4.52-$(uname -m)/bin/screenpipe" record --disable-telemetry
+   ```
+
+   Add `--disable-audio` for a screen-only test. Grant Screen Recording and Accessibility in macOS System
+   Settings, and Microphone for audio. Ctrl+C stops the test. An installed CLI does not prove recording
+   permissions or capture dependencies are ready. FFmpeg is required for audio; follow the CLI diagnostic
+   if it is missing. Installation does not start a recorder, add a login service, or configure other agents.
+4. If Screenpipe requires authentication, copy its existing key directly into the adapter's private file:
 
    ```sh
    mkdir -p "$HOME/.config/plow-latch"
-   (umask 077; screenpipe auth token > "$HOME/.config/plow-latch/screenpipe-api-key")
+   (umask 077; "$HOME/.screenpipe/latch-cli/0.4.52-$(uname -m)/bin/screenpipe" auth token > "$HOME/.config/plow-latch/screenpipe-api-key" 2>/dev/null)
    chmod 600 "$HOME/.config/plow-latch/screenpipe-api-key"
    ```
 
    This copies the key without printing it. Keep it out of chat, manifests, tool arguments, and logs.
    Repeat after rotating the Screenpipe key. An empty or malformed file fails closed. Without a key file,
    the adapter supports instances with API authentication disabled; an authenticated instance returns a
-   fixed setup hint. `/health` does not require a key.
-4. Run the health and search examples in [skill.md](skill.md). Every API call requires `network=true`.
+   fixed setup hint. `/health` does not require a key. An owner-authorized local agent can perform the copy
+   using shell redirection and an explicit write grant; the token must never return as tool output.
+   For an existing desktop installation, use its supported CLI rather than a different profile's key.
+5. Run the health and search examples in [skill.md](skill.md). Every API call requires `network=true`.
+
+For a from-source terminal install, run this from the repository root:
+
+```sh
+SCREENPIPE_INSTALL_DIR="$HOME/.screenpipe/latch-cli" /bin/sh apps/desktop/plugins/screenpipe/install.sh
+```
+
+This runs the same installer as the agent-facing command. The [official installation guide](https://docs.screenpipe.com/getting-started)
+documents the CLI distribution. The npm package metadata pins [Apple Silicon](https://registry.npmjs.org/@screenpipe/cli-darwin-arm64/0.4.52)
+and [Intel](https://registry.npmjs.org/@screenpipe/cli-darwin-x64/0.4.52) tarballs and their integrity values.
 
 The default port is 3030. For a different local port, change the manifest's fixed `SCREENPIPE_API_PORT`
 before staging. Callers cannot supply a host, port, URL, key file, or curl configuration through argv.
@@ -36,12 +64,14 @@ the skill explicitly requires `health` before a search.
 | `plow-screenpipe --help` | None | Local usage; no network or key access |
 | `plow-screenpipe health` | `GET /health` | Recorder status and capture timestamps; no key access |
 | `plow-screenpipe search [options]` | `GET /search` | JSON results and pagination; requests `max_content_length=2000` |
+| `plow-screenpipe install` | Official npm registry | Owner-approved write; installs a verified, pinned native CLI without starting capture |
 
 Search accepts `--query`, `--content-type`, `--app-name`, `--window-name`, `--start-time`, `--end-time`,
 `--limit`, `--offset`, and `--order`. It defaults to 20 results, newest first. Limits are 1..100; offsets
 are 0..1000000. Text and timestamp values use curl's `--data-urlencode`; even `@file` and `&token=...` are
 query text rather than file reads or extra parameters. Unknown flags and subcommands fail before HTTP.
-Date parsing stays with Screenpipe; use RFC3339 with an explicit timezone.
+Date parsing stays with Screenpipe; use RFC3339 with an explicit timezone. The wrapper translates
+`--order asc|desc` to Screenpipe's API values `ascending|descending`.
 Current Screenpipe keeps the first and last halves of long text, plus a truncation marker; the marker adds
 characters beyond 2000. Older API versions may ignore this option. The adapter also bounds the response file.
 
@@ -63,7 +93,10 @@ sequenceDiagram
 ```
 
 The adapter uses macOS `/bin/sh` and `/usr/bin/curl`, so both Mac architectures use the same source files.
-It adds no runtime downloads, postinstall hooks, daemon, npm dependency, Screenpipe source, or binaries.
+Queries download nothing. The optional installer downloads only the pinned native npm platform package
+after approval, keeps it outside Latch, verifies SHA-512 before extraction, and publishes the release
+atomically. It preserves incomplete existing releases for repair and serializes concurrent installations.
+It adds no postinstall hooks, daemon, npm dependency, Screenpipe source, or binaries to Latch's distribution.
 The existing staging script copies the plugin, and the existing manifest parser and dispatcher load it.
 
 The network capability grants network generally in Latch's current sandbox. The adapter itself fixes the
@@ -72,8 +105,9 @@ through curl's stdin, keeping the key out of process argv and Latch's audit reco
 discarded; errors use fixed messages. Responses use a disposable file in the executor's scratch directory,
 with a file-size limit and a 15-second request deadline; the file is removed on exit.
 
-The manifest has no write prefixes. The wrapper has no route for recording controls, raw SQL, media
-export, notifications, pipes, or computer control. Searches explicitly disable embedded frames and cloud
+The manifest classifies `install` as a write; history commands keep their existing read-prefix rules.
+The wrapper has no route for recording controls, raw SQL, media export, notifications, pipes, or computer
+control. Searches explicitly disable embedded frames and cloud
 retrieval. Successful results travel to the requesting agent through Latch, so enabling a local adapter
 does not keep the retrieved history on-device. The skill limits retrieval to the owner's task and treats
 captured content as untrusted input. An Always allow rule for `search` covers future query/filter values
@@ -109,6 +143,9 @@ node scripts/screenpipe-smoke.mjs
 ```
 
 The CLI tests run the actual shell parser against an executable curl fixture, with no listening server.
+Installer tests use synthetic tarballs with real SHA-512 verification and extraction: both architectures,
+offline reuse, corrupt downloads, unsupported systems, failed downloads, cleanup and preservation of
+existing releases. Actual native execution and capture must be checked separately on a real Mac.
 The MCP tests use the real manifest, skill registry, capability construction, policy engine and audit log.
 The help execution also runs through macOS seatbelt. HTTP evidence should identify whether its backend is
 a synthetic API fixture or a real Screenpipe installation; UI evidence should identify whether it comes
