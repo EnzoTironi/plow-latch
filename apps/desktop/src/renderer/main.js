@@ -181,7 +181,7 @@ async function refreshGatekeeperAttention() {
   drawGatekeeperNotice();
 }
 
-// ---- Audit (master–detail, mockup Alternative 1) ----
+// ---- Audit (master–detail) ----
 // Rows are grouped ACTIVITIES (one logical operation), each with a per-event
 // timeline in the detail pane — matching the Swift app's fine-grained view.
 
@@ -223,9 +223,17 @@ async function renderAudit() {
   const generation = ++auditRenderGeneration;
   await refreshGatekeeperAttention();
   if (currentTab !== "audit" || generation !== auditRenderGeneration) return;
+  // The strip is mounted complete: its mode, rules count and instructions all
+  // change its size, and arriving a beat after the list they would shove it down.
   const gatekeeper = createGatekeeperCard();
-  const search = el("div", { class: "search" }, [
-    el("input", { attrs: { placeholder: "Search activity, path, agent…" } }),
+  await gatekeeper.ready;
+  if (currentTab !== "audit" || generation !== auditRenderGeneration) {
+    gatekeeper.dispose();
+    return;
+  }
+  const search = el("label", { class: "search" }, [
+    icon("search"),
+    el("input", { attrs: { type: "search", placeholder: "Search activity, path, agent…", "aria-label": "Search activity" } }),
   ]);
   const searchInput = search.querySelector("input");
   searchInput.value = auditSearch;
@@ -235,7 +243,7 @@ async function renderAudit() {
   // is picked, then "Decision: Allowed". Rebuilt on every refresh.
   const chipsBox = el("div", { class: "chips" });
   const count = el("span", { class: "count" });
-  const clearBtn = el("button", { class: "btn small", text: "Clear Log" });
+  const clearBtn = el("button", { class: "btn small quiet", text: "Clear Log" });
   clearBtn.addEventListener("click", async () => {
     const cleared = await window.domo.auditClear();
     if (cleared) {
@@ -248,7 +256,14 @@ async function renderAudit() {
     search, chipsBox, el("div", { class: "spacer" }), count, clearBtn,
   ]);
 
-  const listBox = el("div", { class: "list" });
+  // Until the first page lands, the rows to come as a skeleton of the same
+  // height — the list fills in place rather than appearing from nothing.
+  const listBox = el("div", { class: "list" }, [
+    el("div", { class: "sk-shimmer", attrs: { "aria-hidden": "true" } }, Array.from({ length: 8 }, () =>
+      el("div", { class: "sk-row" }, [
+        el("span", { class: "sk sk-ic" }), el("span", { class: "sk" }), el("span", { class: "sk" }), el("span", { class: "sk" }),
+      ]))),
+  ]);
   // The line under the last loaded row while there are more; nearing it
   // asks main for the next page. Asked once per page: a further scroll
   // while that read is in flight finds the limit already past the rows.
@@ -337,13 +352,27 @@ async function renderAudit() {
   // The table (and its tbody) persist across refreshes so row nodes are reused,
   // not rebuilt — that keeps an in-progress insert animation alive and lets a
   // burst of streamed events update a row in place instead of recreating it.
-  const tbody = el("tbody");
-  const table = el("table", {}, [
-    el("thead", {}, [el("tr", {}, [
-      el("th", { text: "Time" }), el("th", { text: "Decision" }), el("th", { text: "Status" }), el("th", { text: "Activity" }),
-    ])]),
-    tbody,
-  ]);
+  //
+  // To assistive tech it is a listbox: one tab stop, each row an option whose
+  // name is its cells in reading order (activity, decision, status, time), and
+  // the arrow keys move the selection the detail pane follows.
+  const tbody = el("tbody", { attrs: { role: "presentation" } });
+  const table = el("table", {
+    class: "activity",
+    attrs: { role: "listbox", "aria-label": "Activity", tabindex: "0" },
+  }, [tbody]);
+  table.addEventListener("keydown", (e) => {
+    const step = { ArrowDown: 1, ArrowUp: -1, Home: -Infinity, End: Infinity }[e.key];
+    if (step === undefined || !tbody.children.length) return;
+    e.preventDefault();
+    const order = [...tbody.children];
+    const at = order.findIndex((tr) => tr.classList.contains("sel"));
+    const next = order[Math.max(0, Math.min(order.length - 1, at + step))];
+    next.scrollIntoView({ block: "nearest" });
+    selectedId = next.dataset.id;
+    dismissedGatekeeperDetailId = null;
+    refreshAudit();
+  });
 
   auditMounted = {
     listBox, detailScroll, count, chipsBox, clearBtn, searchInput, table, tbody, rows: new Map(),
@@ -545,6 +574,7 @@ async function refreshAuditNow(opts) {
   }
 
   // Create/update each row, reusing existing nodes so animations survive.
+  const verdicts = [];
   shown.forEach((a) => {
     let r = rows.get(a.id);
     if (!r) {
@@ -552,9 +582,16 @@ async function refreshAuditNow(opts) {
       rows.set(a.id, r);
       if (animateNew) enterRows.push(r.tr);
     }
-    updateAuditRow(r, a);
-    r.tr.classList.toggle("sel", a.id === selectedId);
+    const verdict = updateAuditRow(r, a, !!opts.followTop && !reduceMotion);
+    if (verdict) verdicts.push({ tr: r.tr, verdict });
+    const sel = a.id === selectedId;
+    r.tr.classList.toggle("sel", sel);
+    r.tr.setAttribute("aria-selected", String(sel));
   });
+  sweepVerdicts(verdicts);
+  const active = rows.get(selectedId)?.tr;
+  if (active) table.setAttribute("aria-activedescendant", active.id);
+  else table.removeAttribute("aria-activedescendant");
 
   // Put the rows in the desired (newest-first) order with minimal DOM moves, so
   // nodes that don't move keep their running animations undisturbed.
@@ -625,6 +662,9 @@ function hostOf(url) {
 // can collapse to zero (a real table row won't shrink below its content) and
 // grow to push the rows below it down. Content is later updated IN PLACE so a
 // burst of streamed events never recreates (and thus never interrupts) the row.
+// Cells run in reading order — what happened, the verdict, the outcome, when —
+// which is also the order a screen reader speaks the option.
+let auditRowSeq = 0;
 function createAuditRow(id) {
   const timeCw = el("div", { class: "cw" });
   const decisionCw = el("div", { class: "cw" });
@@ -632,12 +672,13 @@ function createAuditRow(id) {
   const iconWrap = el("span", { class: "ic-wrap" });
   const titleSpan = el("span", { class: "t-title" });
   const actCw = el("div", { class: "cw" }, [el("div", { class: "t-act" }, [iconWrap, titleSpan])]);
-  const tr = el("tr", {}, [
-    el("td", { class: "t-time" }, [timeCw]),
+  const tr = el("tr", { attrs: { role: "option", id: `activity-row-${++auditRowSeq}`, "aria-selected": "false" } }, [
+    el("td", {}, [actCw]),
     el("td", {}, [decisionCw]),
     el("td", { class: "t-dec" }, [badgeCw]),
-    el("td", {}, [actCw]),
+    el("td", { class: "t-time" }, [timeCw]),
   ]);
+  tr.dataset.id = id;
   // Select on mouse down (feels immediate, before the click completes).
   tr.addEventListener("mousedown", () => {
     selectedId = id;
@@ -646,53 +687,117 @@ function createAuditRow(id) {
   });
   return {
     tr, timeCw, decisionCw, badgeCw, iconWrap, titleSpan,
-    time: null, decision: null, decisionTone: null, tone: null, status: null, title: null, kind: null,
+    time: null, today: null, decision: null, decisionTone: null, decisionKind: null,
+    tone: null, status: null, statusKind: null, title: null, kind: null,
   };
 }
 
-// The Decision cell: who let this happen, as a pill — without the dot the
-// other tabs' pills carry, since the fill already says it. Empty for a row
-// that had no authorization step.
-function decisionMark(a) {
+function isToday(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+}
+
+// The Decision cell: who let this happen, as setup's mark (a check allowed,
+// a cross refused) beside the word. Empty for a row that had no
+// authorization step. `fresh` draws the mark in: the verdict just landed.
+const DECISION_GLYPHS = { green: "checkmark", red: "close", amber: "clock" };
+function decisionMark(a, fresh = false) {
   if (!a.decision) return el("span", { class: "dec-none" });
-  return el("span", { class: `badge b-${a.decisionTone || "zinc"}`, text: a.decision });
+  const tone = a.decisionTone || "zinc";
+  // auditView's decided("Pending") is the one verdict still to come.
+  return el("span", { class: `mark mark-${tone}` + (a.decision === "Pending" ? " pending" : "") + (fresh ? " just-decided" : "") }, [
+    icon(DECISION_GLYPHS[tone] ?? "ring", { class: "ico mark-glyph" }),
+    el("span", { text: a.decision }),
+  ]);
 }
 
 // The Status cell: what happened to the work, as a colored word rather than
-// a second pill. Empty when nothing ran.
+// a second pill; running work gets a breathing dot. Empty when nothing ran.
 function statusPill(a) {
   if (!a.status) return el("span", { class: "dec dec-none" });
-  return el("span", { class: `dec dec-${a.tone || "zinc"}`, text: a.status });
+  return el("span", { class: `dec dec-${a.tone || "zinc"}` + (a.statusKind === "running" ? " live" : "") }, [
+    el("span", { class: "dec-dot", attrs: { "aria-hidden": "true" } }),
+    el("span", { text: a.status }),
+  ]);
 }
 
-// Update a row's content in place, touching only what changed.
-function updateAuditRow(r, a) {
+// Update a row's content in place, touching only what changed. `live` is a
+// change streaming in while the list is on screen (and motion is welcome).
+// Returns "allow" or "deny" when that change was this row's verdict landing.
+function updateAuditRow(r, a, live = false) {
+  let verdict = null;
   r.tr.classList.toggle("gatekeeper-denied-row", a.decisionKind === "denied");
-  if (r.time !== a.ts) { r.timeCw.textContent = fmtDayTime(a.ts); r.time = a.ts; }
+  const today = isToday(a.ts);
+  if (r.time !== a.ts || r.today !== today) {
+    // Today's rows say the time; older ones the day too. To the second either
+    // way: audit rows are often seconds apart.
+    r.timeCw.textContent = today ? fmtClock(a.ts) : fmtDayTime(a.ts);
+    r.time = a.ts;
+    r.today = today;
+  }
   if (r.decisionTone !== a.decisionTone || r.decision !== a.decision) {
-    r.decisionCw.replaceChildren(decisionMark(a));
+    // A verdict landing on a row that was waiting for one, while it is watched.
+    const decided = live && r.decision !== null &&
+      (r.decisionKind === "none" || r.decisionKind === "unanswered") &&
+      (a.decisionKind === "allowed" || a.decisionKind === "denied");
+    r.decisionCw.replaceChildren(decisionMark(a, decided));
+    if (decided) verdict = a.decisionKind === "denied" ? "deny" : "allow";
     r.decisionTone = a.decisionTone; r.decision = a.decision;
   }
-  if (r.tone !== a.tone || r.status !== a.status) {
+  r.decisionKind = a.decisionKind;
+  if (r.tone !== a.tone || r.status !== a.status || r.statusKind !== a.statusKind) {
     r.badgeCw.replaceChildren(statusPill(a));
-    r.tone = a.tone; r.status = a.status;
+    r.tone = a.tone; r.status = a.status; r.statusKind = a.statusKind;
   }
   if (r.kind !== a.kind) { r.iconWrap.replaceChildren(icon(a.kind)); r.kind = a.kind; }
   if (r.title !== a.title) { r.titleSpan.textContent = a.title; r.title = a.title; }
+  return verdict;
+}
+
+// The scan line is for a verdict that lands alone. Several in one refresh, or
+// one within SWEEP_QUIET_MS of the last, get their marks drawn and no sweep: a
+// busy Gatekeeper stays quiet instead of strobing the list. Five seconds is a
+// conservative start for a cadence nobody has watched yet (each review takes
+// seconds) — easy to lower once someone has. If it still reads busy, the next
+// step is sweeping denials only, not retuning this: a denial is the event
+// worth announcing, an allow is routine.
+const SWEEP_QUIET_MS = 5000;
+let lastVerdictAt = 0;
+function sweepVerdicts(verdicts) {
+  if (!verdicts.length) return;
+  const now = Date.now();
+  if (verdicts.length === 1 && now - lastVerdictAt > SWEEP_QUIET_MS) {
+    sweepRow(verdicts[0].tr, `sweep-${verdicts[0].verdict}`);
+  }
+  lastVerdictAt = now;
+}
+
+// The scan line across a row whose verdict just landed (styles.css .sweep).
+function sweepRow(tr, kind) {
+  tr.classList.remove("sweep", "sweep-allow", "sweep-deny");
+  void tr.offsetWidth; // a second verdict in a row restarts the sweep
+  tr.classList.add("sweep", kind);
+  const done = (e) => {
+    if (e.target !== tr) return; // the mark's own draw bubbles up first
+    tr.classList.remove("sweep", kind);
+    tr.removeEventListener("animationend", done);
+  };
+  tr.addEventListener("animationend", done);
 }
 
 // Insert animation: the row collapses to zero and grows (pushing the rows below
 // it down), then its content fades in once the push has mostly settled.
+const EASE = "cubic-bezier(0.2, 0.7, 0.2, 1)"; // styles.css --ease
 function animateRowEnter(tr) {
-  const push = 260;
-  const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+  const push = 200;
   for (const td of tr.children) {
     const cs = getComputedStyle(td);
     const pt = cs.paddingTop;
     const pb = cs.paddingBottom;
     td.animate(
       [{ paddingTop: "0px", paddingBottom: "0px" }, { paddingTop: pt, paddingBottom: pb }],
-      { duration: push, easing: ease },
+      { duration: push, easing: EASE },
     );
     const cw = td.firstElementChild;
     if (!cw) continue;
@@ -700,13 +805,13 @@ function animateRowEnter(tr) {
     cw.style.overflow = "hidden";
     const grow = cw.animate(
       [{ height: "0px" }, { height: h + "px" }],
-      { duration: push, easing: ease },
+      { duration: push, easing: EASE },
     );
     grow.onfinish = () => { cw.style.overflow = ""; };
-    // Fade the content in after the push is ~70% done.
+    // Fade the content in after the push is mostly done.
     cw.animate(
       [{ opacity: 0 }, { opacity: 1 }],
-      { duration: 200, delay: push * 0.7, easing: "ease-out", fill: "backwards" },
+      { duration: 160, delay: push * 0.6, easing: EASE, fill: "backwards" },
     );
   }
 }
@@ -834,8 +939,12 @@ function gatekeeperDenialDetail(a) {
   ]);
 }
 
+// What the detail pane last drew: the timeline steps beyond it are new.
+let detailSeen = { id: null, steps: 0 };
+
 function detailFor(a) {
   if (!a) return el("div", { class: "empty", text: "Select an activity." });
+  const running = a.statusKind === "running";
 
   const meta = el("dl", { class: "meta" });
   const addMeta = (k, v, mono) => {
@@ -846,24 +955,46 @@ function detailFor(a) {
   addMeta("Agent", a.agentDisplay ? `${a.agentDisplay}  ${a.agentId || ""}`.trim() : a.agentId, !a.agentDisplay);
   addMeta("Goal", a.goal);
   addMeta("Decided by", a.decidedBy);
+  addMeta("When", fmtDayTime(a.ts));
   addMeta("Intent", a.intentId, true);
   if (a.exitCode !== null && a.exitCode !== undefined) addMeta("Exit", a.exitCode);
 
-  // The header repeats the row's two cells: the decision, then the outcome.
+  // The header is the row again, in full: what happened, then the decision
+  // and the outcome — and, while it runs, for how long.
+  const head = el("div", { class: "detail-head" }, [
+    el("span", { class: "ic-wrap lg" }, [icon(a.kind)]),
+    el("div", { class: "detail-head-main" }, [
+      el("h2", { class: "detail-title", text: a.title }),
+      el("div", { class: "act-head" }, [
+        decisionMark(a),
+        statusPill(a),
+        running ? el("span", { class: "live-elapsed", attrs: { "data-since": a.ts }, text: elapsedSince(a.ts) }) : null,
+      ]),
+    ]),
+  ]);
   const children = [
     gatekeeperDenialDetail(a),
-    el("h3", { class: "act-head" }, [decisionMark(a), statusPill(a)]),
-    a.command ? el("div", { class: "cmd", text: a.command }) : null,
+    head,
+    // The exact command, unless the title already is it word for word.
+    a.command && a.command !== a.title ? el("div", { class: "cmd", text: a.command }) : null,
     meta,
   ];
   if (a.capabilities && a.capabilities.length) {
     children.push(el("div", { class: "section-label", text: "Capability bounds" }));
     children.push(el("div", { class: "capchips" }, a.capabilities.map((c) => el("span", { class: "cap", text: String(c) }))));
   }
-  if (a.timeline && a.timeline.length) {
+  // Steps that arrived since this activity was last drawn slide in; the
+  // newest step of running work breathes like its row.
+  const steps = a.timeline ?? [];
+  const seen = detailSeen.id === a.id ? detailSeen.steps : steps.length;
+  detailSeen = { id: a.id, steps: steps.length };
+  if (steps.length) {
     children.push(el("div", { class: "section-label", text: "Timeline" }));
-    children.push(el("div", { class: "timeline" }, a.timeline.map((s) =>
-      el("div", { class: "tl" + (s.state === "ok" ? " ok" : s.state === "bad" ? " bad" : "") }, [
+    children.push(el("div", { class: "timeline" }, steps.map((s, i) =>
+      el("div", {
+        class: "tl" + (s.state === "ok" ? " ok" : s.state === "bad" ? " bad" : "") +
+          (i >= seen ? " tl-new" : "") + (running && i === steps.length - 1 ? " tl-live" : ""),
+      }, [
         el("div", { class: "tt", text: s.text }),
         el("div", { class: "tm", text: fmtClock(s.at) }),
       ]),
@@ -871,6 +1002,18 @@ function detailFor(a) {
   }
   return el("div", {}, children.filter(Boolean));
 }
+
+/** How long running work has been at it: m:ss, or h:mm:ss past the hour. */
+function elapsedSince(iso) {
+  const total = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
+  const pad = (n) => String(n).padStart(2, "0");
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  return h ? `${h}:${pad(m)}:${pad(total % 60)}` : `${m}:${pad(total % 60)}`;
+}
+setInterval(() => {
+  for (const node of document.querySelectorAll(".live-elapsed")) node.textContent = elapsedSince(node.dataset.since);
+}, 1000);
 
 // ---- Gatekeeper policy (Audit header) ----
 
@@ -953,13 +1096,13 @@ function createGatekeeperCard() {
     text: "Loading…",
     attrs: { type: "button", "aria-haspopup": "menu" },
   });
-  const modeDescription = el("p", { class: "faint gatekeeper-mode-description" });
-  const rulesButton = el("button", { class: "btn", text: "View rules" });
+  const modeDescription = el("p", { class: "gatekeeper-mode-description" });
+  const rulesButton = el("button", { class: "btn small quiet", text: "View rules" });
   rulesButton.addEventListener("click", () => openRulesModal(rulesButton));
 
   const purposeInput = el("textarea", {
     class: "text",
-    attrs: { placeholder: PURPOSE_PLACEHOLDER, "aria-label": "Gatekeeper instructions" },
+    attrs: { id: "gatekeeperPurpose", rows: "1", placeholder: PURPOSE_PLACEHOLDER, "aria-label": "Gatekeeper instructions" },
   });
   purposeInput.disabled = true;
   const saveText = el("span", { text: "" });
@@ -973,21 +1116,22 @@ function createGatekeeperCard() {
   });
   inactiveNote.hidden = true;
 
+  // Two lines: the setting and what it means, then the instructions it
+  // enforces — shown in full and edited where they are read.
   const node = el("section", { class: "audit-gatekeeper" }, [
     el("div", { class: "gatekeeper-head" }, [
+      el("span", { class: "gatekeeper-icon" }, [icon("shieldCheck")]),
       el("h2", { class: "gatekeeper-title", text: "Gatekeeper" }),
       modeButton,
-      el("div", { class: "spacer" }),
+      modeDescription,
       rulesButton,
     ]),
-    modeDescription,
     el("div", { class: "gatekeeper-purpose" }, [
       el("div", { class: "gatekeeper-field-head" }, [
-        el("label", { text: "Instructions" }),
-        el("div", { class: "spacer" }),
-        saveStatus,
+        el("label", { text: "Instructions", attrs: { for: "gatekeeperPurpose" } }),
       ]),
       purposeInput,
+      saveStatus,
       inactiveNote,
     ]),
   ]);
@@ -1004,6 +1148,7 @@ function createGatekeeperCard() {
       el("span", { class: "filter-caret", text: "▾" }),
     );
     modeButton.dataset.mode = current.mode;
+    node.dataset.mode = current.mode;
     modeDescription.textContent = current.description;
     inactiveNote.hidden = current.mode === "adversarial";
   };
