@@ -111,12 +111,12 @@
 .vaultui .use-note { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--muted); }
 .vaultui .use-note svg { width: 13px; height: 13px; color: var(--blue-fg); opacity: .8; }
 .vaultui .vfoot .acts { display: flex; align-items: center; gap: 9px; }
-.vaultui .btn { font: inherit; cursor: pointer; border-radius: 8px; padding: 6px 12px; border: 1px solid var(--border-strong); background: var(--card); color: var(--fg); transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease); }
+.vaultui .btn { font: inherit; cursor: pointer; border-radius: 999px; padding: 6px 14px; border: 1px solid var(--border-strong); background: var(--card); color: var(--fg); transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease), transform var(--dur) var(--ease); }
 .vaultui .btn:hover { background: var(--hover); color: var(--fg); }
 .vaultui .btn:active { background: var(--press); }
-.vaultui .btn.save { background: var(--volt); border-color: color-mix(in srgb, var(--accent) 30%, var(--volt)); color: var(--volt-ink);
-    box-shadow: 0 8px 26px -12px var(--volt-glow); font-weight: 600; }
-.vaultui .btn.save:hover { filter: brightness(1.04); background: var(--volt); color: var(--volt-ink); }
+/* The window's primary: plow.co's ink pill. */
+.vaultui .btn.save { background: var(--fg); border-color: var(--fg); color: #fff; font-weight: 600; }
+.vaultui .btn.save:hover { background: #000; border-color: #000; color: #fff; }
 .vaultui .btn.danger { background: transparent; border-color: var(--red-bd); color: var(--red-fg); }
 .vaultui .btn.danger:hover { background: var(--red-bg); color: var(--red-fg); }
 /* Scrim: zinc-950, the neutral both palettes are built from, so it dims the
@@ -184,14 +184,12 @@
 .vaultui .trust { max-width: 560px; font-size: 12px; color: var(--muted); line-height: 1.55; margin: 0; }
 .vaultui .btn-primary {
     font: inherit; font-weight: 600; cursor: pointer;
-    background: var(--volt); color: var(--volt-ink); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--volt)); border-radius: 8px;
-    box-shadow: 0 8px 26px -12px var(--volt-glow);
-    padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
-    transition: filter var(--dur) var(--ease);
+    background: var(--fg); color: #fff; border: 1px solid var(--fg); border-radius: 999px;
+    padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+    transition: background var(--dur) var(--ease);
   }
 .vaultui .btn-primary svg { width: 15px; height: 15px; }
-.vaultui .btn-primary:hover { filter: brightness(1.06); }
-.vaultui .btn-primary:active { filter: brightness(0.97); }
+.vaultui .btn-primary:hover { background: #000; }
 .vaultui .sheet-sub { font-size: 13px; color: var(--muted); margin: 0 0 16px; }
 .vaultui .confirm-overlay { z-index: 90; }
 .vaultui .confirm-p { font-size: 13px; color: var(--muted); line-height: 1.55; margin: 9px 0 20px; }

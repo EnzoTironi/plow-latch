@@ -20,7 +20,7 @@ import {
 
 // Lift styles.css's hold on the first paint once the faces are in.
 Promise.race([
-  Promise.all([document.fonts.load('500 13px "DM Sans"'), document.fonts.load('11px "DM Mono"')]),
+  Promise.all([document.fonts.load('500 13px "DM Sans"'), document.fonts.load('11px "DM Mono"'), document.fonts.load('600 16px "Epilogue"')]),
   new Promise((resolve) => setTimeout(resolve, 400)),
 ]).finally(() => document.documentElement.classList.add("fonts-ready"));
 
