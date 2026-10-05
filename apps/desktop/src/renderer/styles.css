@@ -76,8 +76,6 @@
   --blue-bg: #eef4df; --blue-fg: #4c6606; --blue-bd: #d2e3a4;
   --zinc-bg: rgba(19, 19, 15, 0.04); --zinc-fg: #57574f; --zinc-bd: #e9e9e3;
   --focus: #13130f;
-  /* The Permissions section's "will not work" dot. */
-  --dot-off: #b0562f;
   --display: "Epilogue", "DM Sans", system-ui, sans-serif;
   --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
@@ -773,7 +771,6 @@ textarea.text { min-height: 70px; resize: vertical; }
 
 /* The Permissions section (capabilitiesModel.ts). Dots: green granted, red
    will not work as things stand (refused, or never asked), grey unknown. */
-.status-dot.off { background: var(--dot-off); }
 .cap-banner {
   display: flex; align-items: center; gap: 12px;
   max-width: var(--column); margin: 0 auto 18px;
@@ -787,7 +784,7 @@ textarea.text { min-height: 70px; resize: vertical; }
 .cap-banner > div { min-width: 0; }
 .cap-banner .spacer { flex: 1; }
 .cap-row {
-  display: grid; grid-template-columns: 8px 20px 1fr auto; align-items: center; gap: 12px;
+  display: grid; grid-template-columns: 20px 1fr auto; align-items: center; gap: 12px;
   padding: 12px 0;
 }
 /* macOS's own icon for the switch (an app's, a folder's, or the symbol
@@ -803,10 +800,10 @@ textarea.text { min-height: 70px; resize: vertical; }
 }
 .cap-google-g { width: 14px; height: 14px; display: block; }
 /* Connected accounts under the Google row: one row per account, indented
-   to where "Google" starts — the dot column, the icon column and their two
-   gaps — so the rows and their dividers begin at the head's text edge. A
-   circular person glyph stands where the row's icon goes. */
-.cap-account-rows { margin-left: 52px; }
+   to where "Google" starts — the icon column and its gap — so the rows and
+   their dividers begin at the head's text edge. A circular person glyph
+   stands where the row's icon goes. */
+.cap-account-rows { margin-left: 32px; }
 .cap-account-row { grid-template-columns: 20px 1fr auto; }
 .cap-account-rows > .cap-row, .cap-group-rows > .cap-row, .cap-group-rows > .cap-group { border-top: 1px solid var(--border); }
 .cap-person {
@@ -848,7 +845,8 @@ textarea.text { min-height: 70px; resize: vertical; }
 .menu-label { display: block; font-weight: 600; }
 .menu-description { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.35; }
 .menu-item.danger .menu-label { color: var(--red-fg); }
-.cap-row .status-dot { flex: none; }
+/* The status in words, on a row with nothing to press. */
+.cap-state { color: var(--muted); font-size: 12px; white-space: nowrap; }
 .cap-row .cap-name { font-weight: 500; }
 .cap-row .cap-sub { color: var(--muted); font-size: 12px; line-height: 1.4; margin-top: 2px; }
 .cap-row .cap-asks { font-variant-numeric: tabular-nums; }
@@ -856,7 +854,7 @@ textarea.text { min-height: 70px; resize: vertical; }
 .cap-row .cap-count { color: var(--red-fg); }
 /* The Plugins tab's rows: setup's plugin row — the kind's tile, the name and
    its lines, the status in words, and the on/off switch. A requirement under
-   it indents past the tile and keeps its own dot. */
+   it indents past the tile. */
 .plugin-row { grid-template-columns: 34px 1fr auto auto; gap: 14px; }
 .plugin-tile {
   width: 34px; height: 34px; border-radius: 10px;
@@ -865,8 +863,7 @@ textarea.text { min-height: 70px; resize: vertical; }
 }
 .plugin-tile .ico { width: 16px; height: 16px; stroke-width: 1.8; }
 .plugin-row .dec { min-width: 0; }
-.plugin-req { grid-template-columns: 8px 1fr auto; }
-.plugin-req .status-dot.off { background: var(--amber-fg); }
+.plugin-req { grid-template-columns: 1fr auto; }
 .plugin-name { display: flex; align-items: center; gap: 8px; }
 .plugin-name .badge {
   padding: 1px 6px; border-radius: 5px;
@@ -887,15 +884,15 @@ textarea.text { min-height: 70px; resize: vertical; }
 }
 .cap-group-head:hover .cap-name { text-decoration: underline; text-underline-offset: 3px; }
 .cap-group-head:hover .cap-chevron { color: var(--fg); }
-/* The chevron sits in the dot's 8px column, centred on it. */
-.cap-chevron-cell { width: 8px; display: flex; justify-content: center; align-items: center; }
+.cap-group-head { grid-template-columns: 20px 1fr auto auto; }
 /* 16px box, and a stroke of 3 in the glyph's 24-unit viewBox is 2px on
    screen at that size. */
 .cap-chevron { width: 16px; height: 16px; stroke-width: 3; flex: none; color: var(--muted); transform: rotate(-90deg); transition: transform var(--dur) var(--ease), color var(--dur) var(--ease); }
 .cap-chevron.open { transform: rotate(0deg); }
 /* The count wears a button's box so the line is a button's height. */
 .cap-group-count { display: inline-flex; align-items: center; min-height: 30px; color: var(--muted); font: 400 11.5px var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.cap-group-rows { padding-left: 20px; padding-bottom: 4px; }
+/* A group's rows start where its name does: their icons under its text. */
+.cap-group-rows { padding-left: 32px; padding-bottom: 4px; }
 /* A plugin's requirements line up under its name, past the tile. */
 .cap-group:has(> .plugin-row) > .cap-group-rows { padding-left: 48px; }
 @media (prefers-reduced-motion: reduce) { .cap-chevron { transition: none; } }

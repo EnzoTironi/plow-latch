@@ -2511,24 +2511,19 @@ function permissionsPane({ reveal = false } = {}) {
   };
 
   const capabilityRow = (r) => {
-    // Three dots: green works; red will NOT work as things stand, whether
-    // macOS refused it or has simply never been asked — an agent's request
-    // fails either way until the owner acts; grey when this Mac cannot tell
-    // (an app that is not open, no helper). The tooltip keeps the words.
-    const dotClass =
-      r.status === "granted" ? " on"
-      : r.needsAttention || r.status === "denied" || r.status === "not_asked" ? " off"
-      : "";
+    // No status dot: the right edge says it — "Granted", the button that
+    // grants it, or, when there is nothing to press, the status in words.
     let action;
     // A word, not a button: nothing to press once it is granted.
     if (r.status === "granted") action = el("span", { class: "cap-granted", text: "Granted" });
     else if (r.actionLabel) {
-      // Plain, whatever the row's state: the amber dot and the request line
-      // already say which rows need a decision, and a blue button would read
+      // Plain, whatever the row's state: the request line already says which
+      // rows need a decision, and a filled button would read
       // as "the one thing to do here" when every row is the owner's call.
-      action = el("button", { class: "btn", text: r.actionLabel });
+      // The status rides on the button for VoiceOver ("…, Not granted").
+      action = el("button", { class: "btn", text: r.actionLabel, attrs: { "aria-description": r.statusText } });
       action.addEventListener("click", () => act(r.key, action));
-    } else action = el("span");
+    } else action = el("span", { class: "cap-state", text: r.statusText });
     // What the switch stopped, as a third line under the name — the count,
     // when, who, and the link to the requests themselves (an explicit link:
     // a row that merely opened on click never read as something to click).
@@ -2555,7 +2550,6 @@ function permissionsPane({ reveal = false } = {}) {
       : action;
     if (asks && r.actionLabel) action.classList.add("attention");
     const children = [
-      el("span", { class: "status-dot" + dotClass, attrs: { title: r.statusText } }),
       iconCell(r.key),
       el("div", {}, [
         el("div", { class: "cap-name", text: r.title }),
@@ -2642,7 +2636,6 @@ function permissionsPane({ reveal = false } = {}) {
       ]);
     });
     const head = el("div", { class: "cap-row" }, [
-      el("span", { class: "status-dot" + (google.accounts.length ? " on" : "") }),
       googleMark(),
       el("div", {}, [
         el("div", { class: "cap-name", text: "Google" }),
@@ -2671,17 +2664,17 @@ function permissionsPane({ reveal = false } = {}) {
     if (seen !== undefined && newest > seen) openGroups.set(g.key, true);
     groupNewest.set(g.key, newest);
     const open = openGroups.get(g.key);
-    // The row grid's own shape — the chevron where a row keeps its dot, the
-    // name and line where a row keeps its own, the count where a row keeps
-    // its button — so a group line is exactly as tall as a switch's.
+    // The row grid's own shape — the icon, the name and line, the count where
+    // a row keeps its button, then the disclosure chevron at the right edge —
+    // so a group line is exactly as tall as a switch's.
     const head = el("button", { class: "cap-row cap-group-head", attrs: { type: "button", "aria-expanded": String(open) } }, [
-      el("span", { class: "cap-chevron-cell" }, [icon("chevron", { class: "ico cap-chevron" + (open ? " open" : "") })]),
       iconCell(`group:${g.key}`),
       el("div", {}, [
         el("div", { class: "cap-name", text: g.title }),
         el("div", { class: "cap-sub", text: g.description }),
       ]),
       el("span", { class: "cap-group-count", text: `${g.granted} of ${g.total} granted` }),
+      icon("chevron", { class: "ico cap-chevron" + (open ? " open" : "") }),
     ]);
     head.addEventListener("click", async () => {
       openGroups.set(g.key, !open);
@@ -2782,7 +2775,6 @@ async function renderPlugins() {
       }
     });
     return el("div", { class: "cap-row plugin-req" }, [
-      el("span", { class: "status-dot off" }),
       el("div", {}, [
         el("div", { class: "cap-name", text: u.title }),
         el("div", { class: "cap-sub", text: u.detail }),
@@ -2791,6 +2783,9 @@ async function renderPlugins() {
     ]);
   };
 
+  // What each plugin works with, not how it runs (every CLI plugin was a
+  // terminal prompt, which said nothing). An unknown plugin keeps that one.
+  const PLUGIN_ICONS = { gog: "mail", messages: "messages", wiki: "note" };
   const pluginRow = (r) => {
     const s = STATUS[r.status];
     const box = el("input", { attrs: { type: "checkbox", "aria-label": `Turn ${r.title} on or off` } });
@@ -2804,10 +2799,10 @@ async function renderPlugins() {
         box.disabled = false;
       }
     });
-    // Setup's plugin row: the kind's tile, the name with its kind beside it,
-    // what it does — then the status in words and the switch.
+    // The plugin's row: a tile saying what it works with, the name with its
+    // kind beside it, what it does — then the status in words and the switch.
     const head = el("div", { class: "cap-row plugin-row" }, [
-      el("span", { class: "plugin-tile" }, [icon(r.kind === "Browser" ? "browser" : "command")]),
+      el("span", { class: "plugin-tile" }, [icon(r.kind === "Browser" ? "browser" : PLUGIN_ICONS[r.name] ?? "command")]),
       el("div", {}, [
         el("div", { class: "cap-name plugin-name" }, [
           el("span", { text: r.title }),
