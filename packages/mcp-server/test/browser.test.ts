@@ -106,7 +106,7 @@ const act = (server: DomoMcpServer, session: string, action: string, extra: Reco
   callTool(server, "plow_browser", { session, action, ...extra }, AGENT);
 
 describe("browser tools (fake runtime)", () => {
-  it("returns a click_at result and rejects missing coordinates", async () => {
+  it("returns a click_at result and lets a fill clear a field", async () => {
     const { server } = makeServer();
     const session = await open(server, ["pizza.example"]);
     await act(server, session, "goto", { url: "https://pizza.example/verify" });
@@ -115,9 +115,39 @@ describe("browser tools (fake runtime)", () => {
     expect(clicked.isError, JSON.stringify(clicked.payload)).toBe(false);
     expect(clicked.payload).toMatchObject({ ok: true, x: 120, y: 80 });
 
-    const missing = await act(server, session, "click_at", { x: 120 });
-    expect(missing.isError).toBe(true);
-    expect(JSON.stringify(missing.payload)).toMatch(/integer viewport coordinates/i);
+    // An empty value is how a field clears, so it is not a missing argument.
+    const cleared = await act(server, session, "fill", { selector: "#q", value: "" });
+    expect(cleared.isError, JSON.stringify(cleared.payload)).toBe(false);
+    expect(cleared.payload).toMatchObject({ ok: true });
+  });
+
+  // Each of these once reached the browser and came back as something else:
+  // a scope refusal, "no frame has undefined", a timeout, or a bare success.
+  // Presence is the actionArgs table; types are the schema, which the SDK
+  // enforces before run().
+  it.each([
+    ["plow_browser", { action: "goto" }, "goto requires 'url'"],
+    ["plow_browser", { action: "goto", url: "" }, "goto requires 'url'"],
+    ["plow_browser", { action: "click", timeout_ms: 5000 }, "click requires 'selector'"],
+    ["plow_browser", { action: "fill", value: "jon" }, "fill requires 'selector'"],
+    ["plow_browser", { action: "fill", selector: "#q" }, "fill requires 'value'"],
+    ["plow_browser", { action: "eval" }, "eval requires 'expression'"],
+    ["plow_browser", { action: "click_at", x: 120 }, "click_at requires 'y'"],
+    ["plow_browser", { action: "click_at", x: "120", y: 80 }, "Input validation error: Invalid arguments for tool plow_browser: data/x must be integer"],
+    ["plow_browser", { action: "click_at", x: 12.5, y: 80 }, "Input validation error: Invalid arguments for tool plow_browser: data/x must be integer"],
+    ["plow_browser", { action: "use_page" }, "use_page requires 'index'"],
+    ["plow_vault", { action: "describe" }, "describe requires 'item'"],
+  ])("%s %j names what is missing and does nothing", async (tool, args, error) => {
+    const { server, device, cmdLog } = makeServer();
+    const session = await open(server, ["pizza.example"]);
+    await act(server, session, "goto", { url: "https://pizza.example/" });
+    const sentBefore = fs.readFileSync(cmdLog, "utf8");
+
+    const r = await callTool(server, tool, tool === "plow_browser" ? { session, ...args } : args, AGENT);
+    expect(r.isError).toBe(true);
+    expect(r.payload).toEqual({ error });
+    expect(fs.readFileSync(cmdLog, "utf8")).toBe(sentBefore);
+    expect(events(device)).not.toContain("browser_scope_violation");
   });
 
   it("advertises the browsing skill via plow_list_skills + plow_read_skill", async () => {
