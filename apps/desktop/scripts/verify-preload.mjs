@@ -21,6 +21,7 @@ import { launchAtLoginState, setLaunchAtLogin } from "../dist/loginItem.js";
 import { capabilitiesView } from "../dist/capabilitiesModel.js";
 import { grantList, pluginRows } from "../dist/pluginsModel.js";
 import { parseManifest } from "@domo/device-core";
+import { settleMotion } from "./screenshot-harness.mjs";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(dir, "../dist");
@@ -447,6 +448,7 @@ async function clickCloudButton(win, label) {
  * happen. `waitFor` cannot stand in for it; a poll sees state, not paint.
  */
 async function captureAfterPaint(win, outputPath) {
+  await settleMotion(win);
   await win.webContents.executeJavaScript(
     `new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(null))))`,
   );
@@ -1755,8 +1757,9 @@ app.whenReady().then(async () => {
   connectorProbe.google.accounts = connectedAccounts;
 
   // The permission inventory, now a section of Settings: on a Mac whose
-  // inventory says Full Disk Access is off, the row names the permission, its
-  // dot says so honestly, the line gives the Messages use case, and the one
+  // inventory says Full Disk Access is off, the row names the permission, says
+  // so honestly (never "Granted"; its button carries "Not granted" for
+  // VoiceOver), the line gives the Messages use case, and the one
   // button routes the grant through System Settings (a key into main's table —
   // the renderer never holds the URL). Nothing has been blocked, so no banner.
   await win.webContents.executeJavaScript(`window.__domoSelectTab && window.__domoSelectTab("settings")`);
@@ -1768,7 +1771,8 @@ app.whenReady().then(async () => {
     const fda = rows.find((r) => r.querySelector(".cap-name")?.textContent === "Full Disk Access");
     return {
       hasFdaRow: !!fda,
-      fdaSaysNotGranted: fda?.querySelector(".status-dot")?.getAttribute("title") === "Not granted",
+      fdaSaysNotGranted: !fda?.querySelector(".cap-granted") &&
+        fda?.querySelector("button.btn")?.getAttribute("aria-description") === "Not granted",
       fdaNamesMessages: (fda?.querySelector(".cap-sub")?.textContent ?? "").includes("Messages"),
       fdaOffersSystemSettings: fda?.querySelector("button.btn")?.textContent.trim() === "Allow in System Settings…",
       // A granted switch is a word, not a button.

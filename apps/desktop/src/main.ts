@@ -419,6 +419,11 @@ type ApprovalRequest = { kind: "intent"; view: ReturnType<typeof approvalViewMod
  */
 const approvalQueue = new ApprovalQueue();
 
+/** A window's colour before its page paints — the page's own background
+ *  (styles.css --bg, plow.co's taupe in every appearance), so nothing flashes
+ *  while one opens. */
+const WINDOW_BACKGROUND = "#f4f4ef";
+
 function openApprovalWindow(
   request: ApprovalRequest,
   // Resolves to what the adversarial agent had to say, or null when it is not
@@ -432,6 +437,7 @@ function openApprovalWindow(
       resizable: false,
       fullscreenable: false,
       title: "Plow Latch — Approve",
+      backgroundColor: WINDOW_BACKGROUND,
       webPreferences: {
         preload: path.join(dirname, "preload.cjs"),
         contextIsolation: true,
@@ -520,6 +526,11 @@ function createMainWindow(): void {
     y: bounds?.y,
     title: "Plow Latch",
     titleBarStyle: "hiddenInset",
+    backgroundColor: WINDOW_BACKGROUND,
+    // Five labelled sections, the traffic lights and the connection line need
+    // this much; narrower, they collide (the labels stay — a bare icon is a guess).
+    minWidth: 780,
+    minHeight: 520,
     webPreferences: {
       preload: path.join(dirname, "preload.cjs"),
       contextIsolation: true,
