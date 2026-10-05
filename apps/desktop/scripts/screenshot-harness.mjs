@@ -66,12 +66,12 @@ export async function waitFor(win, expr, label, timeoutMs = 10_000) {
  * hidden window whose frames are throttled. Capped, so a long entrance cannot
  * stall a run.
  */
-export async function settleMotion(win, capMs = 1000) {
+export async function settleMotion(win) {
   const ms = await win.webContents.executeJavaScript(`Math.max(0, ...document.getAnimations().map((a) => {
     const t = a.effect && a.effect.getComputedTiming();
     return t && Number.isFinite(t.endTime) && a.playState === "running" ? t.endTime - (t.localTime ?? 0) : 0;
   }))`);
-  if (ms > 0) await new Promise((r) => setTimeout(r, Math.min(ms, capMs) + 20));
+  if (ms > 0) await new Promise((r) => setTimeout(r, Math.min(ms, 1000) + 20));
 }
 
 /**

@@ -687,15 +687,9 @@ function createAuditRow(id) {
   });
   return {
     tr, timeCw, decisionCw, badgeCw, iconWrap, titleSpan,
-    time: null, today: null, decision: null, decisionTone: null, decisionKind: null,
+    time: null, decision: null, decisionTone: null, decisionKind: null,
     tone: null, status: null, statusKind: null, title: null, kind: null,
   };
-}
-
-function isToday(iso) {
-  const d = new Date(iso);
-  const now = new Date();
-  return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
 }
 
 // The Decision cell: who let this happen, as setup's mark (a check allowed,
@@ -728,14 +722,9 @@ function statusPill(a) {
 function updateAuditRow(r, a, live = false) {
   let verdict = null;
   r.tr.classList.toggle("gatekeeper-denied-row", a.decisionKind === "denied");
-  const today = isToday(a.ts);
-  if (r.time !== a.ts || r.today !== today) {
-    // Today's rows say the time; older ones the day too. To the second either
-    // way: audit rows are often seconds apart.
-    r.timeCw.textContent = today ? fmtClock(a.ts) : fmtDayTime(a.ts);
-    r.time = a.ts;
-    r.today = today;
-  }
+  // The day and the time, to the second (audit rows are often seconds
+  // apart) — never clock-only, which goes stale on a list left open overnight.
+  if (r.time !== a.ts) { r.timeCw.textContent = fmtDayTime(a.ts); r.time = a.ts; }
   if (r.decisionTone !== a.decisionTone || r.decision !== a.decision) {
     // A verdict landing on a row that was waiting for one, while it is watched.
     const decided = live && r.decision !== null &&
@@ -3226,7 +3215,10 @@ window.domo.onShowSettings(async () => {
 // The permission rows sit at the foot of Settings, so the pane opens there.
 let revealPermissions = false;
 window.domo.onShowCapabilities(async () => {
-  if (currentTab === "settings") view.querySelector(".permissions > *")?.scrollIntoView({ block: "start" });
+  // Not drawn yet — another tab, or Settings still rendering — and the render
+  // reveals them when it mounts them.
+  const target = currentTab === "settings" && view.querySelector(".permissions > *");
+  if (target) target.scrollIntoView({ block: "start" });
   else revealPermissions = true;
   if (await selectTab("settings")) window.domo.uiSetTab("settings");
 });
