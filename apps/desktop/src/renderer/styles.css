@@ -1,7 +1,8 @@
 /* The main window's design system is plow.co's (/build, /latch): DM Sans and
    DM Mono for reading, Epilogue for headings, a taupe canvas with white
-   hairline cards, warm ink, black pill buttons, and volt kept to small chips
-   and the one live state. Panes name tokens, never colours. */
+   hairline cards, warm ink, pill buttons with Volt (#D5EF8A) for the one
+   primary and the switches, and volt-deep where green has to be read as
+   text. Panes name tokens, never colours. */
 @font-face {
   font-family: "DM Sans";
   font-style: normal;
@@ -695,10 +696,12 @@ dl.meta dd { margin: 0; overflow-wrap: anywhere; line-height: 1.4; }
 .ext-arrow { color: var(--faint); font-size: 13px; }
 .btn.danger { color: var(--red-fg); border-color: var(--red-bd); }
 .btn.danger:hover { border-color: var(--red-fg); }
-.btn.primary { background: var(--fg); color: #fff; border-color: var(--fg); font-weight: 600; }
-.btn.primary:hover { background: #000; border-color: #000; }
-.btn.primary:active { background: #000; }
-.btn.primary:disabled:hover { background: var(--fg); border-color: var(--fg); }
+/* The one primary action: Volt with volt-ink text, as setup's "Get started"
+   and plow.co's green button. */
+.btn.primary { background: var(--volt); color: var(--volt-ink); border-color: var(--volt); font-weight: 600; }
+.btn.primary:hover { background: #c9e879; border-color: #c9e879; }
+.btn.primary:active { background: #c9e879; }
+.btn.primary:disabled:hover { background: var(--volt); border-color: var(--volt); }
 .btn.quiet { border-color: transparent; background: transparent; color: var(--muted); }
 .btn.quiet:hover { background: var(--hover); border-color: transparent; color: var(--fg); }
 input.text, textarea.text, select.text {
@@ -910,7 +913,7 @@ textarea.text { min-height: 70px; resize: vertical; }
 }
 @media (prefers-reduced-motion: reduce) { .cap-nudge { animation: none; } }
 /* The button a row is waiting on: an amber edge and a soft halo. */
-.btn.attention { border-color: var(--amber-bd); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber-fg) 14%, transparent); }
+.btn.attention { border-color: #a9c45a; box-shadow: 0 0 0 3px var(--volt); }
 .btn.attention:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 /* "See blocked requests…": a link, so it reads as something to click,
    where a bare row did not. */
