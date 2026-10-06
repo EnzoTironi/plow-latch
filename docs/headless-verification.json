@@ -117,7 +117,7 @@
         "nativeOutsideHomeDenied": true,
         "builtMcpAppsResourceRead": true,
         "pluginProcessDuringCalls": true,
-        "executingVersion": "0.1.4-dev",
+        "executingVersion": "0.1.6-dev",
         "nativeInsideIsolatedPlowExecuted": true,
         "hostClose": {
           "gracefulEof": true,
@@ -166,7 +166,7 @@
         "nativeOutsideHomeDenied": true,
         "builtMcpAppsResourceRead": true,
         "pluginProcessDuringCalls": true,
-        "executingVersion": "0.1.4-dev",
+        "executingVersion": "0.1.6-dev",
         "nativeInsideIsolatedPlowExecuted": true,
         "hostClose": {
           "gracefulEof": true,
@@ -176,10 +176,6 @@
       },
       {
         "phase": "update",
-        "installation": {
-          "authPolicy": "ON_USE",
-          "appsNeedingAuth": []
-        },
         "runtimeStatus": "connected",
         "tools": [
           "latch_call_connection",
@@ -219,7 +215,7 @@
         "nativeOutsideHomeDenied": true,
         "builtMcpAppsResourceRead": true,
         "pluginProcessDuringCalls": true,
-        "executingVersion": "0.1.5-lifecycle",
+        "executingVersion": "0.1.7-lifecycle",
         "nativeInsideIsolatedPlowExecuted": true,
         "hostClose": {
           "gracefulEof": true,
@@ -229,10 +225,6 @@
       },
       {
         "phase": "rollback",
-        "installation": {
-          "authPolicy": "ON_USE",
-          "appsNeedingAuth": []
-        },
         "runtimeStatus": "connected",
         "tools": [
           "latch_call_connection",
@@ -272,7 +264,7 @@
         "nativeOutsideHomeDenied": true,
         "builtMcpAppsResourceRead": true,
         "pluginProcessDuringCalls": true,
-        "executingVersion": "0.1.4-dev",
+        "executingVersion": "0.1.6-dev",
         "nativeInsideIsolatedPlowExecuted": true,
         "hostClose": {
           "gracefulEof": true,
@@ -293,10 +285,6 @@
       },
       {
         "phase": "reinstall",
-        "installation": {
-          "authPolicy": "ON_USE",
-          "appsNeedingAuth": []
-        },
         "runtimeStatus": "connected",
         "tools": [
           "latch_call_connection",
@@ -336,7 +324,7 @@
         "nativeOutsideHomeDenied": true,
         "builtMcpAppsResourceRead": true,
         "pluginProcessDuringCalls": true,
-        "executingVersion": "0.1.4-dev",
+        "executingVersion": "0.1.6-dev",
         "nativeInsideIsolatedPlowExecuted": true,
         "hostClose": {
           "gracefulEof": true,
@@ -351,7 +339,7 @@
     "surface": "packaged STDIO runtime with a system-only PATH",
     "chatgptOwnerVerified": false,
     "modelCalls": 0,
-    "manifestFilesVerified": 3300,
+    "manifestFilesVerified": 3302,
     "tools": [
       "latch_call_connection",
       "latch_hub_query",
@@ -386,5 +374,55 @@
     "status": "passed",
     "processAfterClose": false
   },
-  "review": "Two independent mixed-ciphertext reproductions and 30 relevant tests passed after fixes. No remaining actionable finding in the reviewed application scope."
+  "review": "Two independent mixed-ciphertext reproductions and 30 relevant tests passed after fixes. No remaining actionable finding in the reviewed application scope.",
+  "stackUnits": [
+    {
+      "branch": "codex/latch-plugin-native",
+      "workspaceBuildPassed": true,
+      "tests": {
+        "numTotalTests": 2695,
+        "numPassedTests": 2684,
+        "numFailedTests": 0,
+        "numPendingTests": 11,
+        "success": true
+      },
+      "scope": "workspace suite"
+    },
+    {
+      "branch": "codex/latch-plugin-runtime",
+      "workspaceBuildPassed": true,
+      "tests": {
+        "numTotalTests": 92,
+        "numPassedTests": 92,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "success": true
+      },
+      "scope": "scoped package tests"
+    },
+    {
+      "branch": "codex/latch-plugin-owner-services",
+      "workspaceBuildPassed": true,
+      "tests": {
+        "numTotalTests": 2832,
+        "numPassedTests": 2821,
+        "numFailedTests": 0,
+        "numPendingTests": 11,
+        "success": true
+      },
+      "scope": "workspace suite"
+    },
+    {
+      "branch": "codex/latch-plugin-panel",
+      "workspaceBuildPassed": true,
+      "tests": {
+        "numTotalTests": 12,
+        "numPassedTests": 12,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "success": true
+      },
+      "scope": "scoped package tests"
+    }
+  ]
 }
