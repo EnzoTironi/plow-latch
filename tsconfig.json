@@ -32,6 +32,9 @@
       "path": "packages/connector-runtime"
     },
     {
+      "path": "apps/headless"
+    },
+    {
       "path": "packages/owner-services"
     },
     {

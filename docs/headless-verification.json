@@ -1,0 +1,428 @@
+{
+  "sourceBase": "46428fc7eb3d512767511e5af3f688a27afef7ad",
+  "chatgptOwnerVerified": false,
+  "officialPublication": false,
+  "suite": {
+    "numTotalTests": 2844,
+    "numPassedTests": 2833,
+    "numFailedTests": 0,
+    "numPendingTests": 11,
+    "success": true,
+    "workerLimit": 4,
+    "ignoredReason": "11 existing Camoufox integration cases require actual browser assets"
+  },
+  "ui": {
+    "host": "local MCP Apps verification host",
+    "ownerAssurance": "test_host",
+    "chatgptOwnerVerified": false,
+    "results": [
+      {
+        "name": "one built widget initializes through AppBridge",
+        "status": "passed"
+      },
+      {
+        "name": "embedded brand fonts load in the sandboxed widget",
+        "status": "passed"
+      },
+      {
+        "name": "keyboard navigation moves focus and selects the visible panel",
+        "status": "passed"
+      },
+      {
+        "name": "memory create, correction and search use persisted service state",
+        "status": "passed"
+      },
+      {
+        "name": "native file operation waits for the separate host decision",
+        "status": "passed"
+      },
+      {
+        "name": "connection review produces one effect, durable result and settled cost",
+        "status": "passed"
+      },
+      {
+        "name": "owner settings support refusal and a bound accepted change",
+        "status": "passed"
+      },
+      {
+        "name": "maintained preference controls require confirmation and use real settings",
+        "status": "passed"
+      },
+      {
+        "name": "memory removal deletes the real record",
+        "status": "passed"
+      },
+      {
+        "name": "memory pagination retrieves records beyond the initial page",
+        "status": "passed"
+      },
+      {
+        "name": "small viewport keeps the page within its width",
+        "status": "passed"
+      },
+      {
+        "name": "host dark theme and reduced motion preferences reach the widget",
+        "status": "passed"
+      },
+      {
+        "name": "an unverified host keeps owner controls disabled",
+        "status": "passed"
+      }
+    ],
+    "consoleErrors": []
+  },
+  "installedLifecycle": {
+    "surface": "Codex app-server installed plugin protocol",
+    "modelCalls": 0,
+    "chatgptOwnerVerified": false,
+    "pluginId": "latch-headless-dev@latch-development",
+    "phases": [
+      {
+        "phase": "installed",
+        "runtimeStatus": "connected",
+        "tools": [
+          "latch_call_connection",
+          "latch_hub_query",
+          "latch_job_status",
+          "latch_memory",
+          "latch_open_hub",
+          "latch_owner_command",
+          "latch_owner_propose",
+          "latch_owner_query",
+          "latch_review_connection",
+          "latch_review_intent",
+          "plow_browser",
+          "plow_browser_close",
+          "plow_browser_open",
+          "plow_browser_request",
+          "plow_device_status",
+          "plow_get_output",
+          "plow_get_result",
+          "plow_history",
+          "plow_list_skills",
+          "plow_read_file",
+          "plow_read_skill",
+          "plow_run_applescript",
+          "plow_run_command",
+          "plow_vault",
+          "plow_write_file"
+        ],
+        "toolCount": 25,
+        "ownerEnrollment": {
+          "status": "unverified",
+          "assurance": "none"
+        },
+        "memoryCreated": true,
+        "fabricatedOwnerRefused": true,
+        "nativeOutsideHomeDenied": true,
+        "builtMcpAppsResourceRead": true,
+        "pluginProcessDuringCalls": true,
+        "executingVersion": "0.1.6-dev",
+        "nativeInsideIsolatedPlowExecuted": true,
+        "hostClose": {
+          "gracefulEof": true,
+          "exitCode": 0
+        },
+        "pluginProcessesAfterClose": []
+      },
+      {
+        "phase": "restart",
+        "runtimeStatus": "connected",
+        "tools": [
+          "latch_call_connection",
+          "latch_hub_query",
+          "latch_job_status",
+          "latch_memory",
+          "latch_open_hub",
+          "latch_owner_command",
+          "latch_owner_propose",
+          "latch_owner_query",
+          "latch_review_connection",
+          "latch_review_intent",
+          "plow_browser",
+          "plow_browser_close",
+          "plow_browser_open",
+          "plow_browser_request",
+          "plow_device_status",
+          "plow_get_output",
+          "plow_get_result",
+          "plow_history",
+          "plow_list_skills",
+          "plow_read_file",
+          "plow_read_skill",
+          "plow_run_applescript",
+          "plow_run_command",
+          "plow_vault",
+          "plow_write_file"
+        ],
+        "toolCount": 25,
+        "ownerEnrollment": {
+          "status": "unverified",
+          "assurance": "none"
+        },
+        "memoryPersisted": true,
+        "identityPreserved": true,
+        "fabricatedOwnerRefused": true,
+        "nativeOutsideHomeDenied": true,
+        "builtMcpAppsResourceRead": true,
+        "pluginProcessDuringCalls": true,
+        "executingVersion": "0.1.6-dev",
+        "nativeInsideIsolatedPlowExecuted": true,
+        "hostClose": {
+          "gracefulEof": true,
+          "exitCode": 0
+        },
+        "pluginProcessesAfterClose": []
+      },
+      {
+        "phase": "update",
+        "runtimeStatus": "connected",
+        "tools": [
+          "latch_call_connection",
+          "latch_hub_query",
+          "latch_job_status",
+          "latch_memory",
+          "latch_open_hub",
+          "latch_owner_command",
+          "latch_owner_propose",
+          "latch_owner_query",
+          "latch_review_connection",
+          "latch_review_intent",
+          "plow_browser",
+          "plow_browser_close",
+          "plow_browser_open",
+          "plow_browser_request",
+          "plow_device_status",
+          "plow_get_output",
+          "plow_get_result",
+          "plow_history",
+          "plow_list_skills",
+          "plow_read_file",
+          "plow_read_skill",
+          "plow_run_applescript",
+          "plow_run_command",
+          "plow_vault",
+          "plow_write_file"
+        ],
+        "toolCount": 25,
+        "ownerEnrollment": {
+          "status": "unverified",
+          "assurance": "none"
+        },
+        "memoryPersisted": true,
+        "identityPreserved": true,
+        "fabricatedOwnerRefused": true,
+        "nativeOutsideHomeDenied": true,
+        "builtMcpAppsResourceRead": true,
+        "pluginProcessDuringCalls": true,
+        "executingVersion": "0.1.7-lifecycle",
+        "nativeInsideIsolatedPlowExecuted": true,
+        "hostClose": {
+          "gracefulEof": true,
+          "exitCode": 0
+        },
+        "pluginProcessesAfterClose": []
+      },
+      {
+        "phase": "rollback",
+        "runtimeStatus": "connected",
+        "tools": [
+          "latch_call_connection",
+          "latch_hub_query",
+          "latch_job_status",
+          "latch_memory",
+          "latch_open_hub",
+          "latch_owner_command",
+          "latch_owner_propose",
+          "latch_owner_query",
+          "latch_review_connection",
+          "latch_review_intent",
+          "plow_browser",
+          "plow_browser_close",
+          "plow_browser_open",
+          "plow_browser_request",
+          "plow_device_status",
+          "plow_get_output",
+          "plow_get_result",
+          "plow_history",
+          "plow_list_skills",
+          "plow_read_file",
+          "plow_read_skill",
+          "plow_run_applescript",
+          "plow_run_command",
+          "plow_vault",
+          "plow_write_file"
+        ],
+        "toolCount": 25,
+        "ownerEnrollment": {
+          "status": "unverified",
+          "assurance": "none"
+        },
+        "memoryPersisted": true,
+        "identityPreserved": true,
+        "fabricatedOwnerRefused": true,
+        "nativeOutsideHomeDenied": true,
+        "builtMcpAppsResourceRead": true,
+        "pluginProcessDuringCalls": true,
+        "executingVersion": "0.1.6-dev",
+        "nativeInsideIsolatedPlowExecuted": true,
+        "hostClose": {
+          "gracefulEof": true,
+          "exitCode": 0
+        },
+        "pluginProcessesAfterClose": []
+      },
+      {
+        "phase": "remove",
+        "installationRemoved": true,
+        "runtimeCacheRemoved": true,
+        "dataPreservedByteForByte": true,
+        "noRuntimeProcesses": true,
+        "hostClose": {
+          "gracefulEof": true,
+          "exitCode": 0
+        }
+      },
+      {
+        "phase": "reinstall",
+        "runtimeStatus": "connected",
+        "tools": [
+          "latch_call_connection",
+          "latch_hub_query",
+          "latch_job_status",
+          "latch_memory",
+          "latch_open_hub",
+          "latch_owner_command",
+          "latch_owner_propose",
+          "latch_owner_query",
+          "latch_review_connection",
+          "latch_review_intent",
+          "plow_browser",
+          "plow_browser_close",
+          "plow_browser_open",
+          "plow_browser_request",
+          "plow_device_status",
+          "plow_get_output",
+          "plow_get_result",
+          "plow_history",
+          "plow_list_skills",
+          "plow_read_file",
+          "plow_read_skill",
+          "plow_run_applescript",
+          "plow_run_command",
+          "plow_vault",
+          "plow_write_file"
+        ],
+        "toolCount": 25,
+        "ownerEnrollment": {
+          "status": "unverified",
+          "assurance": "none"
+        },
+        "memoryPersisted": true,
+        "identityPreserved": true,
+        "fabricatedOwnerRefused": true,
+        "nativeOutsideHomeDenied": true,
+        "builtMcpAppsResourceRead": true,
+        "pluginProcessDuringCalls": true,
+        "executingVersion": "0.1.6-dev",
+        "nativeInsideIsolatedPlowExecuted": true,
+        "hostClose": {
+          "gracefulEof": true,
+          "exitCode": 0
+        },
+        "pluginProcessesAfterClose": []
+      }
+    ],
+    "status": "passed"
+  },
+  "package": {
+    "surface": "packaged STDIO runtime with a system-only PATH",
+    "chatgptOwnerVerified": false,
+    "modelCalls": 0,
+    "manifestFilesVerified": 3302,
+    "tools": [
+      "latch_call_connection",
+      "latch_hub_query",
+      "latch_job_status",
+      "latch_memory",
+      "latch_open_hub",
+      "latch_owner_command",
+      "latch_owner_propose",
+      "latch_owner_query",
+      "latch_review_connection",
+      "latch_review_intent",
+      "plow_browser",
+      "plow_browser_close",
+      "plow_browser_open",
+      "plow_browser_request",
+      "plow_device_status",
+      "plow_get_output",
+      "plow_get_result",
+      "plow_history",
+      "plow_list_skills",
+      "plow_read_file",
+      "plow_read_skill",
+      "plow_run_applescript",
+      "plow_run_command",
+      "plow_vault",
+      "plow_write_file"
+    ],
+    "ownerControlsRemainLocked": true,
+    "capabilityFamilies": 18,
+    "mappedOwnerOperations": 92,
+    "packagedMemoryExecuted": true,
+    "status": "passed",
+    "processAfterClose": false
+  },
+  "review": "Two independent mixed-ciphertext reproductions and 30 relevant tests passed after fixes. No remaining actionable finding in the reviewed application scope.",
+  "stackUnits": [
+    {
+      "branch": "codex/latch-plugin-native",
+      "workspaceBuildPassed": true,
+      "tests": {
+        "numTotalTests": 2695,
+        "numPassedTests": 2684,
+        "numFailedTests": 0,
+        "numPendingTests": 11,
+        "success": true
+      },
+      "scope": "workspace suite"
+    },
+    {
+      "branch": "codex/latch-plugin-runtime",
+      "workspaceBuildPassed": true,
+      "tests": {
+        "numTotalTests": 92,
+        "numPassedTests": 92,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "success": true
+      },
+      "scope": "scoped package tests"
+    },
+    {
+      "branch": "codex/latch-plugin-owner-services",
+      "workspaceBuildPassed": true,
+      "tests": {
+        "numTotalTests": 2832,
+        "numPassedTests": 2821,
+        "numFailedTests": 0,
+        "numPendingTests": 11,
+        "success": true
+      },
+      "scope": "workspace suite"
+    },
+    {
+      "branch": "codex/latch-plugin-panel",
+      "workspaceBuildPassed": true,
+      "tests": {
+        "numTotalTests": 12,
+        "numPassedTests": 12,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "success": true
+      },
+      "scope": "scoped package tests"
+    }
+  ]
+}
