@@ -1,0 +1,36 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "references": [
+    {
+      "path": "../../packages/protocol"
+    },
+    {
+      "path": "../../packages/device-core"
+    },
+    {
+      "path": "../../packages/mcp-server"
+    },
+    {
+      "path": "../../packages/owner-core"
+    },
+    {
+      "path": "../../packages/owner-runtime"
+    },
+    {
+      "path": "../../packages/connector-runtime"
+    },
+    {
+      "path": "../../packages/owner-services"
+    },
+    {
+      "path": "../../packages/integration-hub"
+    }
+  ]
+}

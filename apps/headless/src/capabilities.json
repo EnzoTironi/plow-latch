@@ -1,0 +1,422 @@
+[
+  {
+    "title": "Permissões e revisão",
+    "family": "policy",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "approval:get"
+      },
+      {
+        "channel": "approval:ready"
+      },
+      {
+        "channel": "approval:decide"
+      },
+      {
+        "channel": "approvals:pending"
+      },
+      {
+        "channel": "rules:list"
+      },
+      {
+        "channel": "rules:remove"
+      },
+      {
+        "channel": "gatekeeperRecovery:get"
+      },
+      {
+        "channel": "gatekeeperRecovery:dismiss"
+      },
+      {
+        "channel": "gatekeeperRecovery:suggest"
+      }
+    ]
+  },
+  {
+    "title": "Histórico",
+    "family": "audit",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "audit:page"
+      },
+      {
+        "channel": "audit:activity"
+      },
+      {
+        "channel": "audit:clear"
+      }
+    ]
+  },
+  {
+    "title": "Navegação do painel",
+    "family": "desktop_shell",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "ui:getTab"
+      },
+      {
+        "channel": "ui:setTab"
+      },
+      {
+        "channel": "ui:confirmLeaveReply"
+      }
+    ]
+  },
+  {
+    "title": "Configurações do proprietário",
+    "family": "owner_settings",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "settings:getRelay"
+      },
+      {
+        "channel": "settings:signOut"
+      },
+      {
+        "channel": "settings:setApprovalMode"
+      },
+      {
+        "channel": "settings:getAgentPurpose"
+      },
+      {
+        "channel": "settings:setAgentPurpose"
+      },
+      {
+        "channel": "settings:getInference"
+      }
+    ]
+  },
+  {
+    "title": "Primeiro acesso",
+    "family": "onboarding",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "onboarding:open"
+      },
+      {
+        "channel": "onboarding:get"
+      },
+      {
+        "channel": "onboarding:begin"
+      },
+      {
+        "channel": "onboarding:advance"
+      },
+      {
+        "channel": "onboarding:back"
+      },
+      {
+        "channel": "onboarding:setTelemetry"
+      },
+      {
+        "channel": "onboarding:newCode"
+      },
+      {
+        "channel": "onboarding:gatekeeperPresets"
+      },
+      {
+        "channel": "onboarding:gatekeeperPreview"
+      },
+      {
+        "channel": "onboarding:openMessages"
+      },
+      {
+        "channel": "onboarding:finish"
+      }
+    ]
+  },
+  {
+    "title": "Conta e suporte",
+    "family": "native_launch",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "external:open"
+      }
+    ]
+  },
+  {
+    "title": "Agentes conectados",
+    "family": "agent_management",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "connect:get"
+      },
+      {
+        "channel": "cloud:refresh"
+      },
+      {
+        "channel": "cloud:agents"
+      },
+      {
+        "channel": "connect:create"
+      },
+      {
+        "channel": "cloud:remove"
+      },
+      {
+        "channel": "cloud:newAgentMessages"
+      },
+      {
+        "channel": "cloud:awaitNewAgent"
+      },
+      {
+        "channel": "cloud:changeLine"
+      },
+      {
+        "channel": "cloud:openMessages"
+      },
+      {
+        "channel": "roster:remove"
+      },
+      {
+        "channel": "connect:dismiss"
+      }
+    ]
+  },
+  {
+    "title": "Contas conectadas",
+    "family": "connected_accounts",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "connectors:refresh"
+      },
+      {
+        "channel": "connectors:connect"
+      },
+      {
+        "channel": "connectors:disconnect"
+      },
+      {
+        "channel": "connectors:setDefault"
+      }
+    ]
+  },
+  {
+    "title": "Cofre",
+    "family": "vault",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "vault:items"
+      },
+      {
+        "channel": "vault:search"
+      },
+      {
+        "channel": "vault:item"
+      },
+      {
+        "channel": "vault:reveal"
+      },
+      {
+        "channel": "vault:totp"
+      },
+      {
+        "channel": "vault:deleteItem"
+      },
+      {
+        "channel": "vault:saveItem"
+      },
+      {
+        "channel": "vault:importSources"
+      },
+      {
+        "channel": "vault:importInspect"
+      },
+      {
+        "channel": "vault:importFile"
+      },
+      {
+        "channel": "vault:importPick"
+      },
+      {
+        "channel": "vault:importCommit"
+      },
+      {
+        "channel": "vault:importCancel"
+      },
+      {
+        "channel": "vault:exchangePending"
+      }
+    ]
+  },
+  {
+    "title": "Navegador privado",
+    "family": "browser_owner_view",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "viewer:state"
+      }
+    ]
+  },
+  {
+    "title": "Estado do computador",
+    "family": "status",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "status:get"
+      }
+    ]
+  },
+  {
+    "title": "Permissões do computador",
+    "family": "permissions",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "capabilities:get"
+      },
+      {
+        "channel": "capabilities:act"
+      },
+      {
+        "channel": "capabilities:dismiss"
+      },
+      {
+        "channel": "capabilities:bannerSeen"
+      },
+      {
+        "channel": "requirements:act"
+      },
+      {
+        "channel": "grant:state"
+      }
+    ]
+  },
+  {
+    "title": "Plugins e ferramentas",
+    "family": "plugins",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "plugins:get"
+      },
+      {
+        "channel": "plugins:acknowledge"
+      },
+      {
+        "channel": "plugins:setEnabled"
+      }
+    ]
+  },
+  {
+    "title": "Encerramento e reinício",
+    "family": "lifecycle",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "app:relaunch"
+      }
+    ]
+  },
+  {
+    "title": "Permissões do macOS",
+    "family": "native_permission_panel",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "fullDisk:dragInfo"
+      },
+      {
+        "channel": "fullDisk:tileImage"
+      },
+      {
+        "channel": "fullDisk:dragStart"
+      },
+      {
+        "channel": "fullDisk:panelHold"
+      },
+      {
+        "channel": "fullDisk:panelHeight"
+      },
+      {
+        "channel": "fullDisk:dismiss"
+      }
+    ]
+  },
+  {
+    "title": "Disponibilidade do computador",
+    "family": "availability",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "launch:get"
+      },
+      {
+        "channel": "launch:set"
+      },
+      {
+        "channel": "power:getKeepAwake"
+      },
+      {
+        "channel": "power:setKeepAwake"
+      }
+    ]
+  },
+  {
+    "title": "Atualizações",
+    "family": "updates",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "updates:get"
+      },
+      {
+        "channel": "updates:check"
+      },
+      {
+        "channel": "updates:restart"
+      },
+      {
+        "channel": "updates:dismiss"
+      },
+      {
+        "channel": "updates:setAutoCheck"
+      },
+      {
+        "channel": "updates:setAutoInstall"
+      }
+    ]
+  },
+  {
+    "title": "Dados de diagnóstico",
+    "family": "telemetry",
+    "status": "pending",
+    "reason": "Controles do Latch mapeados. A disponibilidade de cada operação depende dos adaptadores, do acesso à Plow e da verificação do proprietário. O mapa não comprova execução.",
+    "operations": [
+      {
+        "channel": "telemetry:get"
+      },
+      {
+        "channel": "telemetry:set"
+      }
+    ]
+  }
+]
