@@ -10,6 +10,7 @@
  * Electron-free on purpose, like `connectClient.ts`: a state machine that can
  * only be reached by launching a window is one nobody tests.
  */
+import type { SettingsPort } from "../settingsPort.js";
 import {
   CloudAgentLine,
   CloudAgentDisplayRow,
@@ -162,6 +163,7 @@ export interface CloudProvidersApi {
 }
 
 export interface CloudAgentStateDeps {
+  settings?: SettingsPort;
   agents: CloudAgentsApi;
   chats: CloudChatsApi;
   providers: CloudProvidersApi;
@@ -769,7 +771,7 @@ export class CloudAgentState {
   }
 
   private credential(): string {
-    return loadSettings(this.deps.home).relayCredential.trim();
+    return (this.deps.settings?.load() ?? loadSettings(this.deps.home)).relayCredential.trim();
   }
 
   /** Report what the click could not do, and answer `null` to every caller

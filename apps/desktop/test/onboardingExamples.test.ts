@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BROWSER_PLUGIN } from "@domo/device-core";
-import { pluginExamples } from "../src/onboardingExampleCatalog.js";
-import { GATEKEEPER_DECKS, ONBOARDING_EXAMPLES } from "../src/onboardingExamples.js";
+import { pluginExamples } from "@domo/owner-services/maintained/onboardingExampleCatalog";
+import { GATEKEEPER_DECKS, ONBOARDING_EXAMPLES } from "@domo/owner-services/maintained/onboardingExamples";
 
 describe("onboarding example catalog", () => {
   it("tags the unchanged ten-query Gatekeeper catalog for plugin filtering", () => {

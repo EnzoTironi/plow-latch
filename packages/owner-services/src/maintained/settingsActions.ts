@@ -9,6 +9,7 @@
  * Every one of these reads and writes the on-disk settings under `DOMO_HOME`,
  * so what a test observes is what actually survives a relaunch.
  */
+import type { SettingsPort } from "../settingsPort.js";
 import { loadSettings, saveSettings, Settings } from "@domo/owner-core/settings";
 import { InferenceStatus, inferenceStatus } from "@domo/owner-core/reviewPolicy";
 import { PlowApiError } from "@domo/owner-core/plowApi";
@@ -21,10 +22,10 @@ export function queuePendingRevoke(settings: Settings, credential: string): void
   }
 }
 
-function forgetPendingRevoke(home: string, credential: string): void {
+function forgetPendingRevoke(home: string, credential: string, store?: SettingsPort): void {
   update(home, (s) => {
     s.pendingRevokeCredentials = s.pendingRevokeCredentials.filter((pending) => pending !== credential);
-  });
+  }, store);
 }
 
 /** One immediate pass over the durable queue. Callers provide the cadence:
@@ -36,18 +37,19 @@ export class PendingRevokeRetrier {
   constructor(
     private readonly home: string,
     private readonly revoke: (credential: string) => Promise<unknown>,
+    private readonly store?: SettingsPort,
   ) {}
 
   start(): Promise<void> {
     if (this.flight) return this.flight;
     const current = (async () => {
-      for (const credential of [...loadSettings(this.home).pendingRevokeCredentials]) {
+      for (const credential of [...(this.store?.load() ?? loadSettings(this.home)).pendingRevokeCredentials]) {
         try {
           await this.revoke(credential);
-          forgetPendingRevoke(this.home, credential);
+          forgetPendingRevoke(this.home, credential, this.store);
         } catch (error) {
           if (error instanceof PlowApiError && error.kind === "unauthorized") {
-            forgetPendingRevoke(this.home, credential);
+            forgetPendingRevoke(this.home, credential, this.store);
           }
         }
       }
@@ -61,10 +63,11 @@ export class PendingRevokeRetrier {
 }
 
 /** Read-modify-write. What the user chose is what stays on disk. */
-function update(home: string, mutate: (settings: Settings) => void): Settings {
-  const settings = loadSettings(home);
+function update(home: string, mutate: (settings: Settings) => void, store?: SettingsPort): Settings {
+  const settings = store?.load() ?? loadSettings(home);
   mutate(settings);
-  saveSettings(home, settings);
+  if (store) store.save(settings);
+  else saveSettings(home, settings);
   return settings;
 }
 

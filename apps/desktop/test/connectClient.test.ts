@@ -11,7 +11,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { ConnectClient } from "../src/connectClient.js";
+import { ConnectClient } from "@domo/owner-services/maintained/connectClient";
 import { KeyInfo, PlowApi, PlowApiError } from "@domo/owner-core/plowApi";
 import { Deferred, deferred } from "./deferred.js";
 import { keyInfo, keyPrefixOf } from "./keyInfo.js";

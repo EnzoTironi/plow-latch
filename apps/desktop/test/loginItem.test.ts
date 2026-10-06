@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { launchAtLoginState, LoginItemApi, setLaunchAtLogin } from "../src/loginItem.js";
+import { launchAtLoginState, LoginItemApi, setLaunchAtLogin } from "@domo/owner-services/maintained/loginItem";
 
 /** A stand-in for Electron's login-item API: a settable bit plus a call log. */
 function fakeOs(openAtLogin = false) {

@@ -1,6 +1,6 @@
 import vm from "node:vm";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { CONNECTOR_SETUP_WAIT_MS, Connectors } from "../src/connectors.js";
+import { CONNECTOR_SETUP_WAIT_MS, Connectors } from "@domo/owner-services/maintained/connectors";
 import { PlowApi } from "@domo/owner-core/plowApi";
 import { compileMain, mainFunctions } from "./mainSource.js";
 

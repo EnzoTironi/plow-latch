@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AGENT_INDEX_URL, fetchAgentIndex, parseAgentIndex } from "../src/agentIndex.js";
+import { AGENT_INDEX_URL, fetchAgentIndex, parseAgentIndex } from "@domo/owner-services/maintained/agentIndex";
 import { deployCards } from "../src/cloudAgentViewModel.js";
 
 const LOGO_URL = `${new URL(AGENT_INDEX_URL).origin}/v1/agent-logos/life.png`;

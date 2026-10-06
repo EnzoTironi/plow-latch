@@ -13,6 +13,7 @@
  * user is meant to read: the activation display code. The activation *secret*
  * and the login session never appear in it at all.
  */
+import type { SettingsPort } from "../settingsPort.js";
 import { ActivationChat, PlowApi, PlowApiError } from "@domo/owner-core/plowApi";
 import { chatPeople, chatRowTitle, usableChatDisplayName } from "./chatRows.js";
 import { PRESET_TEXT } from "./gatekeeperPreview.js";
@@ -150,6 +151,7 @@ export interface OnboardingState {
 }
 
 export interface OnboardingDeps {
+  settings?: SettingsPort;
   api: PlowApi;
   home: string;
   /** (Re)start the relay from stored settings. */
@@ -174,7 +176,7 @@ export interface OnboardingDeps {
   onChange?: () => void;
   now?: () => number;
   /** How the poll loop waits. Injectable so tests need no real timers. */
-  wait?: (ms: number) => Promise<void>;
+  wait?: (ms: number, signal?: AbortSignal) => Promise<void>;
 }
 
 export class Onboarding {
@@ -190,6 +192,9 @@ export class Onboarding {
   /** Bumped whenever an activation stops being the one we care about. A poll
    * loop whose generation is stale returns instead of writing state. */
   private pollGeneration = 0;
+  private disposed = false;
+  private waitAbort = new AbortController();
+  private readonly polls = new Set<Promise<void>>();
   /**
    * The mint in flight, if any. Held so a second request joins it rather than
    * burning a second code — see `newActivationCode`. `pendingMintId` says which
@@ -230,6 +235,7 @@ export class Onboarding {
 
   /** Finish the external inventory needed by a checkpointed opening step. */
   async prepareInitialStep(): Promise<OnboardingState> {
+    if (this.disposed) return this.state();
     if (this.step === "access") await this.deps.prepareAccess?.();
     return this.state();
   }
@@ -238,7 +244,7 @@ export class Onboarding {
    * save the gatekeeper's `draft` on the way out of that step — the only step
    * that reads it. It comes from the renderer, so it is checked here. */
   async advance(draft?: unknown): Promise<OnboardingState> {
-    if (this.busy) return this.state();
+    if (this.disposed || this.busy) return this.state();
     if (this.step === "welcome") {
       // Returning from verification keeps the live activation and its watcher.
       // Re-entering therefore shows the same code without another network call.
@@ -261,10 +267,11 @@ export class Onboarding {
       return this.publish();
     }
     if (this.step === "plugins") {
+      const generation = this.pollGeneration;
       return this.run(async () => {
         const needsAccess = await this.deps.accessNeeded();
         // Same reset()-mid-await guard as the privacy branch above.
-        if (this.step !== "plugins") return;
+        if (this.disposed || generation !== this.pollGeneration || this.step !== "plugins") return;
         const settings = this.settings();
         settings.telemetryEnabled = this.telemetryEnabled;
         this.save(settings);
@@ -291,7 +298,7 @@ export class Onboarding {
 
   /** Return through the steps that have a Back affordance. */
   async back(draft?: unknown): Promise<OnboardingState> {
-    if (this.busy) return this.state();
+    if (this.disposed || this.busy) return this.state();
     const previous = canGoBackFrom(this.step);
     if (previous === null) return this.state();
     if (this.step === "gatekeeper" && typeof draft === "string") this.purpose = draft;
@@ -301,7 +308,7 @@ export class Onboarding {
 
   /** Change the pending choice; Continue from plugins is its only disk write. */
   setTelemetryEnabled(enabled: unknown): OnboardingState {
-    if (this.busy) return this.state();
+    if (this.disposed || this.busy) return this.state();
     if (this.step === "plugins" && typeof enabled === "boolean") {
       this.telemetryEnabled = enabled;
       return this.publish();
@@ -313,6 +320,7 @@ export class Onboarding {
 
   /** Retry a mint only when the activation view is already waiting for one. */
   async begin(): Promise<OnboardingState> {
+    if (this.disposed) return this.state();
     // Renderer boot is intentionally a read-like no-op on the presentational
     // steps. The first activation is minted only by Get started on Welcome.
     if (this.step !== "activate" || this.activation) {
@@ -334,6 +342,7 @@ export class Onboarding {
    * is what lets this mint.
    */
   async newActivationCode(): Promise<OnboardingState> {
+    if (this.disposed) return this.state();
     // SINGLE-FLIGHT. A display code IS a credential — whoever texts it gets the
     // account — so a second mint nobody is shown is a live credential loose on
     // the account, and the screen can only ever show one of them. A double-click
@@ -355,6 +364,7 @@ export class Onboarding {
     }
 
     this.cancelPolling();
+    const generation = this.pollGeneration;
     const mintId = ++this.mints;
     // The handle is dropped inside the body rather than by chaining `.finally`
     // onto the result: a chained one adds a turn before the caller resumes, and
@@ -367,6 +377,7 @@ export class Onboarding {
         this.activationStale = false;
         this.step = "activate";
         const created = await this.deps.api.createActivation(this.deps.deviceName);
+        if (this.disposed || generation !== this.pollGeneration) return;
         this.activationSecret = created.activationSecret;
         this.activation = {
           displayCode: created.displayCode,
@@ -397,7 +408,7 @@ export class Onboarding {
    * than leave them staring at a screen that still reads like a to-do.
    */
   messagesOpened(): OnboardingState {
-    if (this.busy) return this.state();
+    if (this.disposed || this.busy) return this.state();
     if (this.step === "activate" && this.activation) this.step = "waiting";
     return this.publish();
   }
@@ -409,9 +420,10 @@ export class Onboarding {
    * along, and no caller awaits it.
    */
   private startPolling(secret: string): void {
+    if (this.disposed) return;
     this.pollGeneration += 1;
     const generation = this.pollGeneration;
-    void this.pollActivation(secret, generation).catch((error) => {
+    const flight = this.pollActivation(secret, generation).catch((error) => {
       // Nothing above throws by design; if something does, the screen must not
       // be left on a countdown that no longer runs — and the secret must not
       // outlive its watcher, or "Try Again" would re-arm a code nothing
@@ -421,10 +433,22 @@ export class Onboarding {
       this.stall(messageOf(error));
       this.publish();
     });
+    this.polls.add(flight);
+    void flight.then(() => this.polls.delete(flight), () => this.polls.delete(flight));
   }
 
   private cancelPolling(): void {
     this.pollGeneration += 1;
+    this.waitAbort.abort();
+    this.waitAbort = new AbortController();
+  }
+
+  stop(): Promise<void> {
+    this.disposed = true;
+    this.cancelPolling();
+    this.activation = null;
+    this.activationSecret = null;
+    return Promise.allSettled([...this.polls, ...(this.pendingMint ? [this.pendingMint] : [])]).then(() => {});
   }
 
   private async pollActivation(secret: string, generation: number): Promise<void> {
@@ -472,7 +496,7 @@ export class Onboarding {
       // sign-out — so both halves can change under an await, and this is
       // re-evaluated on the far side of one rather than read once at the top.
       const keep = () =>
-        secret === this.activationSecret && !this.settings().relayCredential.trim();
+        !this.disposed && secret === this.activationSecret && !this.settings().relayCredential.trim();
       // A verified token this Mac will not keep enters the same durable queue
       // as sign-out. The redeem answers once, so it must not be held only in
       // this stack frame or handed to a second network owner.
@@ -490,7 +514,7 @@ export class Onboarding {
         const finished = await this.run(() => this.finishWithSession(result.token as string));
         // Privacy is actionable while the relay connects. `run` clears busy and
         // publishes before this await, and nothing after it mutates state.
-        if (finished.step === "privacy") await this.deps.startRelay();
+        if (!this.disposed && finished.step === "privacy") await this.deps.startRelay();
         return;
       }
       if (generation !== this.pollGeneration) return;
@@ -572,6 +596,7 @@ export class Onboarding {
    * this is honest whichever way the credential went.
    */
   reset(): OnboardingState {
+    if (this.disposed) return this.state();
     this.cancelPolling();
     this.activation = null;
     this.activationSecret = null;
@@ -588,6 +613,7 @@ export class Onboarding {
 
   /** Put a fixed main-process notice on the setup screen. */
   showMessage(message: string): OnboardingState {
+    if (this.disposed) return this.state();
     this.message = message;
     this.noteKind = "error";
     return this.publish();
@@ -700,11 +726,12 @@ export class Onboarding {
   // MARK: plumbing
 
   private settings(): Settings {
-    return loadSettings(this.deps.home);
+    return this.deps.settings?.load() ?? loadSettings(this.deps.home);
   }
 
   private save(settings: Settings): void {
-    saveSettings(this.deps.home, settings);
+    if (this.deps.settings) this.deps.settings.save(settings);
+    else saveSettings(this.deps.home, settings);
   }
 
   private initialStep(settings: Settings): OnboardingStep {
@@ -721,12 +748,19 @@ export class Onboarding {
   }
 
   private wait(ms: number): Promise<void> {
-    if (this.deps.wait) return this.deps.wait(ms);
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    const signal = this.waitAbort.signal;
+    if (this.deps.wait) return this.deps.wait(ms, signal);
+    return new Promise((resolve) => {
+      const finish = () => { clearTimeout(timer); signal.removeEventListener("abort", finish); resolve(); };
+      const timer = setTimeout(finish, ms);
+      if (signal.aborted) finish();
+      else signal.addEventListener("abort", finish, { once: true });
+    });
   }
 
   /** Run one step with a busy flag, turning any failure into readable text. */
   private async run(body: () => Promise<void>): Promise<OnboardingState> {
+    if (this.disposed) return this.state();
     this.busy = true;
     this.message = "";
     this.noteKind = "error";
@@ -768,6 +802,7 @@ export class Onboarding {
   }
 
   private publish(): OnboardingState {
+    if (this.disposed) return this.state();
     this.checkpoint();
     this.deps.onChange?.();
     return this.state();

@@ -4,7 +4,7 @@
  * branch that matters is the one everyday testing never enters.
  */
 import { describe, expect, it } from "vitest";
-import { mcpClientRoster } from "../src/rosterSections.js";
+import { mcpClientRoster } from "@domo/owner-services/maintained/rosterSections";
 import type { KeyInfo } from "@domo/owner-core/plowApi";
 import { keyInfo, keyPrefixOf } from "./keyInfo.js";
 

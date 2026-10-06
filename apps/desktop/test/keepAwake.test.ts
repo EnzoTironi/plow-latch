@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { KeepAwake, KeepAwakeOptions, PowerSource, SHORT_LIVED_HOLD_MS } from "../src/keepAwake.js";
+import { KeepAwake, KeepAwakeOptions, PowerSource, SHORT_LIVED_HOLD_MS } from "@domo/owner-services/maintained/keepAwake";
 
 /**
  * Ported alongside keepAwake.ts from the Phoenix app's KeepMacAwakeTests: all

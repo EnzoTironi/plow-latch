@@ -34,5 +34,6 @@ for (const file of scripts) {
 }
 
 fs.cpSync(src, dest, { recursive: true });
+fs.copyFileSync(path.join(dir, "../../../packages/owner-services/dist/maintained/onboardingExampleCatalog.js"), path.join(dir, "../dist/onboardingExampleCatalog.js"));
 fs.copyFileSync(path.join(dir, "../../../packages/owner-core/dist/onboardingSteps.js"), path.join(dir, "../dist/onboardingSteps.js"));
 console.log(`copied renderer assets → ${dest} (${scripts.length} scripts parsed)`);

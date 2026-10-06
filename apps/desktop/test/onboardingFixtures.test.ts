@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { gatekeeperPresets } from "../src/gatekeeperPreview.js";
-import { pluginExamples } from "../src/onboardingExampleCatalog.js";
+import { gatekeeperPresets } from "@domo/owner-services/maintained/gatekeeperPreview";
+import { pluginExamples } from "@domo/owner-services/maintained/onboardingExampleCatalog";
 import * as steps from "@domo/owner-core/onboardingSteps";
-import { grantList } from "../src/pluginsModel.js";
+import { grantList } from "@domo/owner-services/maintained/pluginsModel";
 import { onboardingFixtures } from "../src/renderer/onboarding-fixtures.js";
 
 describe("onboarding visual fixtures", () => {

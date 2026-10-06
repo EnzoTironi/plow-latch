@@ -28,6 +28,8 @@ function plant(main: string): string {
   fs.mkdirSync(path.join(desktop, "src/renderer"), { recursive: true });
   fs.mkdirSync(path.join(root, "packages/owner-core/dist"), { recursive: true });
   fs.writeFileSync(path.join(root, "packages/owner-core/dist/onboardingSteps.js"), "export const SETUP_STEPS = [];\n");
+  fs.mkdirSync(path.join(root, "packages/owner-services/dist/maintained"), { recursive: true });
+  fs.writeFileSync(path.join(root, "packages/owner-services/dist/maintained/onboardingExampleCatalog.js"), "export const pluginExamples = () => [];\n");
   // The script reads a renderer `.js` with the module goal the browser gives
   // it, which is what `"type": "module"` decides for `node --check`.
   fs.writeFileSync(path.join(root, "package.json"), `{"type":"module"}`);

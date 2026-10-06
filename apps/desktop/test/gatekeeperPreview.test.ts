@@ -9,7 +9,7 @@ import {
   PRESET_TEXT,
   previewRow,
   PreviewDeps,
-} from "../src/gatekeeperPreview.js";
+} from "@domo/owner-services/maintained/gatekeeperPreview";
 import { loadSettings } from "@domo/owner-core/settings";
 
 // The preview's fixed placeholder home — never this Mac's account.

@@ -23,7 +23,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { clickText, failLoudly, shootScreens, shotWindow, waitFor } from "./screenshot-harness.mjs";
-import { capabilitiesView } from "../dist/capabilitiesModel.js";
+import { capabilitiesView } from "@domo/owner-services/maintained/capabilitiesModel";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const dist = path.join(dir, "../dist");
@@ -168,13 +168,11 @@ const DEVICE_SETTINGS = {
 };
 
 async function setUp() {
-  const { ConnectClient } = await import(path.join(dist, "connectClient.js"));
+  const { ConnectClient } = await import("@domo/owner-services/maintained/connectClient");
   const { saveSettings, loadSettings } = await import("@domo/owner-core/settings");
   // The Audit screenshot carries the Gatekeeper card, so this harness also
   // serves the reviewer's state and purpose statement from the throwaway home.
-  const { readAgentPurpose, readInference, setAgentPurpose, setApprovalMode } = await import(
-    path.join(dist, "settingsActions.js")
-  );
+  const { readAgentPurpose, readInference, setAgentPurpose, setApprovalMode } = await import("@domo/owner-services/maintained/settingsActions");
 
   // A Mac that has been through login: a device credential and an endpoint.
   saveSettings(home, { ...loadSettings(home), ...DEVICE_SETTINGS });

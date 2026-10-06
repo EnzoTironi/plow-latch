@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { AgentIndexEntry } from "../src/agentIndex.js";
+import type { AgentIndexEntry } from "@domo/owner-services/maintained/agentIndex";
 import { agentKind, cloudProviderPickerViewModel, DEPLOY_CARD_LIMIT, deployCards } from "../src/cloudAgentViewModel.js";
 
 describe("cloudProviderPickerViewModel", () => {

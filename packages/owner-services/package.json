@@ -1,0 +1,25 @@
+{
+  "name": "@domo/owner-services",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./maintained/*": {
+      "types": "./dist/maintained/*.d.ts",
+      "default": "./dist/maintained/*.js"
+    }
+  },
+  "dependencies": {
+    "@domo/device-core": "*",
+    "@domo/owner-core": "*",
+    "@domo/owner-runtime": "*",
+    "@domo/protocol": "*",
+    "zod": "^4.4.3"
+  }
+}

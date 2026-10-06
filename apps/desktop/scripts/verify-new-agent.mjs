@@ -36,8 +36,8 @@ async function mouseClick(win, expression) {
 
 app.whenReady().then(async () => {
   fs.mkdirSync(out, { recursive: true });
-  const { CloudAgentState } = await import(path.join(desktop, "dist/cloudAgentState.js"));
-  const { CloudAgentsClient } = await import(path.join(desktop, "dist/cloudAgents.js"));
+  const { CloudAgentState } = await import("@domo/owner-services/maintained/cloudAgentState");
+  const { CloudAgentsClient } = await import("@domo/owner-services/maintained/cloudAgents");
   const { PlowApi } = await import("@domo/owner-core/plowApi");
   const { saveSettings, loadSettings } = await import("@domo/owner-core/settings");
   saveSettings(home, { ...loadSettings(home), relayCredential: "fixture_device_credential" });

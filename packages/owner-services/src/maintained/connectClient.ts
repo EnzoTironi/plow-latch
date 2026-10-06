@@ -18,6 +18,7 @@
  * part with states worth testing, and a state machine that can only be reached
  * by launching a window is one nobody tests.
  */
+import type { SettingsPort } from "../settingsPort.js";
 import { PlowApi, PlowApiError } from "@domo/owner-core/plowApi";
 import { mcpClientRoster, RosterRow } from "./rosterSections.js";
 import { loadSettings, Settings } from "@domo/owner-core/settings";
@@ -66,6 +67,7 @@ export interface ConnectClientState {
 }
 
 export interface ConnectClientDeps {
+  settings?: SettingsPort;
   api: PlowApi;
   home: string;
   isConnected: () => boolean;
@@ -309,7 +311,7 @@ export class ConnectClient {
   }
 
   private settings(): Settings {
-    return loadSettings(this.deps.home);
+    return this.deps.settings?.load() ?? loadSettings(this.deps.home);
   }
 
   private fail(message: string): ConnectClientState {

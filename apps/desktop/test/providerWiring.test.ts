@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { buildMinter } from "../src/providerWiring.js";
+import { buildMinter } from "@domo/owner-services/maintained/providerWiring";
 import { PlowApi } from "@domo/owner-core/plowApi";
 import { saveSettings } from "@domo/owner-core/settings";
 import { providerFor } from "@domo/device-core";

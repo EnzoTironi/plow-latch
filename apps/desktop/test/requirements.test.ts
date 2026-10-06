@@ -6,8 +6,8 @@
  * and any other id is a permission.
  */
 import { describe, expect, it } from "vitest";
-import { accountRequirementId, SAFARI_JAVASCRIPT } from "../src/pluginsModel.js";
-import { actOnRequirement, type ActResult, type RequirementDeps } from "../src/requirements.js";
+import { accountRequirementId, SAFARI_JAVASCRIPT } from "@domo/owner-services/maintained/pluginsModel";
+import { actOnRequirement, type ActResult, type RequirementDeps } from "@domo/owner-services/maintained/requirements";
 
 /** A Mac where Full Disk Access is (or is not) on, and Safari's write may
  *  fail. `mac` is what the acts leave behind. */

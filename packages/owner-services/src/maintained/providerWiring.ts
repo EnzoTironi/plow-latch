@@ -5,6 +5,7 @@
  * decides which credential leaves this Mac, so it has to be reachable by
  * `npx vitest run` with no display.
  */
+import type { SettingsPort } from "../settingsPort.js";
 import {
   MintError,
   type Minter,
@@ -21,14 +22,14 @@ import { loadSettings } from "@domo/owner-core/settings";
  * `PlowApi`'s, and duplicating it would have put those three properties in two
  * places that can drift.
  */
-export function buildMinter(opts: { api: PlowApi; home: string }): Minter {
+export function buildMinter(opts: { api: PlowApi; home: string; settings?: SettingsPort }): Minter {
   const authorised = async <T>(
     provider: Provider,
     call: (credential: string) => Promise<T>,
   ): Promise<T> => {
     // Read per call, never captured: re-pairing takes effect on the next
     // command rather than the next launch.
-    const credential = loadSettings(opts.home).relayCredential.trim();
+    const credential = (opts.settings?.load() ?? loadSettings(opts.home)).relayCredential.trim();
     if (!credential) throw MintError.unpaired();
     try {
       return await call(credential);

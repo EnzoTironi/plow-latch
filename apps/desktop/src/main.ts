@@ -57,44 +57,44 @@ import { createDomoMcpServer, DomoMcpServer } from "@domo/mcp-server";
 import { RelayClient } from "@domo/relay-client";
 import type { AutomationStatus, HostInventory, NativePermissions, RequestablePermission, StagedPlugin } from "@domo/device-core";
 import { approvalViewModel, CredentialTitles } from "@domo/owner-core/viewModel";
-import { AuditIndex, AuditQuery } from "./auditIndex.js";
+import { AuditIndex, AuditQuery } from "@domo/owner-services/maintained/auditIndex";
 
 import { appBundleName, appBundlePath, decodeTileImage, windowInWorkArea } from "./permissionFlow.js";
 import { FdaGrantFlow, GrantTarget } from "./fdaGrantFlow.js";
 import { AUTOMATION_APPS, automationApp, osascriptRunner, reconcile, requestAutomation } from "./automation.js";
-import { capabilitiesView, CapabilitiesView, fullDiskLanded, FullDiskState, FullDiskWatch, isGroup, paneFor, permissionTitle } from "./capabilitiesModel.js";
-import { browserPluginRow, grantList, pluginExamples, pluginRows, type GrantItem, type PluginExample, type PluginRow } from "./pluginsModel.js";
-import { actOnRequirement } from "./requirements.js";
+import { capabilitiesView, CapabilitiesView, fullDiskLanded, FullDiskState, FullDiskWatch, isGroup, paneFor, permissionTitle } from "@domo/owner-services/maintained/capabilitiesModel";
+import { browserPluginRow, grantList, pluginExamples, pluginRows, type GrantItem, type PluginExample, type PluginRow } from "@domo/owner-services/maintained/pluginsModel";
+import { actOnRequirement } from "@domo/owner-services/maintained/requirements";
 import { enableSafariJavaScript, Runner, safariJavaScriptEnabled } from "./safariJavaScript.js";
 import { launchSessionWarning, managerName } from "./launchSession.js";
-import { launchAtLoginState, LoginItemApi, setLaunchAtLogin } from "./loginItem.js";
-import { KeepAwake } from "./keepAwake.js";
+import { launchAtLoginState, LoginItemApi, setLaunchAtLogin } from "@domo/owner-services/maintained/loginItem";
+import { KeepAwake } from "@domo/owner-services/maintained/keepAwake";
 import { devIconScript } from "./devIcon.js";
 import { applyPlowFolderIcon } from "./plowFolderIcon.js";
 import { migrateLegacyHome } from "./migrateHome.js";
-import { buildMinter } from "./providerWiring.js";
+import { buildMinter } from "@domo/owner-services/maintained/providerWiring";
 import { resolveInstancePaths } from "./paths.js";
-import { ImportStaging, passwordsAppCanHandOff } from "./importStaging.js";
+import { ImportStaging, passwordsAppCanHandOff } from "@domo/owner-services/maintained/importStaging";
 import { loadSettings, saveSettings, useCredentialCodec, WindowBounds } from "@domo/owner-core/settings";
 import { resolveTelemetryConfig, SimulatedError, Telemetry, telemetryMaySend } from "./telemetry.js";
 import { PlowApi, PlowApiError, relaySocketUrl, resolveApiBaseUrl } from "@domo/owner-core/plowApi";
-import { Onboarding } from "./onboarding.js";
-import { CONNECTOR_SETUP_WAIT_MS, Connectors } from "./connectors.js";
-import { ConnectClient } from "./connectClient.js";
-import { CloudAgentsClient } from "./cloudAgents.js";
-import { CloudAgentState, CloudChatsClient, CloudLinesClient, tabShowsCloudAgents } from "./cloudAgentState.js";
-import { fetchAgentIndex } from "./agentIndex.js";
+import { Onboarding } from "@domo/owner-services/maintained/onboarding";
+import { CONNECTOR_SETUP_WAIT_MS, Connectors } from "@domo/owner-services/maintained/connectors";
+import { ConnectClient } from "@domo/owner-services/maintained/connectClient";
+import { CloudAgentsClient } from "@domo/owner-services/maintained/cloudAgents";
+import { CloudAgentState, CloudChatsClient, CloudLinesClient, tabShowsCloudAgents } from "@domo/owner-services/maintained/cloudAgentState";
+import { fetchAgentIndex } from "@domo/owner-services/maintained/agentIndex";
 import { loggingFetch } from "./wireLog.js";
 import { WindowGate } from "./windowGate.js";
-import { SimulatedScenario, SimulatedUpdater, UpdateController } from "./updates.js";
+import { SimulatedScenario, SimulatedUpdater, UpdateController } from "@domo/owner-services/maintained/updates";
 import { adversarialReview } from "@domo/owner-core/adversarialAgent";
-import { gatekeeperPresets, previewRow } from "./gatekeeperPreview.js";
+import { gatekeeperPresets, previewRow } from "@domo/owner-services/maintained/gatekeeperPreview";
 import {
   dismissGatekeeperAttention,
   gatekeeperRecoveryView,
   type GatekeeperRecoveryView,
   suggestGatekeeperRevision,
-} from "./gatekeeperRecovery.js";
+} from "@domo/owner-services/maintained/gatekeeperRecovery";
 import {
   ApprovalDecision,
   ApprovalQueue,
@@ -112,7 +112,7 @@ import {
   queueRevokeAndSignOut,
   setApprovalMode,
   signOutOfPlow,
-} from "./settingsActions.js";
+} from "@domo/owner-services/maintained/settingsActions";
 import { guardStdio } from "./stdioGuard.js";
 
 // Before the first console line: a console on a pipe whose reader has gone
