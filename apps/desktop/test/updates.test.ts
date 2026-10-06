@@ -5,7 +5,7 @@ import {
   UpdateController,
   UpdaterLike,
   UpdateState,
-} from "../src/updates.js";
+} from "@domo/owner-services/maintained/updates";
 
 /** In-memory stand-in for electron-updater's autoUpdater. */
 class FakeUpdater implements UpdaterLike {

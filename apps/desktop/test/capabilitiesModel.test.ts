@@ -22,7 +22,7 @@ import {
   LABEL_VIA_PROMPT,
   paneFor,
   SETTINGS_PANES,
-} from "../src/capabilitiesModel.js";
+} from "@domo/owner-services/maintained/capabilitiesModel";
 
 /** The section's rows in display order, groups flattened, for the tests
  *  that care about order; `section.rows` is the same list. */

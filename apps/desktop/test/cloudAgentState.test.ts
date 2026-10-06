@@ -9,9 +9,9 @@ import {
   CloudChatsClient,
   CloudLineOption,
   CloudLinesClient,
-} from "../src/cloudAgentState.js";
-import { CloudAgentResource } from "../src/cloudAgents.js";
-import type { AgentIndex } from "../src/agentIndex.js";
+} from "@domo/owner-services/maintained/cloudAgentState";
+import { CloudAgentResource } from "@domo/owner-services/maintained/cloudAgents";
+import type { AgentIndex } from "@domo/owner-services/maintained/agentIndex";
 import {
   CloudAgentProvider,
   PlowApi,

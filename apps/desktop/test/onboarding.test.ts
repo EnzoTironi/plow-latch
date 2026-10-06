@@ -2,16 +2,16 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { PRESET_TEXT } from "../src/gatekeeperPreview.js";
+import { PRESET_TEXT } from "@domo/owner-services/maintained/gatekeeperPreview";
 import {
   ACTIVATION_POLL_INTERVAL_MS,
   ACTIVATION_POLL_WINDOW_MS,
   Onboarding,
   OnboardingDeps,
-} from "../src/onboarding.js";
+} from "@domo/owner-services/maintained/onboarding";
 import { PlowApi, PlowApiError } from "@domo/owner-core/plowApi";
 import { loadSettings, saveSettings, Settings } from "@domo/owner-core/settings";
-import { PendingRevokeRetrier, queueRevokeAndSignOut, signOutOfPlow } from "../src/settingsActions.js";
+import { PendingRevokeRetrier, queueRevokeAndSignOut, signOutOfPlow } from "@domo/owner-services/maintained/settingsActions";
 
 const DEVICE_TOKEN = "plow_DEVICEtok_secret";
 const SESSION_TOKEN = "plow_ACTIVATIONsession_secret";

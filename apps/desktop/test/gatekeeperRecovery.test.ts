@@ -3,7 +3,7 @@ import {
   dismissGatekeeperAttention,
   gatekeeperRecoveryView,
   suggestGatekeeperRevision,
-} from "../src/gatekeeperRecovery.js";
+} from "@domo/owner-services/maintained/gatekeeperRecovery";
 import { makeIntent } from "@domo/protocol";
 
 const CREDENTIAL = "plow_sk_gatekeeper_recovery_secret";

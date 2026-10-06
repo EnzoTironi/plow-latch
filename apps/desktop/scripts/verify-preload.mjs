@@ -15,11 +15,11 @@ import {
   readInference,
   setAgentPurpose,
   setApprovalMode,
-} from "../dist/settingsActions.js";
+} from "@domo/owner-services/maintained/settingsActions";
 import { loadSettings, saveSettings } from "@domo/owner-core/settings";
-import { launchAtLoginState, setLaunchAtLogin } from "../dist/loginItem.js";
-import { capabilitiesView } from "../dist/capabilitiesModel.js";
-import { grantList, pluginRows } from "../dist/pluginsModel.js";
+import { launchAtLoginState, setLaunchAtLogin } from "@domo/owner-services/maintained/loginItem";
+import { capabilitiesView } from "@domo/owner-services/maintained/capabilitiesModel";
+import { grantList, pluginRows } from "@domo/owner-services/maintained/pluginsModel";
 import { parseManifest } from "@domo/device-core";
 import { settleMotion } from "./screenshot-harness.mjs";
 

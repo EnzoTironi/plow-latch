@@ -28,6 +28,9 @@
       "path": "../../packages/owner-core"
     },
     {
+      "path": "../../packages/owner-services"
+    },
+    {
       "path": "../../packages/relay-client"
     }
   ]

@@ -17,7 +17,7 @@
 import { JSONValue, jv } from "@domo/protocol";
 import type { AutomationStatus, HostInventory, HostPermission, PermissionStatus } from "@domo/device-core";
 import { COVERED_BY_FULL_DISK_ACCESS } from "@domo/device-core";
-import { automationApp, AutomationApp } from "./automation.js";
+import { automationApp, AutomationApp } from "@domo/device-core";
 
 /** One blocked request, as the row lists it. */
 export interface BlockedRequest {

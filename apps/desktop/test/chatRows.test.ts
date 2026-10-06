@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chatRowTitle, formatNumber, type ChatPerson } from "../src/chatRows.js";
+import { chatRowTitle, formatNumber, type ChatPerson } from "@domo/owner-services/maintained/chatRows";
 
 const LINE = "+16503156536";
 const person = (over: Partial<ChatPerson> = {}): ChatPerson => ({

@@ -16,7 +16,7 @@ import {
   SAFARI_JAVASCRIPT,
   type PluginRow,
   type PluginsInput,
-} from "../src/pluginsModel.js";
+} from "@domo/owner-services/maintained/pluginsModel";
 
 const manifest = (requires: object, name = "wiki", title?: string): PluginManifest =>
   parseManifest(JSON.stringify({

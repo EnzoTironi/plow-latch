@@ -21,7 +21,7 @@ import {
   setAgentPurpose,
   setApprovalMode,
   signOutOfPlow,
-} from "../src/settingsActions.js";
+} from "@domo/owner-services/maintained/settingsActions";
 import { PlowApiError } from "@domo/owner-core/plowApi";
 
 const PLOW_CREDENTIAL = "plow_sk_do_not_leak_me";

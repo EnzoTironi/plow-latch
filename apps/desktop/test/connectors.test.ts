@@ -8,7 +8,7 @@ import {
   CONNECTOR_TIMEOUT_NOTE,
   Connectors,
   ConnectorsState,
-} from "../src/connectors.js";
+} from "@domo/owner-services/maintained/connectors";
 import {
   ConnectorAccount,
   ConnectorsOverview,

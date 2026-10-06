@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   toCloudAgentDisplayRow,
-} from "../src/cloudAgentMapper.js";
-import { CloudAgentResource, isTerminalCloudAgent } from "../src/cloudAgents.js";
+} from "@domo/owner-services/maintained/cloudAgentMapper";
+import { CloudAgentResource, isTerminalCloudAgent } from "@domo/owner-services/maintained/cloudAgents";
 
 function agent(overrides: Partial<CloudAgentResource> = {}): CloudAgentResource {
   return {

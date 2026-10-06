@@ -7,7 +7,7 @@
  */
 import { describe, expect, it } from "vitest";
 import type { ImportedLogin, ParsedImport } from "@domo/device-core";
-import { ImportStaging, passwordsAppCanHandOff } from "../src/importStaging.js";
+import { ImportStaging, passwordsAppCanHandOff } from "@domo/owner-services/maintained/importStaging";
 
 const login = (title: string): ImportedLogin => ({
   title,
