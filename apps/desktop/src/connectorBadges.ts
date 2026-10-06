@@ -1,4 +1,4 @@
-import type { ConnectorAccount } from "./plowApi.js";
+import type { ConnectorAccount } from "@domo/owner-core/plowApi";
 
 export function googleCapabilityBadges(capabilities: ConnectorAccount["capabilities"]): string[] {
   const badges: string[] = [];

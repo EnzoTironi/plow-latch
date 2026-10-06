@@ -23,7 +23,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { FetchLike } from "./plowApi.js";
+import { FetchLike } from "@domo/owner-core/plowApi";
 
 /** Past this, the log starts over. It is a rolling account, not an archive. */
 const MAX_LOG_BYTES = 2 * 1024 * 1024;

@@ -169,7 +169,7 @@ const DEVICE_SETTINGS = {
 
 async function setUp() {
   const { ConnectClient } = await import(path.join(dist, "connectClient.js"));
-  const { saveSettings, loadSettings } = await import(path.join(dist, "settings.js"));
+  const { saveSettings, loadSettings } = await import("@domo/owner-core/settings");
   // The Audit screenshot carries the Gatekeeper card, so this harness also
   // serves the reviewer's state and purpose statement from the throwaway home.
   const { readAgentPurpose, readInference, setAgentPurpose, setApprovalMode } = await import(

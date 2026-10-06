@@ -9,9 +9,9 @@
  * Every one of these reads and writes the on-disk settings under `DOMO_HOME`,
  * so what a test observes is what actually survives a relaunch.
  */
-import { loadSettings, saveSettings, Settings } from "./settings.js";
-import { InferenceStatus, inferenceStatus } from "./reviewPolicy.js";
-import { PlowApiError } from "./plowApi.js";
+import { loadSettings, saveSettings, Settings } from "@domo/owner-core/settings";
+import { InferenceStatus, inferenceStatus } from "@domo/owner-core/reviewPolicy";
+import { PlowApiError } from "@domo/owner-core/plowApi";
 
 export function queuePendingRevoke(settings: Settings, credential: string): void {
   const pending = credential.trim();

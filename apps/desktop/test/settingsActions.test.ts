@@ -11,7 +11,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { loadSettings, saveSettings, Settings } from "../src/settings.js";
+import { loadSettings, saveSettings, Settings } from "@domo/owner-core/settings";
 import {
   isSignedIn,
   PendingRevokeRetrier,
@@ -22,7 +22,7 @@ import {
   setApprovalMode,
   signOutOfPlow,
 } from "../src/settingsActions.js";
-import { PlowApiError } from "../src/plowApi.js";
+import { PlowApiError } from "@domo/owner-core/plowApi";
 
 const PLOW_CREDENTIAL = "plow_sk_do_not_leak_me";
 

@@ -15,7 +15,8 @@
     "@domo/protocol": "*",
     "@domo/relay-client": "*",
     "electron-updater": "^6.6.2",
-    "posthog-node": "5.21.2"
+    "posthog-node": "5.21.2",
+    "@domo/owner-core": "*"
   },
   "optionalDependencies": {
     "@domo/native-credential-import": "*",

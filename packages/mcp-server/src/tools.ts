@@ -74,6 +74,11 @@ export interface ToolContext {
   sessionId: string;
   /** Ceiling on `plow_run_command`'s in-call wait — the call budget. */
   commandWaitCapMs: number;
+  interaction?: IntentInteraction;
+}
+
+export interface IntentInteraction {
+  run<T>(intent: Intent, body: () => Promise<T>): Promise<T>;
 }
 
 /** One tool as this package defines it, before the MCP SDK wraps it. */
@@ -165,7 +170,8 @@ async function decideAndRun(
     capabilities,
     sessionId: ctx.sessionId,
   });
-  const response = await ctx.device.handleIntent(intent, payload, () => progress.decided());
+  const execute = () => ctx.device.handleIntent(intent, payload, () => progress.decided());
+  const response = ctx.interaction ? await ctx.interaction.run(intent, execute) : await execute();
   const r = jv(response);
   switch (r.get("status").str) {
     case "denied":

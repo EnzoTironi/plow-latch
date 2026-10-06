@@ -16,8 +16,8 @@ import {
   CloudAgentProvider,
   PlowApi,
   PlowApiError,
-} from "../src/plowApi.js";
-import { loadSettings, saveSettings } from "../src/settings.js";
+} from "@domo/owner-core/plowApi";
+import { loadSettings, saveSettings } from "@domo/owner-core/settings";
 import { Deferred, deferred } from "./deferred.js";
 
 const CREDENTIAL = "plow_session_123456789";

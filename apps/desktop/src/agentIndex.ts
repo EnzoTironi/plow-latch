@@ -12,7 +12,7 @@
  * a size cap, and hands it over as a data URL — never decoding it here, in the
  * unsandboxed process: the sandboxed renderer does that.
  */
-import { REQUEST_TIMEOUT_MS } from "./plowApi.js";
+import { REQUEST_TIMEOUT_MS } from "@domo/owner-core/plowApi";
 
 export const AGENT_INDEX_URL = "https://agent-index-server.vercel.app/v1/agents";
 /** Plow builds its provider id from the Index's bare `agent_id`: `life` is `exe:life`. */

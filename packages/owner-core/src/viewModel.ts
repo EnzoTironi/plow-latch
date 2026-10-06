@@ -8,9 +8,6 @@
  * text/structured nodes — it never eval()s or innerHTML's agent strings.
  */
 import { Capability, capabilityDisplay, Intent, JSONValue, jv } from "@domo/protocol";
-// The audit view lives in device-core so the MCP server's `plow_history`
-// shows an agent the same rows this window shows the owner. Everything the
-// desktop reads of it comes back through here.
 export {
   ActivityGrouper,
   activityHaystack,
@@ -39,7 +36,6 @@ export interface ApprovalViewModel {
   planContext: string | null;
   /** The enforceable capability set — the source of the sandbox bound. */
   capabilities: { kind: string; display: string }[];
-  /** Convenience flags for the UI. */
   needsNetwork: boolean;
   writesFiles: boolean;
   runsCommand: boolean;
@@ -52,7 +48,6 @@ export interface ApprovalViewModel {
   /** applescript capability: the app it controls, the script verbatim and the
    * args handed to it — runs outside the sandbox, so the card shows them all. */
   scriptsApp: { app: string; bundleId: string; script: string; args: string[] } | null;
-  /** browser capability origins, for the card. */
   origins: string[];
   /** credential(fill) items with titles resolved ON-DEVICE (never from the
    * intent — agent-supplied titles would be spoofable). Title null = the
@@ -83,14 +78,8 @@ export function approvalViewModel(
       const names = credentialItems.map((i) =>
         i.title !== null ? `'${i.title}' (${i.category ?? "?"})` : `${i.id} (unknown item)`,
       );
-      // What the owner is actually granting: the value is typed here and never
-      // handed back to the agent — but the agent is driving the page it lands
-      // in, and can read that page. Saying "never leaves this Mac" would have
-      // them approve against a promise the browser does not keep.
       return `Credentials: fill ${names.join(", ")} into approved sites (typed on this Mac; the agent can see the page it types into)`;
     }
-    // The chip names the target; the script itself gets its own block on the
-    // card (scriptsApp) rather than being folded into a one-line chip.
     if (c.kind === "applescript") return `Script ${c.app ?? "?"} (${c.bundleId ?? "?"})`;
     return capabilityDisplay(c);
   };

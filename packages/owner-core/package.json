@@ -1,0 +1,42 @@
+{
+  "name": "@domo/owner-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./settings": {
+      "types": "./dist/settings.d.ts",
+      "default": "./dist/settings.js"
+    },
+    "./reviewPolicy": {
+      "types": "./dist/reviewPolicy.d.ts",
+      "default": "./dist/reviewPolicy.js"
+    },
+    "./adversarialAgent": {
+      "types": "./dist/adversarialAgent.d.ts",
+      "default": "./dist/adversarialAgent.js"
+    },
+    "./plowApi": {
+      "types": "./dist/plowApi.d.ts",
+      "default": "./dist/plowApi.js"
+    },
+    "./onboardingSteps": {
+      "types": "./dist/onboardingSteps.d.ts",
+      "default": "./dist/onboardingSteps.js"
+    },
+    "./viewModel": {
+      "types": "./dist/viewModel.d.ts",
+      "default": "./dist/viewModel.js"
+    }
+  },
+  "dependencies": {
+    "@domo/device-core": "*",
+    "@domo/protocol": "*"
+  }
+}

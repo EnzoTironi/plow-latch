@@ -375,6 +375,8 @@ function shape(snap: ReturnType<OutputBuffer["snapshot"]>): Omit<ExecResult, "ha
  */
 export class Executor {
   private buffers = new Map<string, OutputBuffer>();
+  private closing = false;
+  private shutdownTask: Promise<void> | null = null;
   /** What each run's profile was built from, kept so a diagnosis can ask
    *  after the fact what that profile allowed (`grants`). */
   private profiles = new Map<string, Parameters<typeof sandboxGrants>[0]>();
@@ -463,6 +465,7 @@ export class Executor {
      */
     env?: Readonly<Record<string, string>>;
   }): Promise<ExecResult> {
+    if (this.closing) throw new ExecutorError("executor is shutting down");
     if (args.argv.length === 0) throw new ExecutorError("launch failed: empty argv");
     const handle = crypto.randomUUID().toUpperCase();
     const scratch = path.join(this.scratchRoot, handle);
@@ -486,7 +489,11 @@ export class Executor {
       scratch: canonicalize(scratch),
     };
     // No new writer over what a hold is about, while it is out.
-    while (this.conflicts(writableRoots(profileArgs))) await new Promise<void>((wake) => this.holdWaiters.push(wake));
+    while (this.conflicts(writableRoots(profileArgs))) {
+      if (this.closing) throw new ExecutorError("executor is shutting down");
+      await new Promise<void>((wake) => this.holdWaiters.push(wake));
+    }
+    if (this.closing) throw new ExecutorError("executor is shutting down");
     const refusal = args.guard?.() ?? null;
     if (refusal !== null) throw new ExecutorError(refusal);
     const profile = SandboxProfile.generate(profileArgs);
@@ -524,6 +531,7 @@ export class Executor {
    * app's state, the same reason an `apple_events` command is exempt.
    */
   async runAppleScript(run: { script: string; args: readonly string[]; waitMs: number }): Promise<ExecResult> {
+    if (this.closing) throw new ExecutorError("executor is shutting down");
     const handle = crypto.randomUUID().toUpperCase();
     const scratch = path.join(this.scratchRoot, handle);
     fs.mkdirSync(scratch, { recursive: true });
@@ -553,6 +561,7 @@ export class Executor {
     argv: string[],
     opts: { cwd: string; env?: Readonly<Record<string, string>>; waitMs: number; reapable: boolean },
   ): Promise<ExecResult> {
+    if (this.closing) throw new ExecutorError("executor is shutting down");
     const realHome = os.homedir();
     const buffer = new OutputBuffer();
     this.buffers.set(handle, buffer);
@@ -794,6 +803,39 @@ export class Executor {
       this.groups.delete(handle);
       return false;
     }
+  }
+
+  shutdown(): Promise<void> {
+    if (this.shutdownTask) return this.shutdownTask;
+    this.closing = true;
+    for (const wake of this.holdWaiters.splice(0)) wake();
+    this.shutdownTask = this.stopGroups();
+    return this.shutdownTask;
+  }
+
+  private async stopGroups(): Promise<void> {
+    const signalGroups = (signal: NodeJS.Signals) => {
+      for (const [handle, pid] of this.groups) {
+        if (!this.groupAlive(handle)) continue;
+        try {
+          process.kill(-pid, signal);
+        } catch (error) {
+          if ((error as NodeJS.ErrnoException).code !== "ESRCH") throw error;
+        }
+      }
+    };
+    const waitForGroups = async (timeoutMs: number) => {
+      const deadline = Date.now() + timeoutMs;
+      while ([...this.groups.keys()].some((handle) => this.groupAlive(handle))) {
+        if (Date.now() >= deadline) return false;
+        await new Promise<void>((resolve) => setTimeout(resolve, 20));
+      }
+      return true;
+    };
+    signalGroups("SIGTERM");
+    if (await waitForGroups(500)) return;
+    signalGroups("SIGKILL");
+    if (!(await waitForGroups(1500))) throw new ExecutorError("owned command processes did not terminate");
   }
 
   /** Invoke cb when the run exits — immediately if it already has. */

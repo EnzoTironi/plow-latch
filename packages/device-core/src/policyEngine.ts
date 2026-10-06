@@ -51,6 +51,7 @@ export interface DeniedIntent {
 /** Whoever answers approval questions: app UI, headless script… */
 export interface PolicyDelegate {
   decideIntent(intent: Intent): Promise<IntentDecision>;
+  shutdown?(): void | Promise<void>;
   /**
    * May a stored always-allow rule answer this intent on its own?
    *
@@ -262,11 +263,24 @@ export class PolicyEngine {
     );
   }
 
-  async decide(intent: Intent, delegate: PolicyDelegate): Promise<Grant> {
+  async decide(intent: Intent, delegate: PolicyDelegate, signal?: AbortSignal): Promise<Grant> {
+    if (signal?.aborted) return makeGrant(intent, "deny", "shutdown");
     if (await this.ruleAnswers(intent, delegate)) {
-      return makeGrant(intent, "always_allow", "rule");
+      return signal?.aborted ? makeGrant(intent, "deny", "shutdown") : makeGrant(intent, "always_allow", "rule");
     }
-    const result = await delegate.decideIntent(intent);
+    if (signal?.aborted) return makeGrant(intent, "deny", "shutdown");
+    const result = signal ? await new Promise<IntentDecision>((resolve, reject) => {
+      const cancel = () => {
+        signal.removeEventListener("abort", cancel);
+        resolve({ decision: "deny", source: "shutdown" });
+      };
+      signal.addEventListener("abort", cancel, { once: true });
+      void Promise.resolve().then(() => signal.aborted ? { decision: "deny" as const, source: "shutdown" } : delegate.decideIntent(intent)).then(
+        decision => { signal.removeEventListener("abort", cancel); resolve(decision); },
+        error => { signal.removeEventListener("abort", cancel); reject(error); },
+      );
+    }) : await delegate.decideIntent(intent);
+    if (signal?.aborted) return makeGrant(intent, "deny", "shutdown");
     const decision = typeof result === "string" ? result : result.decision;
     const source = typeof result === "string" ? "prompt" : (result.source ?? "prompt");
     const reason = typeof result === "string" ? null : (result.reason ?? null);

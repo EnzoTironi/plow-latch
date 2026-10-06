@@ -1,12 +1,29 @@
 {
   "files": [],
   "references": [
-    { "path": "packages/protocol" },
-    { "path": "packages/transport" },
-    { "path": "packages/browser-server" },
-    { "path": "packages/device-core" },
-    { "path": "packages/mcp-server" },
-    { "path": "packages/relay-client" },
-    { "path": "apps/desktop" }
+    {
+      "path": "packages/protocol"
+    },
+    {
+      "path": "packages/transport"
+    },
+    {
+      "path": "packages/browser-server"
+    },
+    {
+      "path": "packages/device-core"
+    },
+    {
+      "path": "packages/mcp-server"
+    },
+    {
+      "path": "packages/relay-client"
+    },
+    {
+      "path": "packages/owner-core"
+    },
+    {
+      "path": "apps/desktop"
+    }
   ]
 }

@@ -9,7 +9,7 @@ import {
   parseActivationChat,
   relaySocketUrl,
   resolveApiBaseUrl,
-} from "../src/plowApi.js";
+} from "@domo/owner-core/plowApi";
 
 /** A `fetch` that records what it was called with and replays canned answers. */
 function recordingFetch(answers: Array<{ status: number; body?: unknown }>) {

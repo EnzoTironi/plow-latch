@@ -12,7 +12,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Intent, JSONValue, makeIntent } from "@domo/protocol";
 
 const { REVIEWER_TIMEOUT_MS, adversarialReview, agentHistory } = await import(
-  "../src/adversarialAgent.js"
+  "@domo/owner-core/adversarialAgent"
 );
 
 function intent(overrides: Partial<Intent> = {}): Intent {

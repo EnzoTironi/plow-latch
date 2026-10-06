@@ -32,10 +32,6 @@ export const REVIEWER_MODEL = "anthropic/claude-sonnet-5";
 export const REVIEWER_COMPLETION_BASE = {
   model: REVIEWER_MODEL,
   max_tokens: 4096,
-  // Adaptive is the only on-mode sonnet-5 accepts — a `budget_tokens` thinking
-  // param comes back as an opaque provider 400, which in adversarial mode is a
-  // DENY (`reviewPolicy.ts`). litellm forwards this shape verbatim to an
-  // adaptive-capable model.
   thinking: { type: "adaptive" },
 } as const;
 /**
@@ -72,14 +68,6 @@ export type Verdict = "allow" | "deny" | "ask";
  */
 export type ReviewFailureCause = "no_credits" | "unavailable";
 
-/**
- * The one place the standing instructions change when nobody is behind the
- * reviewer.
- *
- * `ask` used to be offered unconditionally and withdrawn by inference from the
- * owner's freeform purpose text, which is never about who answers dialogs. The
- * app knows the mode, so it says so.
- */
 const ASK_RULES = {
   available: {
     verdict: `- ask: only when you genuinely cannot tell and a person should look. \
@@ -94,7 +82,6 @@ deny.`,
   },
 } as const;
 
-/** The standing instructions, minus the owner's purpose statement. */
 function standingInstructions(humanAvailable: boolean): string {
   const ask = ASK_RULES[humanAvailable ? "available" : "absent"];
   return `You are the safety reviewer for "Plow Latch", which lets the owner's AI agent use \
@@ -151,19 +138,6 @@ ${ask.verdict}
 Return a JSON object {"decision": ${ask.enum}, "reason": "<one concise sentence>"}.`;
 }
 
-/**
- * The shape the model must answer in — and, when nobody is behind the reviewer,
- * the shape that makes `ask` structurally unsayable.
- *
- * Removing it from the enum rather than mapping it afterwards is the point:
- * `strict: true` means the provider constrains generation to this schema, so an
- * unavailable verdict is not one the model can pick and then have us reinterpret.
- * The prompt says the same thing in prose; this is what makes it true.
- *
- * `Verdict`'s own `ask` is untouched. That is the INTERNAL non-verdict —
- * timeout, provider failure, unparseable answer — which never comes from the
- * model and carries a `cause`. See `failedReview`.
- */
 function verdictSchema(humanAvailable: boolean) {
   return {
     type: "object",
@@ -176,28 +150,6 @@ function verdictSchema(humanAvailable: boolean) {
   } as const;
 }
 
-/**
- * The system message for one review: the standing instructions, plus what the
- * owner says agents are for.
- *
- * It goes HERE and not in the user message, which is the whole point. The user
- * message carries agent-authored values, and text in that channel can claim to
- * be anything — including that it is this purpose statement. The system message
- * is a channel the agent cannot write into at all, so the trust boundary is
- * carried by the transport rather than by a label the agent could forge.
- * `buildPrompt` owns what the user message actually contains.
- *
- * The purpose is the ERRAND, and an errand widens as readily as it narrows.
- * This used to call it "the outer bound" and deny anything outside it, which
- * got the direction of the thing exactly half right: an owner who writes
- * "manage my SSH keys" has just made reading those keys the job, and the old
- * wording turned their own instruction into the reason to refuse them. What a
- * purpose does is say what the work IS; silence about something is silence,
- * not prohibition.
- *
- * Empty is said out loud rather than left out. An unexplained absence reads as
- * a restriction, and the default here is the opposite of one.
- */
 function systemPrompt(purpose: string, humanAvailable: boolean): string {
   const base = standingInstructions(humanAvailable);
   const text = purpose.trim();
@@ -221,62 +173,18 @@ function systemPrompt(purpose: string, humanAvailable: boolean): string {
   );
 }
 
-/**
- * One agent-written value, as a JSON string literal.
- *
- * Everything the agent supplies used to be interpolated bare into a prompt
- * whose structure is prose: a label, a colon, a value, one per line. A value
- * containing a newline could therefore write the NEXT line — a second "Stated
- * goal (UNVERIFIED — do not trust):" saying something milder, a "Recent audit
- * history…" header above events that never happened, a sentence in the owner's
- * voice. The UNVERIFIED label only ever covered the first line of the value;
- * everything past it read as ours.
- *
- * Quoting closes that, and it closes it without touching the text: escaping is
- * not truncation or stripping, so the reviewer still sees exactly what was
- * attempted — inside a delimiter that says where the value stops. The system
- * prompt names the convention, so an encoded string reads as data by rule
- * rather than by the model noticing quotes.
- *
- * An ABSENT value stays the bare token `(none)`. Encoding it would make a
- * field nobody filled in indistinguishable from one filled in with the word.
- */
-function encoded(value: string | undefined | null): string {
+function encodeReviewValue(value: string | undefined | null): string {
   return value === undefined || value === null ? "(none)" : JSON.stringify(value);
 }
 
-/**
- * The user message: this one operation, and nothing else.
- *
- * There is no history here, and its absence is the whole design. The reviewer
- * first received the raw audit stream, with the prompt naming repeated denials
- * as a strong signal to deny — a ratchet, where the first denial is evidence
- * for the second, and self-fuelling, because a growing pile of denials is what
- * a compromised agent would produce. A real errand died that way twenty-odd
- * times in one afternoon.
- *
- * It was then narrowed to the *effects* of ALLOWED operations only, for
- * cumulative scope. That is a strictly better input and it still ratcheted: in
- * a 20-run control on one unchanged request, the reviewer allowed the first
- * nine and then denied nine of the last eleven, reasoning from the pile rather
- * than the request. Denials were provably not in the input; the accumulation
- * was enough on its own.
- *
- * So nothing earlier is built into the message at all. Any history makes a
- * verdict depend on a growing list, and a growing list is what escalates.
- */
 function buildPrompt(intent: Intent, humanAvailable: boolean): string {
-  // A capability display is composed on this Mac, but the paths, origins, argv
-  // and item ids inside it are the agent's, so the line is encoded like any
-  // other agent-written value. What it MEANS is unchanged: this is still the
-  // set the sandbox will enforce.
   const caps = (intent.capabilities ?? [])
-    .map((c) => `  - ${encoded(capabilityDisplay(c))}`)
+    .map((c) => `  - ${encodeReviewValue(capabilityDisplay(c))}`)
     .join("\n");
   return (
     `Operation to review:\n` +
-    `Agent: ${encoded(intent.agentDisplay)} (${encoded(intent.agentId)})\n` +
-    `Request (composed on this Mac from the tool call): ${encoded(intent.request)}\n` +
+    `Agent: ${encodeReviewValue(intent.agentDisplay)} (${encodeReviewValue(intent.agentId)})\n` +
+    `Request (composed on this Mac from the tool call): ${encodeReviewValue(intent.request)}\n` +
     `Requested capability bounds (what will be enforced if allowed — the sandbox for commands and files; for a script, its own text):\n${caps || "  (none)"}\n\n` +
     `Decide ${humanAvailable ? "allow, deny, or ask" : "allow or deny"}.`
   );
@@ -349,34 +257,19 @@ function parseVerdict(
 
   const { decision, reason } = value as { decision: unknown; reason: unknown };
   if (decision !== "allow" && decision !== "deny" && decision !== "ask") return null;
-  // `ask` was not in the schema this answer was generated against, so an `ask`
-  // here is a provider that ignored `strict` — not a reviewer deferring. Belt
-  // and braces for the enum above it: accepting it would put us straight back
-  // on the automatic-deny path the schema exists to close, and wearing the
-  // source of a reviewer that ran and hesitated rather than one that misbehaved.
   if (decision === "ask" && !humanAvailable) return null;
   if (typeof reason !== "string") return null;
 
   return { verdict: decision, reason };
 }
 
-/**
- * Race a call against the budget, and tell it to stop when the budget is spent.
- *
- * `onTimeout` fires from the SAME timer that rejects, so a call we have given
- * up on is cancelled at the instant we give up. Without it the race abandons
- * the promise but not the request: the reviewer returned `ask` when the budget
- * was spent while the
- * HTTP request stayed open and, on a paid endpoint, went on spending.
- */
-/** Our own giving-up, told apart from anything a provider threw. */
 class ReviewTimeout extends Error {}
 
-function withTimeout<T>(p: Promise<T>, ms: number, onTimeout?: () => void): Promise<T> {
+function withReviewDeadline<T>(p: Promise<T>, ms: number, abortRequest?: () => void): Promise<T> {
   let timer: NodeJS.Timeout;
   const timeout = new Promise<never>((_, reject) => {
     timer = setTimeout(() => {
-      onTimeout?.();
+      abortRequest?.();
       reject(new ReviewTimeout("reviewer timed out"));
     }, ms);
     timer.unref?.();
@@ -384,49 +277,19 @@ function withTimeout<T>(p: Promise<T>, ms: number, onTimeout?: () => void): Prom
   return Promise.race([p.finally(() => clearTimeout(timer)), timeout]);
 }
 
-/**
- * What a provider hands back: either the model's raw verdict text, or a reason
- * the review could not produce one. A provider never decides the verdict — it
- * only reports text or failure, and the shared code below maps both.
- */
 type ProviderResult =
   | { ok: true; text: string }
   | { ok: false; reason: string; cause?: ReviewFailureCause };
 
-/**
- * One review round-trip. Providers are the only part that touches a network.
- * `signal` is aborted when the review budget is spent.
- */
 type ProviderCall = (system: string, prompt: string, signal: AbortSignal) => Promise<ProviderResult>;
 
-/**
- * Map a Plow HTTP failure onto a reason a human can act on.
- *
- * The status code and fixed text, and nothing else. An earlier version lifted
- * the rejected model id out of the body so the message could name what the
- * SERVER refused rather than what we meant to send — genuinely more useful, and
- * it needed a parser plus a charset allowlist to keep a hostile body out of a
- * string the human reads. The body is upstream text we do not control, and a
- * fixed string needs no allowlist to be safe. The id is recoverable from the
- * request we sent; the parser was not worth its own attack surface.
- */
 function plowHttpReason(status: number): string {
   if (status === 402) return "insufficient Plow balance";
-  // 400 from this endpoint is the allowlist refusing a model.
   if (status === 400) return "Plow rejected the request's model";
-  // The API masks provider 401/403/408 behind an opaque 502. It specifically
-  // does NOT mean "these credentials are wrong" — do not send anyone to
-  // re-authenticate over it.
   if (status === 502) return "Plow upstream failure";
   return `Plow returned HTTP ${status}`;
 }
 
-/**
- * The Plow path: OpenAI-shaped chat completions, billed to the Plow account.
- *
- * The credential rides in the `Authorization` header and nowhere else — not in
- * the URL, not in a thrown message, not in anything this returns.
- */
 function plowCall(
   credential: string,
   apiBaseUrl: ApiBaseUrl,
@@ -437,14 +300,10 @@ function plowCall(
     let status: number;
     let body: unknown;
     try {
-      // `{status, body}`, never a thrown error carrying the server's `detail`.
-      // The mapping below is the reviewer's own, deliberately.
       ({ status, body } = await api.chatCompletion(
         credential,
         {
           ...REVIEWER_COMPLETION_BASE,
-          // No `temperature`: litellm forwards it and Sonnet 5 rejects the
-          // sampling params outright.
           response_format: {
             type: "json_schema",
             json_schema: {
@@ -461,9 +320,6 @@ function plowCall(
         { signal },
       ));
     } catch {
-      // Deliberately not echoing the thrown error: a transport failure can
-      // carry the request (and so the header) in its message on some runtimes,
-      // and PlowApi's own network messages are written for onboarding.
       return { ok: false, reason: "could not reach Plow" };
     }
 
@@ -471,8 +327,6 @@ function plowCall(
       return {
         ok: false,
         reason: plowHttpReason(status),
-        // 402 is the one failure the calling agent can do something about, so
-        // it is reported as a cause and not only as prose.
         ...(status === 402 ? { cause: "no_credits" as const } : {}),
       };
     }
@@ -521,7 +375,6 @@ export interface ReviewArgs {
   humanAvailable: boolean;
 }
 
-/** The one shape a non-verdict takes: `ask`, plus why it isn't one. */
 function failedReview(
   reason: string,
   cause: ReviewFailureCause = "unavailable",
@@ -538,22 +391,12 @@ export async function adversarialReview(
   args: ReviewArgs,
 ): Promise<{ verdict: Verdict; reason: string; cause?: ReviewFailureCause }> {
   const credential = args.plowCredential.trim();
-  // Nobody to reach. Callers establish that themselves before asking — see
-  // `reviewerAvailable` — so this is the answer to a question that should not
-  // have been put. It stays because of what it prevents rather than what it
-  // catches: without it an empty credential is a live request carrying `Bearer `
-  // to a real endpoint, and this is the gate that must fail closed WITHOUT
-  // dialling. The API origin needs no such guard — it is build-resolved and
-  // cannot be empty.
   if (!credential) return failedReview("not signed in to Plow");
   const call = plowCall(credential, normalizeApiBaseUrl(args.apiBaseUrl), args.humanAvailable);
 
-  // One budget, one timer: the same timeout that gives up on the review aborts
-  // the request it gave up on, so nothing is left running (or billing) behind a
-  // verdict the human has already been handed.
   const budget = new AbortController();
   try {
-    const result = await withTimeout(
+    const result = await withReviewDeadline(
       call(
         systemPrompt(args.agentPurpose ?? "", args.humanAvailable),
         buildPrompt(args.intent, args.humanAvailable),
@@ -563,12 +406,9 @@ export async function adversarialReview(
       () => budget.abort(),
     );
     if (!result.ok) {
-      // `no_credits` is the sharper answer where it applies, so it wins.
       return failedReview(result.reason, result.cause ?? "unavailable");
     }
 
-    // A fixed reason on purpose — see parseVerdict. Nothing derived from the
-    // model's output reaches this string.
     const parsed = parseVerdict(result.text, args.humanAvailable);
     if (!parsed) {
       return failedReview("reviewer returned no usable verdict");
@@ -582,17 +422,6 @@ export async function adversarialReview(
     }
     return parsed;
   } catch (error: unknown) {
-    // Both branches are FIXED strings, for the same reason `parseVerdict`
-    // returns null rather than throwing. This catch also sees whatever the
-    // transport threw, and a transport error message can carry the request it
-    // failed on — including the credential in the `Authorization` header it was
-    // building. That string is persisted to audit.ndjson and drawn in the
-    // Activity view, which is the one place a credential must never reach. The
-    // provider boundary redacts what it RETURNS; nothing may route around it by
-    // way of an exception.
-    //
-    // The timeout is named because we constructed it ourselves and it tells the
-    // human something true. It is still a literal, not the error's own text.
     return failedReview(error instanceof ReviewTimeout ? "reviewer timed out" : "reviewer error");
   }
 }
@@ -603,9 +432,6 @@ export async function adversarialReview(
  * out with `ReviewArgs.history` in its own change.
  */
 export function agentHistory(allEvents: JSONValue[], agentId: string, limit = 40): JSONValue[] {
-  // intent_* / exec_* / denied_operation events carry only intentId, so first
-  // collect this agent's intent ids, then include everything tied to them plus
-  // anything directly stamped with the agent id.
   const intentIds = new Set<string>();
   for (const e of allEvents) {
     const ev = jv(e);

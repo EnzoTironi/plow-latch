@@ -7,6 +7,13 @@ export default defineConfig({
   resolve: {
     // Tests run against src directly; no build step needed.
     alias: {
+      "@domo/owner-core/settings": p("packages/owner-core/src/settings.ts"),
+      "@domo/owner-core/reviewPolicy": p("packages/owner-core/src/reviewPolicy.ts"),
+      "@domo/owner-core/adversarialAgent": p("packages/owner-core/src/adversarialAgent.ts"),
+      "@domo/owner-core/plowApi": p("packages/owner-core/src/plowApi.ts"),
+      "@domo/owner-core/onboardingSteps": p("packages/owner-core/src/onboardingSteps.ts"),
+      "@domo/owner-core/viewModel": p("packages/owner-core/src/viewModel.ts"),
+      "@domo/owner-core": p("packages/owner-core/src/index.ts"),
       "@domo/protocol": p("packages/protocol/src/index.ts"),
       "@domo/transport": p("packages/transport/src/index.ts"),
       "@domo/browser-server": p("packages/browser-server/src/index.ts"),

@@ -3,14 +3,14 @@ import os from "node:os";
 import path from "node:path";
 import { capabilityDisplay } from "@domo/protocol";
 import { describe, expect, it } from "vitest";
-import type { ReviewArgs } from "../src/adversarialAgent.js";
+import type { ReviewArgs } from "@domo/owner-core/adversarialAgent";
 import {
   gatekeeperPresets,
   PRESET_TEXT,
   previewRow,
   PreviewDeps,
 } from "../src/gatekeeperPreview.js";
-import { loadSettings } from "../src/settings.js";
+import { loadSettings } from "@domo/owner-core/settings";
 
 // The preview's fixed placeholder home — never this Mac's account.
 const HOME = "/Users/owner";

@@ -18,9 +18,9 @@
  * part with states worth testing, and a state machine that can only be reached
  * by launching a window is one nobody tests.
  */
-import { PlowApi, PlowApiError } from "./plowApi.js";
+import { PlowApi, PlowApiError } from "@domo/owner-core/plowApi";
 import { mcpClientRoster, RosterRow } from "./rosterSections.js";
-import { loadSettings, Settings } from "./settings.js";
+import { loadSettings, Settings } from "@domo/owner-core/settings";
 
 export interface ClientCredential {
   /** What the user called this connection. Display only. */

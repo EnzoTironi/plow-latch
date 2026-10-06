@@ -6,7 +6,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { Intent, JSONValue, makeIntent } from "@domo/protocol";
-import { activityMatches, approvalViewModel, auditActivities } from "../src/viewModel.js";
+import { activityMatches, approvalViewModel, auditActivities } from "@domo/owner-core/viewModel";
 
 function intentOf(overrides: Partial<Intent> = {}): Intent {
   return {

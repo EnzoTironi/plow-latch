@@ -6,7 +6,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { Intent, JSONValue, makeIntent } from "@domo/protocol";
-import { approvalViewModel, auditActivities, CredentialTitles } from "../src/viewModel.js";
+import { approvalViewModel, auditActivities, CredentialTitles } from "@domo/owner-core/viewModel";
 
 function browserIntent(): Intent {
   return makeIntent({

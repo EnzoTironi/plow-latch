@@ -19,9 +19,9 @@
  * including email and denied an inbox search.
  */
 import { capabilityDisplay, makeIntent } from "@domo/protocol";
-import { ReviewArgs, ReviewFailureCause, Verdict } from "./adversarialAgent.js";
+import { ReviewArgs, ReviewFailureCause, Verdict } from "@domo/owner-core/adversarialAgent";
 import { GATEKEEPER_DECKS, Operation, PresetKey } from "./onboardingExamples.js";
-import { Settings } from "./settings.js";
+import { Settings } from "@domo/owner-core/settings";
 
 export type { PresetKey } from "./onboardingExamples.js";
 

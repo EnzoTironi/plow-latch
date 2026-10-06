@@ -16,7 +16,7 @@ import {
   setAgentPurpose,
   setApprovalMode,
 } from "../dist/settingsActions.js";
-import { loadSettings, saveSettings } from "../dist/settings.js";
+import { loadSettings, saveSettings } from "@domo/owner-core/settings";
 import { launchAtLoginState, setLaunchAtLogin } from "../dist/loginItem.js";
 import { capabilitiesView } from "../dist/capabilitiesModel.js";
 import { grantList, pluginRows } from "../dist/pluginsModel.js";

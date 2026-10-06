@@ -18,13 +18,19 @@ import {
   createMcpHandler,
   fromJsonSchema,
   McpServer,
+  type McpServerFactory,
+  type McpRequestContext,
+  type ServerContext,
+  type ServerOptions,
 } from "@modelcontextprotocol/server";
+import { serveStdio } from "@modelcontextprotocol/server/stdio";
 import { JSONValue, jv } from "@domo/protocol";
 import { DeviceAgent, INTERACTIVE_VERIFICATION, LIVE_WEB_ROUTING } from "@domo/device-core";
 import { BlockedError, CALL_BUDGET_MS, DeferredResults, DeniedError, DeviceError, Progress } from "./deferred.js";
 import { JobOwners } from "./jobs.js";
 import {
   AgentIdentity,
+  IntentInteraction,
   MACOS_TOOLING,
   TOOLS,
   ToolContext,
@@ -224,6 +230,15 @@ export interface McpServerOptions {
    * hardcoded `0.1.0` hid for as long as it existed.
    */
   version?: string;
+  extension?: McpServerExtension;
+}
+
+export interface McpServerExtension {
+  readonly toolNames: readonly string[];
+  readonly requestState?: ServerOptions["requestState"];
+  readonly instructions?: string;
+  register(server: McpServer, context: McpRequestContext, agent: AgentIdentity | null): void;
+  bind(agent: AgentIdentity, context: ServerContext, args: JSONValue): IntentInteraction;
 }
 
 export interface DomoMcpServer {
@@ -239,101 +254,92 @@ export interface DomoMcpServer {
  * deferred-result store lives here, so handles survive across the individual
  * request-scoped MCP instances the SDK constructs.
  */
-export function createDomoMcpServer(
+function createServerFactory(
   device: DeviceAgent,
-  options: McpServerOptions = {},
-): DomoMcpServer {
+  options: McpServerOptions,
+  identity: (auth: AuthInfo | undefined) => AgentIdentity | null,
+): McpServerFactory {
   const budgetMs = options.budgetMs ?? CALL_BUDGET_MS;
   const version = options.version ?? "0.0.0-dev";
   const deferred = new DeferredResults(budgetMs);
   const jobs = new JobOwners();
   const sessionId = crypto.randomUUID().toUpperCase();
 
-  const handler = createMcpHandler(
-    (ctx) => {
-      const server = new McpServer(
-        // `description` is the one field MCP has for "what is this server
-        // FOR", and a client that drops the instructions block still gets it.
-        { ...SERVER_IDENTITY, version },
+  return (ctx) => {
+    const server = new McpServer(
+      { ...SERVER_IDENTITY, version },
+      {
+        // Without this the client may open a subscriptions stream, which a
+        // one-buffered-exchange-per-frame tunnel cannot carry.
+        capabilities: { tools: { listChanged: false } },
+        instructions: options.extension?.instructions ?? SERVER_INSTRUCTIONS,
+        requestState: options.extension?.requestState,
+      },
+    );
+    const agent = identity(ctx.authInfo);
+
+    for (const spec of TOOLS) {
+      server.registerTool(
+        spec.name,
         {
-          // Without this the client may open a subscriptions stream, which a
-          // one-buffered-exchange-per-frame tunnel cannot carry.
-          capabilities: { tools: { listChanged: false } },
-          instructions: SERVER_INSTRUCTIONS,
+          title: spec.title,
+          description: spec.description,
+          annotations: spec.annotations,
+          inputSchema: fromJsonSchema(spec.inputSchema as never),
+        },
+        async (args: unknown, callCtx) => {
+          if (!agent) {
+            return {
+              content: [toolContent({ error: "no authenticated agent on this request" })],
+              isError: true,
+            };
+          }
+          const missing = missingActionArgs(spec, (args ?? null) as JSONValue);
+          if (missing !== null) {
+            return { content: [toolContent({ error: missing })], isError: true };
+          }
+          const toolCtx: ToolContext = {
+            device,
+            deferred,
+            jobs,
+            agent,
+            sessionId,
+            commandWaitCapMs: budgetMs,
+            interaction: options.extension?.bind(agent, callCtx, (args ?? null) as JSONValue),
+          };
+          const body = (progress: Progress) =>
+            spec.run((args ?? null) as JSONValue, toolCtx, progress);
+          try {
+            const result = spec.deferrable
+              ? await deferred.run(agent.agentId, body)
+              : await body({ decided: () => {} });
+            return { content: toolBlocks(result) };
+          } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : String(error);
+            const failure: JSONValue =
+              error instanceof DeniedError
+                ? { status: "denied", reason: message }
+                : error instanceof BlockedError
+                  ? { ...error.payload, status: "blocked" }
+                  : error instanceof DeviceError
+                    ? { error: message, ...error.details }
+                    : { error: message };
+            return { content: [toolContent(failure)], isError: true };
+          }
         },
       );
-      const agent = agentFrom(ctx.authInfo);
+    }
+    options.extension?.register(server, ctx, agent);
+    return server;
+  };
+}
 
-      for (const spec of TOOLS) {
-        server.registerTool(
-          spec.name,
-          {
-            title: spec.title,
-            description: spec.description,
-            // Display and routing hints only — see ToolHints in tools.ts. The
-            // bound is the approved capability set, computed from arguments.
-            annotations: spec.annotations,
-            inputSchema: fromJsonSchema(spec.inputSchema as never),
-          },
-          async (args: unknown) => {
-            // No asserted agent means nobody authorised this call. Fail closed:
-            // every handle, rule and audit entry is keyed on the agent id.
-            //
-            // The guard is here, on the tool callback, and DELIBERATELY not on
-            // `tools/list` or `server/discover`. Those two return a static
-            // manifest that is identical for every agent and says nothing about
-            // this Mac — no state, no user data, no side effect — and the relay
-            // refuses an unauthenticated caller before anything reaches us.
-            // Everything that touches this Mac or does work is a tool, and
-            // every tool goes through here, `plow_list_skills` included.
-            if (!agent) {
-              return {
-                content: [toolContent({ error: "no authenticated agent on this request" })],
-                isError: true,
-              };
-            }
-            const missing = missingActionArgs(spec, (args ?? null) as JSONValue);
-            if (missing !== null) {
-              return { content: [toolContent({ error: missing })], isError: true };
-            }
-            const toolCtx: ToolContext = {
-              device,
-              deferred,
-              jobs,
-              agent,
-              sessionId,
-              commandWaitCapMs: budgetMs,
-            };
-            const body = (progress: Progress) =>
-              spec.run((args ?? null) as JSONValue, toolCtx, progress);
-            try {
-              const result = spec.deferrable
-                ? await deferred.run(agent.agentId, body)
-                : await body({ decided: () => {} });
-              // Most results are one text block; a screenshot or a binary file
-              // expands into its prebuilt blocks via `__mcpContent`.
-              return { content: toolBlocks(result) };
-            } catch (error: unknown) {
-              const message = error instanceof Error ? error.message : String(error);
-              // Three failures, three shapes (§4.3): refused by the owner or
-              // policy, stopped by this Mac itself, or broken. `blocked` is an
-              // error too — the operation did not happen — and carries the
-              // device's whole answer, since that is what the agent relays.
-              const failure: JSONValue =
-                error instanceof DeniedError
-                  ? { status: "denied", reason: message }
-                  : error instanceof BlockedError
-                    ? { ...error.payload, status: "blocked" }
-                    : error instanceof DeviceError
-                      ? { error: message, ...error.details }
-                      : { error: message };
-              return { content: [toolContent(failure)], isError: true };
-            }
-          },
-        );
-      }
-      return server;
-    },
+export function createDomoMcpServer(
+  device: DeviceAgent,
+  options: McpServerOptions = {},
+): DomoMcpServer {
+  const handler = createMcpHandler(
+    createServerFactory(device, options, agentFrom),
     {
       // DNS-rebinding validation is DELIBERATELY NOT CONFIGURED.
       //
@@ -368,7 +374,7 @@ export function createDomoMcpServer(
   );
 
   return {
-    toolNames: TOOLS.map((t) => t.name),
+    toolNames: [...TOOLS.map((t) => t.name), ...(options.extension?.toolNames ?? [])],
     async fetch(request, auth) {
       // Modern MCP requires Mcp-Method, and the SDK rejects a request whose
       // header and body disagree — so the header is a sound place to refuse
@@ -388,4 +394,17 @@ export function createDomoMcpServer(
     },
     close: () => handler.close(),
   };
+}
+
+export function serveDomoStdio(
+  device: DeviceAgent,
+  auth: RelayAuth,
+  options: McpServerOptions = {},
+): Pick<DomoMcpServer, "close" | "toolNames"> {
+  const agent = agentFrom(toAuthInfo(auth));
+  if (!agent) throw new Error("STDIO requires an authenticated process identity");
+  const server = serveStdio(createServerFactory(device, options, () => agent), {
+    maxSubscriptions: 0,
+  });
+  return { toolNames: [...TOOLS.map((tool) => tool.name), ...(options.extension?.toolNames ?? [])], close: () => server.close() };
 }

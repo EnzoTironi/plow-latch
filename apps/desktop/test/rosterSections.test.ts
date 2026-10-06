@@ -5,7 +5,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { mcpClientRoster } from "../src/rosterSections.js";
-import type { KeyInfo } from "../src/plowApi.js";
+import type { KeyInfo } from "@domo/owner-core/plowApi";
 import { keyInfo, keyPrefixOf } from "./keyInfo.js";
 
 /**

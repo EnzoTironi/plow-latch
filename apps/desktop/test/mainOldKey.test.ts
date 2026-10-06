@@ -1,6 +1,6 @@
 import vm from "node:vm";
 import { expect, it } from "vitest";
-import { PlowApiError } from "../src/plowApi.js";
+import { PlowApiError } from "@domo/owner-core/plowApi";
 import { compileMain, mainFunctions } from "./mainSource.js";
 
 // Exercise the shipping old-key recovery without booting Electron (#419).

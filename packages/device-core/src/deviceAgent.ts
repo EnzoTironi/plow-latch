@@ -272,6 +272,10 @@ function auditDiagnosis(d: DiagnosedRun): { [k: string]: JSONValue } {
 }
 
 export class DeviceAgent {
+  private closing = false;
+  private shutdownTask: Promise<void> | null = null;
+  private readonly activeIntents = new Set<Promise<JSONValue>>();
+  private readonly lifecycle = new AbortController();
   readonly identity: DeviceIdentity;
   readonly audit: AuditLog;
   readonly policy: PolicyEngine;
@@ -588,10 +592,21 @@ export class DeviceAgent {
     });
   }
 
-  /** Close any live browser session. The vault needs no stopping any more —
-   * it is a file and a Keychain item, not a process. */
   async shutdown(): Promise<void> {
-    await this.browserSessions?.closeAll("shutdown");
+    if (this.shutdownTask) return this.shutdownTask;
+    this.closing = true;
+    this.shutdownTask = (async () => {
+      const stops = await Promise.allSettled([
+        Promise.resolve().then(() => this.delegate.shutdown?.()).finally(() => this.lifecycle.abort()),
+        this.executor.shutdown(),
+        this.browserSessions?.closeAll("shutdown"),
+      ]);
+      const intents = await Promise.allSettled([...this.activeIntents]);
+      const failures = [...stops, ...intents].filter((result): result is PromiseRejectedResult => result.status === "rejected");
+      if (failures.length === 1) throw failures[0].reason;
+      if (failures.length) throw new AggregateError(failures.map((result) => result.reason), "device shutdown failed");
+    })();
+    return this.shutdownTask;
   }
 
   /**
@@ -611,11 +626,20 @@ export class DeviceAgent {
    * human" from "approved and now running" — the two are different answers to
    * an agent polling a deferred handle.
    */
-  async handleIntent(
+  handleIntent(
     intent: Intent,
     payload: JSONValue = null,
     onDecided?: () => void,
   ): Promise<JSONValue> {
+    if (this.closing) return Promise.resolve({ status: "denied", reason: "device is shutting down" });
+    const result = this.processIntent(intent, payload, onDecided);
+    this.activeIntents.add(result);
+    const remove = () => this.activeIntents.delete(result);
+    void result.then(remove, remove);
+    return result;
+  }
+
+  private async processIntent(intent: Intent, payload: JSONValue, onDecided?: () => void): Promise<JSONValue> {
     const failure = this.validate(intent);
     if (failure !== null) {
       this.audit.record("intent_rejected", { intentId: intent.intentId, reason: failure });
@@ -634,7 +658,7 @@ export class DeviceAgent {
       capabilities: intent.capabilities.map(capabilityDisplay),
     });
 
-    const grant = await this.policy.decide(intent, this.delegate);
+    const grant = await this.policy.decide(intent, this.delegate, this.lifecycle.signal);
     onDecided?.();
     this.audit.record("intent_decision", {
       intentId: intent.intentId,
@@ -644,6 +668,10 @@ export class DeviceAgent {
     // After the append, never before: the delegate's own record of the
     // question is what survives a crash between the answer and this line.
     await this.delegate.decisionRecorded?.(intent.intentId);
+    if (this.closing) {
+      this.audit.record("intent_cancelled", { intentId: intent.intentId, reason: "shutdown" });
+      return { status: "denied", reason: "device is shutting down" };
+    }
     if (grant.decision === "deny") {
       // Most denials need no explanation — the owner said no, and why is
       // between them and their Mac. A few are standing conditions the calling
@@ -781,6 +809,7 @@ export class DeviceAgent {
           this.audit.record("host_permission_observed", { permission: gate, status: "granted", path: target });
         }
       }
+      if (this.closing) throw new Error("device is shutting down");
       return op();
     });
   }

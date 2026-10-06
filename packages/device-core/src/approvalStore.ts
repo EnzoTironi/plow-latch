@@ -68,6 +68,12 @@ export const APPROVAL_SOURCE_EXPIRED = "expired";
 
 export type ApprovalStatus = "pending" | "decided" | "expired" | "abandoned";
 
+export interface ApprovalSettlement {
+  intentId: string;
+  decision: Decision;
+  source: string;
+}
+
 /** What is written to disk for one approval, while it is unanswered. */
 export interface ApprovalRecord {
   intentId: string;
@@ -102,7 +108,14 @@ function iso(ms: number): string {
 }
 
 export class ApprovalStore implements PolicyDelegate {
-  private readonly waiting = new Map<string, (d: IntentDecision, source: string) => void>();
+  private readonly waiting = new Map<string, { settle: (d: IntentDecision, source: string) => void; deadlineAt: number }>();
+  private closed = false;
+  private readonly decisions = new Set<Promise<IntentDecision>>();
+  onSettled?: (notice: ApprovalSettlement) => void | Promise<void>;
+
+  deadline(intentId: string): number | null {
+    return this.waiting.get(intentId)?.deadlineAt ?? null;
+  }
 
   /**
    * Called for each pending record the startup sweep marks abandoned, so the
@@ -245,7 +258,7 @@ export class ApprovalStore implements PolicyDelegate {
     if (!waiter) return false;
     // The waiter re-checks the deadline by clock before accepting this, so an
     // answer that arrives after expiry is denied even if the timer has not run.
-    waiter({ decision, source }, source);
+    waiter.settle({ decision, source }, source);
     return true;
   }
 
@@ -256,10 +269,34 @@ export class ApprovalStore implements PolicyDelegate {
    * bypass for every delegate it is put in front of.
    */
   mayGrantFromStoredRule(intent: Intent): boolean | Promise<boolean> {
+    if (this.closed) return false;
     return this.inner.mayGrantFromStoredRule?.(intent) ?? true;
   }
 
-  async decideIntent(intent: Intent): Promise<IntentDecision> {
+  async shutdown(): Promise<void> {
+    this.closed = true;
+    for (const waiter of [...this.waiting.values()]) {
+      waiter.settle({ decision: "deny", source: "shutdown" }, "shutdown");
+    }
+    try {
+      await this.inner.shutdown?.();
+    } finally {
+      const results = await Promise.allSettled([...this.decisions]);
+      const failed = results.filter((result): result is PromiseRejectedResult => result.status === "rejected");
+      if (failed.length) throw new AggregateError(failed.map(result => result.reason), "approval shutdown failed");
+    }
+  }
+
+  decideIntent(intent: Intent): Promise<IntentDecision> {
+    if (this.closed) return Promise.resolve({ decision: "deny", source: "shutdown" });
+    const decision = this.decidePending(intent);
+    this.decisions.add(decision);
+    const remove = () => this.decisions.delete(decision);
+    void decision.then(remove, remove);
+    return decision;
+  }
+
+  private async decidePending(intent: Intent): Promise<IntentDecision> {
     const started = this.now();
     const record: ApprovalRecord = {
       intentId: intent.intentId,
@@ -290,13 +327,24 @@ export class ApprovalStore implements PolicyDelegate {
     };
 
     let settle!: (d: IntentDecision, source: string) => void;
+    let settled = false;
     const answered = new Promise<{ decision: IntentDecision; source: string }>((resolve) => {
       settle = (decision, source) => {
-        if (this.now() > deadlineAt) resolve(expiredAnswer);
-        else resolve({ decision, source });
+        if (settled) return;
+        settled = true;
+        this.waiting.delete(intent.intentId);
+        const effective = this.now() > deadlineAt ? expiredAnswer : { decision, source };
+        try {
+          void Promise.resolve(this.onSettled?.({
+            intentId: intent.intentId,
+            decision: typeof effective.decision === "string" ? effective.decision : effective.decision.decision,
+            source: typeof effective.decision === "string" ? "prompt" : (effective.decision.source ?? "prompt"),
+          })).catch(() => {});
+        } catch {}
+        resolve(effective);
       };
     });
-    this.waiting.set(intent.intentId, settle);
+    this.waiting.set(intent.intentId, { settle, deadlineAt });
 
     const timer = setTimeout(
       () => settle(expiredAnswer.decision, APPROVAL_SOURCE_EXPIRED),
@@ -307,10 +355,13 @@ export class ApprovalStore implements PolicyDelegate {
 
     // Ask whoever normally answers. Its result goes through the same settlement
     // check as an external answer and as the timer.
-    void this.inner
-      .decideIntent(intent)
-      .then((decision) => settle(decision, "dialog"))
-      .catch(() => settle({ decision: "deny", source: "error" }, "error"));
+    if (this.closed) settle({ decision: "deny", source: "shutdown" }, "shutdown");
+    else {
+      void this.inner
+        .decideIntent(intent)
+        .then((decision) => settle(decision, "dialog"))
+        .catch(() => settle({ decision: "deny", source: "error" }, "error"));
+    }
 
     const { decision, source } = await answered;
     this.waiting.delete(intent.intentId);

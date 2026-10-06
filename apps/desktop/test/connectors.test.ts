@@ -12,7 +12,7 @@ import {
 import {
   ConnectorAccount,
   ConnectorsOverview,
-} from "../src/plowApi.js";
+} from "@domo/owner-core/plowApi";
 import { deferred } from "./deferred.js";
 
 const CREDENTIAL = "plow_device_connector_secret_123456";

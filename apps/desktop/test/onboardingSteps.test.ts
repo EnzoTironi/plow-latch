@@ -4,7 +4,7 @@ import {
   canGoBackFrom,
   isResumableStep,
   setupProgress,
-} from "../src/onboardingSteps.js";
+} from "@domo/owner-core/onboardingSteps";
 
 describe("the setup step table", () => {
   it("gives every screen in the table a dot, in order", () => {

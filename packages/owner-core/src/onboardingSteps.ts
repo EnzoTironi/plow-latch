@@ -33,7 +33,6 @@ export type ResumableStep = Extract<
   { resumable: true }
 >["step"];
 
-/** How far along the footer reads. */
 export interface SetupProgress {
   index: number;
   total: number;
@@ -47,14 +46,11 @@ export interface SetupProgress {
  * than throw.
  */
 export function setupProgress(step: string): SetupProgress | null {
-  // `waiting` is the activation screen still waiting on the text, not a screen
-  // of its own — it shares the dot.
   const key = step === "waiting" ? "activate" : step;
   const index = SETUP_STEPS.findIndex((entry) => entry.step === key);
   return index < 0 ? null : { index, total: SETUP_STEPS.length };
 }
 
-/** Whether a relaunch may resume on this step. */
 export function isResumableStep(step: string): step is ResumableStep {
   return SETUP_STEPS.some((entry) => entry.step === step && entry.resumable);
 }
