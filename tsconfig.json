@@ -23,6 +23,15 @@
       "path": "packages/owner-core"
     },
     {
+      "path": "packages/integration-hub"
+    },
+    {
+      "path": "packages/owner-runtime"
+    },
+    {
+      "path": "packages/connector-runtime"
+    },
+    {
       "path": "apps/desktop"
     }
   ]

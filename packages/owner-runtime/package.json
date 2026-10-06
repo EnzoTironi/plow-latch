@@ -1,0 +1,16 @@
+{
+  "name": "@domo/owner-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "engines": { "node": ">=24.19.0" },
+  "dependencies": {
+    "@domo/device-core": "*",
+    "@domo/owner-core": "*",
+    "@domo/protocol": "*",
+    "zod": "4.4.3"
+  }
+}

@@ -7,6 +7,9 @@ export default defineConfig({
   resolve: {
     // Tests run against src directly; no build step needed.
     alias: {
+      "@domo/integration-hub": p("packages/integration-hub/src/index.ts"),
+      "@domo/owner-runtime": p("packages/owner-runtime/src/index.ts"),
+      "@domo/connector-runtime": p("packages/connector-runtime/src/index.ts"),
       "@domo/owner-core/settings": p("packages/owner-core/src/settings.ts"),
       "@domo/owner-core/reviewPolicy": p("packages/owner-core/src/reviewPolicy.ts"),
       "@domo/owner-core/adversarialAgent": p("packages/owner-core/src/adversarialAgent.ts"),
