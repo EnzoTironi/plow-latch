@@ -10,8 +10,8 @@ import {
   type Minter,
   type Provider,
 } from "@domo/device-core";
-import type { PlowApi } from "./plowApi.js";
-import { loadSettings } from "./settings.js";
+import type { PlowApi } from "@domo/owner-core/plowApi";
+import { loadSettings } from "@domo/owner-core/settings";
 
 /**
  * Adapts `PlowApi` to the `Minter` the device expects.

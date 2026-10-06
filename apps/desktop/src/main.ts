@@ -56,7 +56,7 @@ import {
 import { createDomoMcpServer, DomoMcpServer } from "@domo/mcp-server";
 import { RelayClient } from "@domo/relay-client";
 import type { AutomationStatus, HostInventory, NativePermissions, RequestablePermission, StagedPlugin } from "@domo/device-core";
-import { approvalViewModel, CredentialTitles } from "./viewModel.js";
+import { approvalViewModel, CredentialTitles } from "@domo/owner-core/viewModel";
 import { AuditIndex, AuditQuery } from "./auditIndex.js";
 
 import { appBundleName, appBundlePath, decodeTileImage, windowInWorkArea } from "./permissionFlow.js";
@@ -75,9 +75,9 @@ import { migrateLegacyHome } from "./migrateHome.js";
 import { buildMinter } from "./providerWiring.js";
 import { resolveInstancePaths } from "./paths.js";
 import { ImportStaging, passwordsAppCanHandOff } from "./importStaging.js";
-import { loadSettings, saveSettings, useCredentialCodec, WindowBounds } from "./settings.js";
+import { loadSettings, saveSettings, useCredentialCodec, WindowBounds } from "@domo/owner-core/settings";
 import { resolveTelemetryConfig, SimulatedError, Telemetry, telemetryMaySend } from "./telemetry.js";
-import { PlowApi, PlowApiError, relaySocketUrl, resolveApiBaseUrl } from "./plowApi.js";
+import { PlowApi, PlowApiError, relaySocketUrl, resolveApiBaseUrl } from "@domo/owner-core/plowApi";
 import { Onboarding } from "./onboarding.js";
 import { CONNECTOR_SETUP_WAIT_MS, Connectors } from "./connectors.js";
 import { ConnectClient } from "./connectClient.js";
@@ -87,7 +87,7 @@ import { fetchAgentIndex } from "./agentIndex.js";
 import { loggingFetch } from "./wireLog.js";
 import { WindowGate } from "./windowGate.js";
 import { SimulatedScenario, SimulatedUpdater, UpdateController } from "./updates.js";
-import { adversarialReview } from "./adversarialAgent.js";
+import { adversarialReview } from "@domo/owner-core/adversarialAgent";
 import { gatekeeperPresets, previewRow } from "./gatekeeperPreview.js";
 import {
   dismissGatekeeperAttention,
@@ -102,7 +102,7 @@ import {
   decideIntent,
   ReviewHint,
   storedRuleMayGrant,
-} from "./reviewPolicy.js";
+} from "@domo/owner-core/reviewPolicy";
 import {
   isSignedIn,
   PendingRevokeRetrier,

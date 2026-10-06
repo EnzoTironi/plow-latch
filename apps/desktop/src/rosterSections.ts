@@ -1,5 +1,5 @@
 /** Independent MCP clients; agents have their own resource roster. */
-import { parseApiTimestamp, type KeyDevice, type KeyInfo } from "./plowApi.js";
+import { parseApiTimestamp, type KeyDevice, type KeyInfo } from "@domo/owner-core/plowApi";
 
 /**
  * What a client may do beyond reaching the Mac it is bound to.

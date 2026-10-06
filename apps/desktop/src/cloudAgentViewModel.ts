@@ -1,6 +1,6 @@
 /** Pure cloud-agent presentation decisions, shared with the sandboxed renderer. */
 
-import type { CloudAgentProvider } from "./plowApi.js";
+import type { CloudAgentProvider } from "@domo/owner-core/plowApi";
 import type { AgentIndex, AgentIndexEntry } from "./agentIndex.js";
 
 const CLOUD_HTTP_REASONS = new Set([

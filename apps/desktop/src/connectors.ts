@@ -10,7 +10,7 @@ import {
   ConnectorsOverview,
   PlowApi,
   PlowApiError,
-} from "./plowApi.js";
+} from "@domo/owner-core/plowApi";
 
 export const CONNECTOR_POLL_INTERVAL_MS = 3_000;
 export const CONNECTOR_TIMEOUT_MS = 5 * 60 * 1_000;

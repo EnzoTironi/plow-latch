@@ -3,14 +3,32 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "lib": ["ES2022", "DOM"],
-    "types": ["node"]
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*"
+  ],
   "references": [
-    { "path": "../../packages/protocol" },
-    { "path": "../../packages/device-core" },
-    { "path": "../../packages/mcp-server" },
-    { "path": "../../packages/relay-client" }
+    {
+      "path": "../../packages/protocol"
+    },
+    {
+      "path": "../../packages/device-core"
+    },
+    {
+      "path": "../../packages/mcp-server"
+    },
+    {
+      "path": "../../packages/owner-core"
+    },
+    {
+      "path": "../../packages/relay-client"
+    }
   ]
 }

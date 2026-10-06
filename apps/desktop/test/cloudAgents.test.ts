@@ -5,7 +5,7 @@ import {
   CloudAgentsClient,
   isTerminalCloudAgent,
 } from "../src/cloudAgents.js";
-import { FetchLike, PlowApi, PlowApiError, REQUEST_TIMEOUT_MS } from "../src/plowApi.js";
+import { FetchLike, PlowApi, PlowApiError, REQUEST_TIMEOUT_MS } from "@domo/owner-core/plowApi";
 
 const CREDENTIAL = "plow_dev_credential_123456789";
 

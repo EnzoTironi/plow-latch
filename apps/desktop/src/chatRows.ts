@@ -1,4 +1,4 @@
-import { echoesCredential } from "./plowApi.js";
+import { echoesCredential } from "@domo/owner-core/plowApi";
 
 /**
  * How a chat reads in the picker: one entry per position — the number it runs

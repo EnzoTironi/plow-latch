@@ -5,9 +5,9 @@
  * `KeyInfo` had to be added three times — the drift surface the
  * `agent_id` → `agent_uid`/`agent_provider` rename walked into.
  */
-import type { KeyInfo } from "../src/plowApi.js";
+import type { KeyInfo } from "@domo/owner-core/plowApi";
 
-export { keyPrefixOf } from "../src/plowApi.js";
+export { keyPrefixOf } from "@domo/owner-core/plowApi";
 
 export const keyInfo = (overrides: Partial<KeyInfo> = {}): KeyInfo => ({
   id: 1,

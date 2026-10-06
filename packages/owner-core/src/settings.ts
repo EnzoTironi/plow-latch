@@ -47,14 +47,7 @@ function activeCodec(): CredentialCodec | null {
   }
 }
 
-/**
- * One sealed secret read back, or `""` when nothing here can read it.
- *
- * A decrypt that fails is not a crash: the keychain entry can be gone after a
- * restored backup or a new login keychain. The honest answer is that this Mac
- * does not hold the secret.
- */
-function unseal(sealed: string): string {
+function tryUnseal(sealed: string): string {
   const active = activeCodec();
   if (!active) return "";
   try {
@@ -64,17 +57,7 @@ function unseal(sealed: string): string {
   }
 }
 
-/**
- * One secret sealed, or `""` when this Mac cannot seal it.
- *
- * `available()` answering yes is not a promise that `encrypt` works — the
- * keychain can lock between the two calls — and a throw escaping here used to
- * escape `saveSettings`, so a sign-in that had just spent its one-shot redeem
- * wrote nothing at all and the session it was handed was live on the account
- * with no copy anywhere. `""` sends the caller to the plaintext this Mac wrote
- * until yesterday; 0600 is the floor that holds either way.
- */
-function seal(value: string, active: CredentialCodec | null): string {
+function trySeal(value: string, active: CredentialCodec | null): string {
   if (!value || !active) return "";
   try {
     return active.encrypt(value);
@@ -112,19 +95,7 @@ export type ApprovalMode = "approve" | "adversarial" | "ask" | "deny";
  */
 export const DEFAULT_APPROVAL_MODE: ApprovalMode = "adversarial";
 
-/**
- * What this Mac remembers about one cloud agent, on its own.
- *
- * Local because nothing on the server knows about it: adversarial review is
- * this app's reviewer, not a property of the machine Plow provisioned.
- */
 export interface Settings {
-  /* There is deliberately NO API base URL here. It is baked into the build
-   * (`resolveApiBaseUrl`), because a credential is only valid against the
-   * environment that minted it — a user-editable origin would turn a stored
-   * token silently meaningless and produce an auth error nobody could explain.
-   * The old `relayUrl` WebSocket setting is gone with it; the socket is derived
-   * from the build's base URL by `relaySocketUrl`. */
   /**
    * The credential, ENCRYPTED, when the OS offered a way to encrypt it. Only
    * one of this and `relayCredential` is ever on disk.
@@ -142,7 +113,7 @@ export interface Settings {
   pendingRevokeCredentials: string[];
   /** Individually sealed pending-revoke credentials that could not be read on
    * this load. Keeping each ciphertext separate lets a newly queued sign-out
-   * be appended without replacing an older seal while the Keychain is locked. */
+   * be appended without replacing an older trySeal while the Keychain is locked. */
   pendingRevokeCredentialsEnc?: string[];
   /** The account this Mac is signed into. */
   accountUid: string;
@@ -270,9 +241,6 @@ export function loadSettings(home: string): Settings {
   }
   const settings =
     parsed && typeof parsed === "object" ? { ...(parsed as Record<string, unknown>) } : {};
-  // Retired fields must be removed explicitly: unknown keys otherwise ride
-  // this spread into every later save. Delete this scrub once the fleet has
-  // turned over; it is a one-off, not a migration framework.
   const retiredKeys = [
     "anthropicApiKey",
     "inferenceProvider",
@@ -289,13 +257,10 @@ export function loadSettings(home: string): Settings {
     settings.pendingRevokeCredentials.some(
       (value) => typeof value === "string" && value.trim() !== "",
     );
-  // The encrypted field wins where it exists. A decrypt that fails is treated
-  // as signed out rather than as a crash; its opaque seal joins the revocation
-  // queue below so a temporarily locked Keychain can recover it later.
   const sealed = typeof loaded.relayCredentialEnc === "string" ? loaded.relayCredentialEnc : "";
   let unreadableSeal = false;
   if (sealed) {
-    loaded.relayCredential = unseal(sealed);
+    loaded.relayCredential = tryUnseal(sealed);
     loaded.relayCredentialEnc = undefined;
     if (!loaded.relayCredential) {
       unreadableSeal = true;
@@ -320,12 +285,9 @@ export function loadSettings(home: string): Settings {
     try {
       if (!pendingCodec) throw new Error("credential codec unavailable");
       const plain = pendingCodec.decrypt(pendingSeal);
-      if (!plain.trim()) throw new Error("pending revoke seal has no credential");
+      if (!plain.trim()) throw new Error("pending revoke trySeal has no credential");
       pendingCredentials.push(plain);
     } catch {
-      // Unlike the active login, an unreadable pending revoke does not gate
-      // the app. Preserve its exact bytes so a temporarily locked Keychain can
-      // recover them later; a new sign-out is appended beside it on save.
       opaquePendingSeals.push(pendingSeal);
     }
   }
@@ -333,21 +295,8 @@ export function loadSettings(home: string): Settings {
   loaded.pendingRevokeCredentialsEnc = opaquePendingSeals.length > 0
     ? opaquePendingSeals
     : undefined;
-  // Take them OFF DISK here, rather than waiting for the next write of some
-  // unrelated setting — and let a failure THROW. Swallowing it would report a
-  // successful load while the credential is still in the file, which is the one
-  // outcome this exists to prevent; every other write in this module propagates
-  // too. It happens at most once, because the second read finds nothing to
-  // remove.
-  // A home written before the codec existed carries plaintext. Rewrite it
-  // sealed on the first read that can — the same one-off shape the retired-key
-  // scrub uses, and for the same reason: waiting for some unrelated write
-  // leaves the plaintext on disk for as long as nobody changes a setting.
   const active = activeCodec();
   const needsSealing = !sealed && loaded.relayCredential.trim() !== "" && active !== null;
-  // A current-format array of ciphertexts is already exactly what we want on
-  // disk. Decoding it for the caller must remain a read, not synchronously
-  // re-encrypt and fsync settings on every hot-path `loadSettings` call.
   const pendingNeedsSealing =
     plaintextPendingOnDisk && active !== null;
   if (retired || needsSealing || pendingNeedsSealing || unreadableSeal) {
@@ -358,13 +307,10 @@ export function loadSettings(home: string): Settings {
 
 export function saveSettings(home: string, settings: Settings): void {
   const file = settingsPath(home);
-  // Encrypted where the OS allows, plaintext where it does not — the file is
-  // 0600 either way, which is what it has always been, so an unavailable
-  // keychain is no worse than yesterday rather than a Mac that cannot sign in.
   const active = activeCodec();
   const stored: Record<string, unknown> = { ...settings };
   const credential = String(stored.relayCredential ?? "").trim();
-  const encrypted = seal(credential, active);
+  const encrypted = trySeal(credential, active);
   if (encrypted) {
     stored.relayCredentialEnc = encrypted;
     stored.relayCredential = "";
@@ -384,7 +330,7 @@ export function saveSettings(home: string, settings: Settings): void {
   const newlySealed: string[] = [];
   const pendingInClear: string[] = [];
   for (const pendingCredential of pendingCredentials) {
-    const encryptedPendingCredential = seal(pendingCredential, active);
+    const encryptedPendingCredential = trySeal(pendingCredential, active);
     if (encryptedPendingCredential) newlySealed.push(encryptedPendingCredential);
     else pendingInClear.push(pendingCredential);
   }

@@ -12,10 +12,10 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { ConnectClient } from "../src/connectClient.js";
-import { KeyInfo, PlowApi, PlowApiError } from "../src/plowApi.js";
+import { KeyInfo, PlowApi, PlowApiError } from "@domo/owner-core/plowApi";
 import { Deferred, deferred } from "./deferred.js";
 import { keyInfo, keyPrefixOf } from "./keyInfo.js";
-import { loadSettings, saveSettings } from "../src/settings.js";
+import { loadSettings, saveSettings } from "@domo/owner-core/settings";
 
 const DEVICE_TOKEN = "plow_DEVICEtok_secret";
 const DEVICE_UID = "dev_this_mac";

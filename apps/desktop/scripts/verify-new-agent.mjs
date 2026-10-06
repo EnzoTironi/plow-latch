@@ -38,8 +38,8 @@ app.whenReady().then(async () => {
   fs.mkdirSync(out, { recursive: true });
   const { CloudAgentState } = await import(path.join(desktop, "dist/cloudAgentState.js"));
   const { CloudAgentsClient } = await import(path.join(desktop, "dist/cloudAgents.js"));
-  const { PlowApi } = await import(path.join(desktop, "dist/plowApi.js"));
-  const { saveSettings, loadSettings } = await import(path.join(desktop, "dist/settings.js"));
+  const { PlowApi } = await import("@domo/owner-core/plowApi");
+  const { saveSettings, loadSettings } = await import("@domo/owner-core/settings");
   saveSettings(home, { ...loadSettings(home), relayCredential: "fixture_device_credential" });
   let providers = [{ id: "exe:life", name: "Life", phrases: ["Start Life & café?", "alias"] }];
   let agentRows = [];

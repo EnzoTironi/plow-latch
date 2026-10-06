@@ -1,9 +1,9 @@
 import type { DeniedIntent } from "@domo/device-core";
-import { echoesCredential, normalizeApiBaseUrl, PlowApi } from "./plowApi.js";
+import { echoesCredential, normalizeApiBaseUrl, PlowApi } from "@domo/owner-core/plowApi";
 import {
   REVIEWER_COMPLETION_BASE,
   REVIEWER_TIMEOUT_MS,
-} from "./adversarialAgent.js";
+} from "@domo/owner-core/adversarialAgent";
 
 const MAX_REVISION_LENGTH = 8_000;
 

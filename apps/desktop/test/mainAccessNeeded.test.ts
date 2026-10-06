@@ -1,7 +1,7 @@
 import vm from "node:vm";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { CONNECTOR_SETUP_WAIT_MS, Connectors } from "../src/connectors.js";
-import { PlowApi } from "../src/plowApi.js";
+import { PlowApi } from "@domo/owner-core/plowApi";
 import { compileMain, mainFunctions } from "./mainSource.js";
 
 // Plugins → Continue's shipping access decision, without Electron.

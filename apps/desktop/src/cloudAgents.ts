@@ -1,4 +1,4 @@
-import { PlowApi, PlowApiError, REQUEST_TIMEOUT_MS, echoesCredential } from "./plowApi.js";
+import { PlowApi, PlowApiError, REQUEST_TIMEOUT_MS, echoesCredential } from "@domo/owner-core/plowApi";
 
 export const CLOUD_AGENT_POLL_INTERVAL_MS = 2_000;
 const CLOUD_AGENT_POLL_RETRY_WINDOW_MS = 5 * 60_000;

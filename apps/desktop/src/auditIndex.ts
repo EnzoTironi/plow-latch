@@ -25,7 +25,7 @@ import {
   buildActivity,
   DecisionKind,
   StatusKind,
-} from "./viewModel.js";
+} from "@domo/owner-core/viewModel";
 
 /** What the renderer asks for: the first rows of the filtered listing. */
 export interface AuditQuery {

@@ -14,15 +14,15 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Intent, JSONValue, makeIntent } from "@domo/protocol";
-import { adversarialReview } from "../src/adversarialAgent.js";
-import type { ReviewArgs, ReviewFailureCause, Verdict } from "../src/adversarialAgent.js";
+import { adversarialReview } from "@domo/owner-core/adversarialAgent";
+import type { ReviewArgs, ReviewFailureCause, Verdict } from "@domo/owner-core/adversarialAgent";
 import { APPROVAL_SOURCE_EXPIRED, ApprovalStore, DENIAL_SOURCE_NO_REVIEWER, PolicyEngine } from "@domo/device-core";
 import type { PolicyDelegate } from "@domo/device-core";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { Settings } from "../src/settings.js";
-import { auditActivities, decidedByLabel } from "../src/viewModel.js";
+import { Settings } from "@domo/owner-core/settings";
+import { auditActivities, decidedByLabel } from "@domo/owner-core/viewModel";
 import {
   ApprovalQueue,
   ReviewHint,
@@ -30,8 +30,8 @@ import {
   inferenceStatus,
   reviewerAvailable,
   storedRuleMayGrant,
-} from "../src/reviewPolicy.js";
-import { REVIEWER_MODEL } from "../src/adversarialAgent.js";
+} from "@domo/owner-core/reviewPolicy";
+import { REVIEWER_MODEL } from "@domo/owner-core/adversarialAgent";
 
 const PLOW_CREDENTIAL = "plow_sk_do_not_leak_me";
 
@@ -947,9 +947,9 @@ describe("the renderer's view of inference carries no credentials", () => {
 // pinned by the adversarial-mode describe above and by settingsActions.test.
 
 describe("settings defaults", () => {
-  let loadSettings: typeof import("../src/settings.js").loadSettings;
+  let loadSettings: typeof import("@domo/owner-core/settings").loadSettings;
   beforeEach(async () => {
-    ({ loadSettings } = await import("../src/settings.js"));
+    ({ loadSettings } = await import("@domo/owner-core/settings"));
   });
 
   it("a settings.json that was never written reads as an unusable reviewer", () => {

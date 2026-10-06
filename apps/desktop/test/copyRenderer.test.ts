@@ -26,6 +26,8 @@ function plant(main: string): string {
   const desktop = path.join(root, "apps/desktop");
   fs.mkdirSync(path.join(desktop, "scripts"), { recursive: true });
   fs.mkdirSync(path.join(desktop, "src/renderer"), { recursive: true });
+  fs.mkdirSync(path.join(root, "packages/owner-core/dist"), { recursive: true });
+  fs.writeFileSync(path.join(root, "packages/owner-core/dist/onboardingSteps.js"), "export const SETUP_STEPS = [];\n");
   // The script reads a renderer `.js` with the module goal the browser gives
   // it, which is what `"type": "module"` decides for `node --check`.
   fs.writeFileSync(path.join(root, "package.json"), `{"type":"module"}`);
@@ -62,4 +64,5 @@ it("installs a renderer that parses", () => {
   expect(fs.readFileSync(path.join(root, "apps/desktop/dist/renderer/main.js"), "utf8")).toContain(
     "export const ok = 1;",
   );
+  expect(fs.readFileSync(path.join(root, "apps/desktop/dist/onboardingSteps.js"), "utf8")).toBe("export const SETUP_STEPS = [];\n");
 });

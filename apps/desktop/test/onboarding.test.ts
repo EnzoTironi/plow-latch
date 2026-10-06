@@ -9,8 +9,8 @@ import {
   Onboarding,
   OnboardingDeps,
 } from "../src/onboarding.js";
-import { PlowApi, PlowApiError } from "../src/plowApi.js";
-import { loadSettings, saveSettings, Settings } from "../src/settings.js";
+import { PlowApi, PlowApiError } from "@domo/owner-core/plowApi";
+import { loadSettings, saveSettings, Settings } from "@domo/owner-core/settings";
 import { PendingRevokeRetrier, queueRevokeAndSignOut, signOutOfPlow } from "../src/settingsActions.js";
 
 const DEVICE_TOKEN = "plow_DEVICEtok_secret";

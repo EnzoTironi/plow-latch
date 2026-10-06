@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { loadSettings, saveSettings, useCredentialCodec } from "../src/settings.js";
+import { loadSettings, saveSettings, useCredentialCodec } from "@domo/owner-core/settings";
 
 const cleanups: (() => void)[] = [];
 afterEach(() => {

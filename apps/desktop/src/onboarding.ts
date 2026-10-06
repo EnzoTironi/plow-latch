@@ -13,10 +13,10 @@
  * user is meant to read: the activation display code. The activation *secret*
  * and the login session never appear in it at all.
  */
-import { ActivationChat, PlowApi, PlowApiError } from "./plowApi.js";
+import { ActivationChat, PlowApi, PlowApiError } from "@domo/owner-core/plowApi";
 import { chatPeople, chatRowTitle, usableChatDisplayName } from "./chatRows.js";
 import { PRESET_TEXT } from "./gatekeeperPreview.js";
-import { loadSettings, saveSettings, Settings } from "./settings.js";
+import { loadSettings, saveSettings, Settings } from "@domo/owner-core/settings";
 import { queuePendingRevoke } from "./settingsActions.js";
 import {
   canGoBackFrom,
@@ -24,7 +24,7 @@ import {
   setupProgress,
   type SetupProgress,
   type SetupStep,
-} from "./onboardingSteps.js";
+} from "@domo/owner-core/onboardingSteps";
 
 /**
  * The verification sub-steps retain their existing mechanics. A successful

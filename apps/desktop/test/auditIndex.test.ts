@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { JSONValue } from "@domo/protocol";
 import { AuditIndex } from "../src/auditIndex.js";
 import { capabilitiesView } from "../src/capabilitiesModel.js";
-import { activityMatches, auditActivities } from "../src/viewModel.js";
+import { activityMatches, auditActivities } from "@domo/owner-core/viewModel";
 
 const at = (s: number) => `2026-09-10T17:${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}Z`;
 

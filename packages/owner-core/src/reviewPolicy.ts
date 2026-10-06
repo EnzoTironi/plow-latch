@@ -134,7 +134,7 @@ export class ApprovalQueue {
       const answer = await waiting.entry.preempt().catch(() => null);
       if (answer === null) continue;
       const at = this.line.indexOf(waiting);
-      if (at < 0) continue; // its turn came, and it answered for itself
+      if (at < 0) continue; 
       this.line.splice(at, 1);
       waiting.resolve(answer);
     }
@@ -220,50 +220,26 @@ export async function decideIntent(intent: Intent, deps: DecideDeps): Promise<De
 
   if (mode === "deny") return { decision: "deny", source: "policy" };
 
-  // The playground: file operations confined to ~/Plow are granted here, in
-  // every mode that grants anything — no review spent, no dialog raised. After
-  // the deny return above ON PURPOSE: deny mode is the owner's kill switch,
-  // and the carve-out must not outrank it.
   if (await confinedToPlowFolder(intent.capabilities, deps.plowRoot)) {
     return { decision: "allow_once", source: APPROVAL_SOURCE_PLOW_FOLDER };
   }
 
-  /** Is the reviewer the decider for this intent? */
-  // Approve: the whole point of the mode, for every intent — a script that
-  // runs outside the sandbox included. Above the reviewer, because by here
-  // `deny` has already returned and `ask` still wants the human.
   if (mode === "approve") return { decision: "allow_once", source: "approve" };
 
   const reviewDecides = mode === "adversarial";
 
-  // Run one review, recording its start and outcome onto the intent's audit
-  // timeline so the app shows "adversarial agent started" + its verdict between
-  // the request and the final decision.
-  // A review that decides has no human behind it, and the reviewer is told so
-  // rather than left to infer it from the owner's freeform purpose text. Ask
-  // mode is the other way round: the dialog is coming either way, so a reviewer
-  // that wants to defer is saying something the human will actually see.
   const humanAvailable = !reviewDecides;
 
   const review = async () => {
     deps.record("adversarial_review_started", {
       intentId: intent.intentId,
       agent: intent.agentId,
-      // The model that actually ran — the audit log is the test oracle, so it
-      // must not name one that never saw this intent.
       model: REVIEWER_MODEL,
     });
     const r = await deps.review({
       intent,
-      // Nothing about the past. The reviewer reasoned from a growing pile of
-      // earlier operations rather than from the request, and each denial fed
-      // the next; it now sees this operation and nothing else.
       history: [],
-      // A SECRET. It reaches the Authorization header of the Plow request and
-      // nothing else — never the audit record below, never the renderer.
       plowCredential: (settings.relayCredential ?? "").trim(),
-      // Device-side and human-authored: it comes from the settings file, so no
-      // agent-reachable path can write what the prompt will label TRUSTED.
       agentPurpose: settings.agentPurpose ?? "",
       apiBaseUrl: deps.apiBaseUrl,
       humanAvailable,
@@ -272,23 +248,12 @@ export async function decideIntent(intent: Intent, deps: DecideDeps): Promise<De
       intentId: intent.intentId,
       verdict: r.verdict,
       reason: r.reason,
-      // The verdict alone says "ask", which reads as the agent deferring to the
-      // human — untrue when it never ran. The cause is what tells the timeline
-      // the difference between deferring and being unable to answer.
       ...(r.cause ? { cause: r.cause } : {}),
     });
     return r;
   };
 
   if (reviewDecides) {
-    // No credential is no reviewer, and this intent has no other decider: the
-    // mode that got here has no human in it. Auto-approving would hand the
-    // agent exactly the access the mode exists to gate.
-    //
-    // Decide this BEFORE `review()`, which opens the timeline with "adversarial
-    // agent started" and names the model it is about to use. With no credential
-    // there is no call and no model, so recording one would put a reviewer that
-    // never ran into the audit log — and the audit log is the oracle.
     if (!reviewerAvailable(settings)) {
       return { decision: "deny", source: DENIAL_SOURCE_NO_REVIEWER };
     }
@@ -296,39 +261,12 @@ export async function decideIntent(intent: Intent, deps: DecideDeps): Promise<De
     if (verdict === "allow")
       return { decision: "allow_once", source: "adversarial" };
     if (verdict === "deny") return { decision: "deny", source: "adversarial", reason };
-    // The account cannot pay for inference, so the reviewer can never run.
-    // Deny — and say why, in a form the calling agent can read.
-    // Quietly reverting to prompting a human would change the mode the user
-    // configured, and would hide a standing condition behind one more dialog.
     if (cause === "no_credits") {
       return { decision: "deny", source: DENIAL_SOURCE_NO_CREDITS };
     }
-    // Any other "ask". This mode has no human in it — the owner chose "the
-    // reviewer decides", and a modal here contradicts the setting: it appears
-    // on a Mac whose owner has said they are not answering, waits out its
-    // fifteen minutes, and holds every request behind it while it does, because
-    // approvals are serialized. So the fallback is a verdict.
-    //
-    // Deny, because it is the fail-closed answer and because nothing that
-    // arrives here is an argument for access: the reviewer never reached a
-    // verdict.
-    //
-    // One source, not two. There used to be a second — a reviewer that ran and
-    // declined to decide — but `ask` is no longer in the schema the model
-    // answers into, and an `ask` that arrives anyway is refused at the parse
-    // and comes back carrying `unavailable`. Nothing can reach this line
-    // without that cause, so a branch on it would be picking between a live
-    // source and a dead one.
     return { decision: "deny", source: DENIAL_SOURCE_REVIEWER_UNAVAILABLE };
   }
 
-  // Ask mode: show the dialog, with the reviewer's hint whenever a credential
-  // is present. A 402 here costs only the hint — the human was always the
-  // decider.
-  //
-  // A hint is a nicety, so it is skipped when there is no credential:
-  // running a review that cannot run would buy an audit pair and a null
-  // suggestion. Not a gate — nothing the human chose is refused by it.
   const hint =
     reviewerAvailable(settings)
       ? review().then((r) => ({
@@ -342,30 +280,11 @@ export async function decideIntent(intent: Intent, deps: DecideDeps): Promise<De
         }))
       : null;
   return deps.queue.run({
-    // A dialog ahead of this one in the queue may have been answered "always
-    // allow", storing a rule that covers this intent too. Then the human has
-    // already decided it: it is granted the way the engine grants a matching
-    // rule — as the rule's answer, not the dialog's — and no window opens.
-    // `ruleStored`: this answer came FROM a rule, so the engine has nothing to
-    // store — and must not, or a rule revoked while the answer travels back
-    // through the approval store's write would come back.
     preempt: async () =>
       (await deps.ruleAnswers()) ? { decision: "always_allow", source: "rule", ruleStored: true } : null,
     show: async () => {
       const decision = await deps.openApproval(hint);
       if (decision === "always_allow") {
-        // Stored, then every request still waiting is asked whether the new
-        // rule covers it — before this dialog's own answer goes back, so
-        // the ones it covers are granted now and never reach the human.
-        //
-        // DELIBERATELY ahead of the approval store's deadline check. That
-        // deadline is the REQUEST's: an answer past it denies the request as
-        // expired, because the agent's call is long stale. The rule is not
-        // stale — it is the owner's standing choice about exactly the bound
-        // they were shown, and would be asked for again on the next matching
-        // request only to get the same click. So a late "always allow" keeps
-        // its rule, and the audit log says so: `rule_stored` is written when
-        // the rule is, and the decision line then says what the request got.
         deps.storeRule();
         await deps.queue.sweep();
         return { decision, source: "ask", ruleStored: true };

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { gatekeeperPresets } from "../src/gatekeeperPreview.js";
 import { pluginExamples } from "../src/onboardingExampleCatalog.js";
-import * as steps from "../src/onboardingSteps.js";
+import * as steps from "@domo/owner-core/onboardingSteps";
 import { grantList } from "../src/pluginsModel.js";
 import { onboardingFixtures } from "../src/renderer/onboarding-fixtures.js";
 

@@ -32,7 +32,7 @@ import {
   PlowApiError,
   parseActivationChat,
   echoesCredential,
-} from "./plowApi.js";
+} from "@domo/owner-core/plowApi";
 import {
   ChatPerson,
   chatEchoesCredential,
@@ -41,7 +41,7 @@ import {
   formatNumber,
   withoutCredentialEchoes,
 } from "./chatRows.js";
-import { loadSettings } from "./settings.js";
+import { loadSettings } from "@domo/owner-core/settings";
 
 /**
  * Does landing on this tab put the cloud group on screen?
