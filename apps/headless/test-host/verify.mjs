@@ -24,9 +24,35 @@ try {
   page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
   await page.goto(server.url);
   const app = page.frameLocator("#view");
-  const screenshot = async name => { await page.evaluate(() => window.scrollTo(0, 0)); await page.screenshot({ path: join(output, name) }); };
+  const screenshot = async name => {
+    await page.frameLocator("#view").locator("body").evaluate(async () => {
+      await document.fonts.ready;
+      await Promise.all(document.getAnimations().map(animation => animation.finished.catch(() => {})));
+    });
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.screenshot({ path: join(output, name) });
+  };
   const authorize = async () => { await page.getByRole("dialog").waitFor(); await page.getByRole("button", { name: "Autorizar este pedido", exact: true }).click(); await page.getByRole("dialog").waitFor({ state: "hidden" }); };
   await check("one built widget initializes through AppBridge", async () => { await app.getByText("Host de verificação", { exact: true }).waitFor(); assert.equal(await app.locator("#authority").count(), 1); await screenshot("01-painel.png"); });
+  await check("embedded brand fonts load in the sandboxed widget", async () => {
+    const fonts = await app.locator("body").evaluate(async () => {
+      await document.fonts.ready;
+      return Array.from(document.fonts).filter(font => font.status === "loaded").map(font => font.family.replaceAll('"', "")).sort();
+    });
+    assert.deepEqual(fonts, ["DM Sans", "Epilogue"]);
+  });
+  await check("keyboard navigation moves focus and selects the visible panel", async () => {
+    const overview = app.getByRole("tab", { name: "Agora", exact: true });
+    await overview.focus(); await overview.press("End");
+    await app.getByRole("heading", { name: "Recursos do Latch", exact: true }).waitFor();
+    assert.equal(await app.getByRole("tab", { name: "Recursos", exact: true }).evaluate(element => element === document.activeElement), true);
+    await app.getByRole("tab", { name: "Recursos", exact: true }).press("Home");
+    await overview.press("ArrowDown");
+    await app.getByRole("heading", { name: "Suas conexões", exact: true }).waitFor();
+    assert.equal(await app.getByRole("tab", { name: "Conexões", exact: true }).getAttribute("aria-selected"), "true");
+    await screenshot("10-conexoes.png");
+    await app.getByRole("tab", { name: "Conexões", exact: true }).press("Home");
+  });
   await check("memory create, correction and search use persisted service state", async () => {
     await app.getByRole("tab", { name: "Memória", exact: true }).click();
     await app.getByLabel("Informação", { exact: true }).fill("Meu idioma preferido é português.");
@@ -93,6 +119,7 @@ try {
     await app.getByRole("button", { name: "Revisar mudança de modo", exact: true }).click(); await authorize();
     await textContains(app.locator("#message"), "Mudança confirmada e aplicada");
     assert.equal((await server.host.call("latch_hub_query", {})).structuredContent.hub.mode, "deny");
+    await screenshot("11-acesso.png");
   });
   await check("maintained preference controls require confirmation and use real settings", async () => {
     await app.getByRole("tab", { name: "Recursos", exact: true }).click();
@@ -144,6 +171,20 @@ try {
     await mobileApp.getByRole("tab", { name: "Memória", exact: true }).click();
     assert.equal(await mobileApp.locator("body").evaluate(body => body.scrollWidth <= window.innerWidth + 1), true);
     await screenshot("06-celular.png");
+  });
+  await context.close(); context = null;
+  context = await browser.newContext({ viewport: { width: 1320, height: 1100 }, colorScheme: "dark", reducedMotion: "reduce" }); page = await context.newPage();
+  page.on("pageerror", error => errors.push(error.message));
+  await page.goto(server.url);
+  const darkApp = page.frameLocator("#view");
+  await check("host dark theme and reduced motion preferences reach the widget", async () => {
+    await darkApp.getByText("Host de verificação", { exact: true }).waitFor();
+    assert.equal(await darkApp.locator("html").getAttribute("data-theme"), "dark");
+    assert.equal(await darkApp.locator("#overview").evaluate(element => getComputedStyle(element).animationName), "none");
+    assert.equal(await darkApp.locator("body").evaluate(element => getComputedStyle(element).color), "rgb(232, 237, 223)");
+    await darkApp.getByRole("button", { name: "Ampliar painel", exact: true }).click();
+    assert.equal(await darkApp.locator("html").getAttribute("data-theme"), "dark");
+    await screenshot("09-tema-escuro.png");
   });
   await context.close(); context = null;
   const locked = await startTestHost({ enrolled: false }); servers.push(locked);

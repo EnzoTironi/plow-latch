@@ -30,7 +30,10 @@ function textElement(tag, text, className) {
 }
 function message(text, error = false) { node("message").textContent = text; node("message").dataset.error = String(error); }
 function switchTab(name) {
-  for (const button of document.querySelectorAll("[data-tab]")) button.setAttribute("aria-selected", String(button.dataset.tab === name));
+  for (const button of document.querySelectorAll("[data-tab]")) {
+    button.setAttribute("aria-selected", String(button.dataset.tab === name));
+    button.tabIndex = button.dataset.tab === name ? 0 : -1;
+  }
   for (const panel of document.querySelectorAll(".panel")) panel.hidden = panel.id !== name;
 }
 function button(text, action, disabled = false, className) {
@@ -222,6 +225,26 @@ async function searchMemories(more = false) {
 function cancelEdit() { editing = null; node("memory-text").value = ""; node("memory-title").textContent = "Lembrar uma informação"; node("memory-save").textContent = "Guardar na memória"; node("memory-cancel").hidden = true; }
 for (const element of document.querySelectorAll("[data-tab]")) element.addEventListener("click", () => switchTab(element.dataset.tab));
 for (const element of document.querySelectorAll("[data-switch]")) element.addEventListener("click", () => switchTab(element.dataset.switch));
+const tablist = document.querySelector('[role="tablist"]');
+const compact = window.matchMedia("(max-width:800px)");
+const tabOrientation = () => tablist.setAttribute("aria-orientation", compact.matches ? "horizontal" : "vertical");
+compact.addEventListener("change", tabOrientation);
+tabOrientation();
+switchTab("overview");
+tablist.addEventListener("keydown", event => {
+  const tabs = [...tablist.querySelectorAll('[role="tab"]')];
+  const current = tabs.indexOf(document.activeElement);
+  if (current < 0) return;
+  let next;
+  if (["ArrowRight", "ArrowDown"].includes(event.key)) next = (current + 1) % tabs.length;
+  else if (["ArrowLeft", "ArrowUp"].includes(event.key)) next = (current - 1 + tabs.length) % tabs.length;
+  else if (event.key === "Home") next = 0;
+  else if (event.key === "End") next = tabs.length - 1;
+  else return;
+  event.preventDefault();
+  switchTab(tabs[next].dataset.tab);
+  tabs[next].focus();
+});
 node("refresh").addEventListener("click", () => perform(async () => { await refresh(); message("Estado atualizado."); }));
 node("expand").addEventListener("click", () => perform(() => app.requestDisplayMode({ mode: "fullscreen" })));
 node("memory-search").addEventListener("input", () => { clearTimeout(searchTimer); searchSequence += 1; searchTimer = setTimeout(() => { if (connected) void searchMemories().catch(() => message("Não foi possível consultar a memória.", true)); }, 200); });
@@ -252,6 +275,11 @@ node("connection-save").addEventListener("click", () => perform(async () => {
   node("connection-form").hidden = true;
 }));
 app.ontoolresult = result => { if (result.structuredContent?.hub) render(result.structuredContent.hub); };
-app.onhostcontextchanged = context => { if (context.theme) document.documentElement.style.colorScheme = context.theme; };
-try { await app.connect(); connected = true; await refresh(); }
+function applyTheme(context) {
+  const theme = context?.theme ?? (window.matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light");
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.style.colorScheme = theme;
+}
+app.onhostcontextchanged = () => applyTheme(app.getHostContext());
+try { await app.connect(); applyTheme(app.getHostContext()); connected = true; await refresh(); }
 catch { node("authority").replaceChildren(textElement("span", "O painel precisa de um host MCP Apps", "banner-label"), document.createTextNode("Abra o Latch pelo plugin em um host compatível. Este arquivo sozinho não tem acesso ao serviço.")); message("Conexão indisponível.", true); }

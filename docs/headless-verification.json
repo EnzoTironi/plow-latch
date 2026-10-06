@@ -21,6 +21,14 @@
         "status": "passed"
       },
       {
+        "name": "embedded brand fonts load in the sandboxed widget",
+        "status": "passed"
+      },
+      {
+        "name": "keyboard navigation moves focus and selects the visible panel",
+        "status": "passed"
+      },
+      {
         "name": "memory create, correction and search use persisted service state",
         "status": "passed"
       },
@@ -50,6 +58,10 @@
       },
       {
         "name": "small viewport keeps the page within its width",
+        "status": "passed"
+      },
+      {
+        "name": "host dark theme and reduced motion preferences reach the widget",
         "status": "passed"
       },
       {

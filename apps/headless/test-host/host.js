@@ -9,7 +9,7 @@ async function post(path, body) {
   const response = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
   const data = await response.json(); if (!response.ok) throw new Error(data.error); return data;
 }
-const bridge = new AppBridge(null, { name: "Latch verification host", version: "0.1" }, { serverTools: {} }, { hostContext: { theme: "light", locale: "pt-BR", displayMode: "inline", availableDisplayModes: ["inline", "fullscreen"] } });
+const bridge = new AppBridge(null, { name: "Latch verification host", version: "0.1" }, { serverTools: {} }, { hostContext: { theme: window.matchMedia("(prefers-color-scheme:dark)").matches ? "dark" : "light", locale: "pt-BR", displayMode: "inline", availableDisplayModes: ["inline", "fullscreen"] } });
 bridge.oncalltool = params => post("/api/call", { name: params.name, arguments: params.arguments ?? {} });
 bridge.onsizechange = ({ height }) => { if (height) iframe.style.height = `${Math.min(2400, Math.max(700, height))}px`; };
 bridge.onrequestdisplaymode = async ({ mode }) => { bridge.setHostContext({ displayMode: mode }); return { mode }; };

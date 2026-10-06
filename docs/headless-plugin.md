@@ -12,7 +12,7 @@ This branch runs Latch's shared device tools without Electron. It adds an owner 
 
 `packages/integration-hub` stores scoped connections, versioned memory with source references, jobs, bounded results, audit entries, and cost reservations in SQLite. `packages/connector-runtime` executes reviewed MCP, API, and CLI configurations through a protected credential broker. Unknown effects retain their reservations and do not replay automatically.
 
-The panel has six tabs: current activity, connections, memory, activity and costs, access, and resources. It uses the MCP Apps bridge and service state. It does not import the host's conversation memory automatically.
+The panel has six tabs: current activity, connections, memory, activity and costs, access, and resources. It uses the MCP Apps bridge and service state. Its responsive layout uses the maintained Latch fonts, with their SIL license included in the package. The panel follows the host's theme, supports keyboard navigation, and respects reduced motion. It does not import the host's conversation memory automatically.
 
 ## Owner authority
 
@@ -64,7 +64,7 @@ node apps/headless/test-host/verify.mjs /absolute/evidence/ui
 Build the portable Darwin arm64 experiment with the verified Node binary. The builder includes the runtime dependency closure, licenses, provenance, and a SHA-256 file manifest. Workspace packages are real directories because the host's installer does not preserve workspace symlinks.
 
 ```sh
-node scripts/build-headless-plugin.mjs --output /absolute/package --node /absolute/node-24.19.0 --version 0.1.4-dev
+node scripts/build-headless-plugin.mjs --output /absolute/package --node /absolute/node-24.19.0 --version 0.1.6-dev
 node apps/headless/test-host/package-probe.mjs /absolute/package/marketplace/plugins/latch-headless-dev /absolute/evidence/package
 ```
 

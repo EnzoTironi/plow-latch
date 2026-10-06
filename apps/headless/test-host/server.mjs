@@ -35,7 +35,7 @@ export async function startTestHost({ enrolled = true } = {}) {
       if (!cookies.includes(`latch_fixture=${token}`)) { send(403, { error: "fixture_session_required" }); return; }
       if (request.method === "GET" && path === "/host.js") { send(200, script, "text/javascript; charset=utf-8"); return; }
       if (request.method === "GET" && path === "/view") {
-        response.setHeader("Content-Security-Policy", "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'");
+        response.setHeader("Content-Security-Policy", "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'");
         send(200, html, "text/html; charset=utf-8"); return;
       }
       if (!routes.has(path)) { send(404, { error: "not_found" }); return; }
